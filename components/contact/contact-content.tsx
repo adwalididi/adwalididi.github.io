@@ -1,0 +1,103 @@
+"use client"
+
+import { useEffect, useRef, useState } from "react"
+import { MessageCircle, Instagram, Facebook, Linkedin, Clock } from "lucide-react"
+
+export function ContactContent() {
+  const [isVisible, setIsVisible] = useState(false)
+  const sectionRef = useRef<HTMLElement>(null)
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setIsVisible(true)
+        }
+      },
+      { threshold: 0.1 }
+    )
+
+    if (sectionRef.current) {
+      observer.observe(sectionRef.current)
+    }
+
+    return () => observer.disconnect()
+  }, [])
+
+  return (
+    <section ref={sectionRef} className="py-12 sm:py-16 bg-cream">
+      <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div 
+          className={`bg-white rounded-3xl p-8 sm:p-12 shadow-sm border border-border transition-all duration-700 ${
+            isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
+          }`}
+        >
+          <p className="text-lg text-charcoal/80 leading-relaxed mb-8">
+            We don&apos;t do contact forms. Because nobody wants to fill out a form and wait 48 hours for a reply.
+          </p>
+          
+          <p className="text-lg text-charcoal/80 leading-relaxed mb-8">
+            WhatsApp us directly — we&apos;ll respond same day, ask you a few simple questions about your business, and tell you honestly whether we think we can help.
+          </p>
+          
+          <p className="text-xl font-semibold text-charcoal mb-8">
+            That conversation costs nothing.
+          </p>
+
+          {/* Primary CTA */}
+          <a
+            href="https://wa.me/916261643774"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-3 bg-[#25D366] text-white px-8 py-4 rounded-full font-semibold text-lg hover:bg-[#25D366]/90 transition-all hover:scale-105 shadow-lg w-full sm:w-auto justify-center"
+          >
+            <MessageCircle size={24} fill="white" />
+            WhatsApp Karo
+          </a>
+
+          {/* Additional Contact Info */}
+          <div className="mt-10 pt-8 border-t border-border">
+            <p className="text-charcoal/60 text-sm font-medium mb-4">Also find us here:</p>
+            
+            <div className="space-y-4">
+              <a
+                href="https://www.instagram.com/adwalididi"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-3 text-charcoal/80 hover:text-saffron transition-colors"
+              >
+                <Instagram size={22} />
+                <span>@adwalididi</span>
+              </a>
+              
+              <a
+                href="https://www.facebook.com/adwalididi"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-3 text-charcoal/80 hover:text-saffron transition-colors"
+              >
+                <Facebook size={22} />
+                <span>Ad Wali Didi</span>
+              </a>
+              
+              <a
+                href="https://www.linkedin.com/company/112985325"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-3 text-charcoal/80 hover:text-saffron transition-colors"
+              >
+                <Linkedin size={22} />
+                <span>Ad Wali Didi</span>
+              </a>
+              
+              <div className="flex items-center gap-3 text-charcoal/60">
+                <Clock size={22} />
+                <span>Response time: Same day, usually faster</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  )
+}
