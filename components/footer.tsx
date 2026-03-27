@@ -11,10 +11,10 @@ export function Footer() {
         {/* Logo at top */}
         <Link href="/" className="block mb-6">
           <Image
-            src="/logo-light.png"
+            src="/logo-light.webp"
             alt="Ad Wali Didi Digital Marketing Agency"
             width={160}
-            height={40}
+            height={44}
             className="h-14 sm:h-[78px] w-auto"
           />
         </Link>

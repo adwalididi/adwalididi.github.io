@@ -24,7 +24,7 @@ export const metadata: Metadata = {
   description: 'We help Indian businesses get more enquiries through Google Business Profile, Meta Ads, and Ad Creatives. 150+ enquiries generated in Month 1 for a travel startup.',
   keywords: ['digital marketing', 'Google Ads', 'Meta Ads', 'Google Business Profile', 'Indian businesses', 'local marketing', 'Ad Creatives'],
   icons: {
-    icon: '/favicon.png',
+    icon: [{ url: '/favicon.png', sizes: '64x64' }],
     apple: '/favicon.png',
   },
 }
@@ -41,7 +41,7 @@ const jsonLd = {
   "name": "Ad Wali Didi",
   "description": "Digital marketing agency for Indian small businesses. Google Ads, Meta Ads, Google Business Profile management, and Ad Creatives.",
   "url": "https://adwalididi.github.io",
-  "logo": "https://adwalididi.github.io/logo-dark.png",
+  "logo": "https://adwalididi.github.io/logo-dark.webp",
   "contactPoint": {
     "@type": "ContactPoint",
     "telephone": "+91-6261643774",

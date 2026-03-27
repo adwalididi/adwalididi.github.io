@@ -14,7 +14,7 @@ export function HeroSection() {
   }, [])
 
   return (
-    <section 
+    <section
       ref={sectionRef}
       className="min-h-screen flex items-center justify-center pt-20 pb-12 px-4 sm:px-6 lg:px-8 relative overflow-hidden"
       style={{
@@ -24,7 +24,7 @@ export function HeroSection() {
       {/* Decorative elements */}
       <div className="absolute top-20 right-10 w-64 h-64 bg-white/5 rounded-full blur-3xl" />
       <div className="absolute bottom-20 left-10 w-96 h-96 bg-white/5 rounded-full blur-3xl" />
-      
+
       <div className="max-w-6xl mx-auto text-center relative z-10">
         <div className={`transition-all duration-700 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
           <h1 className="font-[var(--font-syne)] text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-white leading-tight">
@@ -32,16 +32,16 @@ export function HeroSection() {
             <span className="block mt-2" style={{ color: '#F5CB5C' }}>Humari Zimmedari.</span>
           </h1>
         </div>
-        
-        <p 
+
+        <p
           className={`mt-6 sm:mt-8 text-lg sm:text-xl md:text-2xl max-w-3xl mx-auto leading-relaxed transition-all duration-700 delay-200 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}
           style={{ color: 'rgba(255,255,255,0.80)' }}
         >
-          We handle your Google profile, run your ads, and make your creatives — 
+          We handle your Google profile, run your ads, and make your creatives —
           <span className="text-white font-medium"> so you get enquiries, not excuses.</span>
         </p>
 
-        <div 
+        <div
           className={`mt-10 sm:mt-12 flex flex-col sm:flex-row items-center justify-center gap-4 transition-all duration-700 delay-300 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}
         >
           <a
