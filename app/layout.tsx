@@ -40,8 +40,8 @@ const jsonLd = {
   "@type": "LocalBusiness",
   "name": "Ad Wali Didi",
   "description": "Digital marketing agency for Indian small businesses. Google Ads, Meta Ads, Google Business Profile management, and Ad Creatives.",
-  "url": "https://adwalididi.com",
-  "logo": "https://adwalididi.com/logo-dark.png",
+  "url": "https://adwalididi.github.io",
+  "logo": "https://adwalididi.github.io/logo-dark.png",
   "contactPoint": {
     "@type": "ContactPoint",
     "telephone": "+91-6261643774",

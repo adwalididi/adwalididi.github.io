@@ -9,6 +9,6 @@ export default function robots(): MetadataRoute.Robots {
       allow: '/',
       disallow: '/private/',
     },
-    sitemap: 'https://adwalididi.com/sitemap.xml',
+    sitemap: 'https://adwalididi.github.io/sitemap.xml',
   }
 }

@@ -3,7 +3,7 @@ import { MetadataRoute } from 'next'
 export const dynamic = 'force-static'
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const baseUrl = 'https://adwalididi.com'
+  const baseUrl = 'https://adwalididi.github.io'
 
   // Define the core pages of the website
   const routes = [
