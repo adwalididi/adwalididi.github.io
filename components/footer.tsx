@@ -10,7 +10,7 @@ export function Footer() {
         <Link href="/" className="block mb-6">
           <Image
             src="/logo-light.png"
-            alt="Ad Wali Didi"
+            alt="Ad Wali Didi Digital Marketing Agency"
             width={160}
             height={40}
             className="h-14 w-auto"

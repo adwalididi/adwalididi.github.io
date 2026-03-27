@@ -4,8 +4,8 @@ import { ServiceDetail } from "@/components/services/service-detail"
 import { FullPackage } from "@/components/services/full-package"
 
 export const metadata: Metadata = {
-  title: "Services | Ad Wali Didi",
-  description: "Google Business Profile management, Meta & Google Ads, and Ad Creatives. Three services that work together to grow your business.",
+  title: "Our Services | Google Ads, Meta Ads & GBP Management — Ad Wali Didi",
+  description: "Google Business Profile management, Meta Ads, Google Ads and Ad Creatives for Indian small businesses. One agency, three services, zero coordination headache.",
 }
 
 const services = [

@@ -15,7 +15,24 @@ export function HeroSection() {
   return (
     <section 
       ref={sectionRef}
-      className="min-h-screen flex items-center justify-center pt-20 pb-12 px-4 sm:px-6 lg:px-8 bg-cream relative overflow-hidden"
+      className="min-h-screen flex items-center justify-center pt-20 pb-12 px-4 sm:px-6 lg:px-8 relative overflow-hidden"
+      style={{
+        backgroundColor: '#FFF8F0',
+        backgroundImage: `repeating-linear-gradient(
+          0deg,
+          transparent,
+          transparent 40px,
+          rgba(232, 101, 10, 0.06) 40px,
+          rgba(232, 101, 10, 0.06) 41px
+        ),
+        repeating-linear-gradient(
+          90deg,
+          transparent,
+          transparent 40px,
+          rgba(74, 14, 78, 0.04) 40px,
+          rgba(74, 14, 78, 0.04) 41px
+        )`
+      }}
     >
       {/* Decorative elements */}
       <div className="absolute top-20 right-10 w-64 h-64 bg-saffron/10 rounded-full blur-3xl" />

@@ -23,7 +23,7 @@ export function Navbar() {
           <Link href="/" className="block">
             <Image
               src="/logo-dark.png"
-              alt="Ad Wali Didi"
+              alt="Ad Wali Didi Logo"
               width={160}
               height={44}
               className="h-12 sm:h-16 w-auto"

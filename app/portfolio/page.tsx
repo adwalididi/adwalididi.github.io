@@ -5,8 +5,8 @@ import { CaseStudies } from "@/components/portfolio/case-studies"
 import { PortfolioCTA } from "@/components/portfolio/portfolio-cta"
 
 export const metadata: Metadata = {
-  title: "Our Work | Ad Wali Didi",
-  description: "See real results from real businesses. 150+ enquiries in month 1 for a travel startup — and we're just getting started.",
+  title: "Our Work & Results | Ad Wali Didi",
+  description: "Real results for real businesses. 150+ enquiries for a travel startup, 550 leads for a construction business. See our case studies.",
 }
 
 export default function PortfolioPage() {

@@ -5,8 +5,8 @@ import { WhatMakesUsDifferent } from "@/components/about/what-makes-us-different
 import { AboutCTA } from "@/components/about/about-cta"
 
 export const metadata: Metadata = {
-  title: "About Us | Ad Wali Didi",
-  description: "The story behind Ad Wali Didi — started to help Indian small businesses who were invisible online. Human, warm, and results-driven.",
+  title: "About Us | Ad Wali Didi — Indian Digital Marketing Agency",
+  description: "Ad Wali Didi started to help Indian small businesses become visible online. Our story, our approach, and why we do this.",
 }
 
 export default function AboutPage() {
