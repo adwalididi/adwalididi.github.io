@@ -1,7 +1,8 @@
 "use client"
 
 import { useEffect, useRef, useState } from "react"
-import { Check, MessageCircle } from "lucide-react"
+import { Check } from "lucide-react"
+import { WhatsAppIcon } from "@/components/ui/whatsapp-icon"
 
 interface ServiceDetailProps {
   service: {
@@ -77,7 +78,7 @@ export function ServiceDetail({ service, index }: ServiceDetailProps) {
               rel="noopener noreferrer"
               className="inline-flex items-center gap-2 px-6 py-3 rounded-full font-medium transition-all hover:scale-105 mt-8 bg-gold text-near-black hover:bg-[#c49b2e]"
             >
-              <MessageCircle size={20} />
+              <WhatsAppIcon size={20} />
               WhatsApp us about {service.title}
             </a>
           </div>

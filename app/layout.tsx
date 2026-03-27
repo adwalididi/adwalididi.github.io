@@ -5,6 +5,7 @@ import './globals.css'
 import { Navbar } from '@/components/navbar'
 import { Footer } from '@/components/footer'
 import { WhatsAppButton } from '@/components/whatsapp-button'
+import { ScrollToTop } from '@/components/scroll-to-top'
 
 const inter = Inter({ 
   subsets: ['latin'],
@@ -34,6 +35,36 @@ export const viewport: Viewport = {
   initialScale: 1,
 }
 
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "LocalBusiness",
+  "name": "Ad Wali Didi",
+  "description": "Digital marketing agency for Indian small businesses. Google Ads, Meta Ads, Google Business Profile management, and Ad Creatives.",
+  "url": "https://adwalididi.com",
+  "logo": "https://adwalididi.com/logo-dark.png",
+  "contactPoint": {
+    "@type": "ContactPoint",
+    "telephone": "+91-6261643774",
+    "contactType": "customer service",
+    "availableLanguage": ["English", "Hindi"]
+  },
+  "sameAs": [
+    "https://www.facebook.com/adwalididi",
+    "https://www.instagram.com/adwalididi",
+    "https://www.linkedin.com/company/112985325"
+  ],
+  "areaServed": {
+    "@type": "Country",
+    "name": "India"
+  },
+  "serviceType": [
+    "Google Business Profile Management",
+    "Google Ads Management",
+    "Meta Ads Management",
+    "Ad Creative Design"
+  ]
+}
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -41,11 +72,18 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={`${inter.variable} ${syne.variable}`} data-scroll-behavior="smooth">
+      <head>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
+      </head>
       <body className="font-sans antialiased bg-white text-near-black">
         <Navbar />
         <main>{children}</main>
         <Footer />
         <WhatsAppButton />
+        <ScrollToTop />
         <Analytics />
       </body>
     </html>

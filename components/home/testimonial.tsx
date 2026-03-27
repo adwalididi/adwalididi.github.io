@@ -1,11 +1,31 @@
 "use client"
 
-import { useEffect, useRef, useState } from "react"
-import { Quote } from "lucide-react"
+import { useEffect, useRef, useState, useCallback } from "react"
+import { Quote, ChevronLeft, ChevronRight } from "lucide-react"
+
+const testimonials = [
+  {
+    quote: "I had no idea our Google profile was costing us customers. Ad Wali Didi fixed everything and within weeks we were getting calls we never got before. The best part — I didn't have to explain anything twice.",
+    client: "Travel Agency Client",
+    location: "India",
+  },
+  {
+    quote: "We had no online presence. They built our entire ad campaign from scratch and within 6 months we had over 550 leads. One team handled everything — no hassle.",
+    client: "Construction Business Client",
+    location: "India",
+  },
+  {
+    quote: "The creatives they designed actually made people stop scrolling. We saw more walk-ins within the first week itself. They understood the local audience perfectly.",
+    client: "Dairy Business Client",
+    location: "India",
+  },
+]
 
 export function Testimonial() {
   const [isVisible, setIsVisible] = useState(false)
+  const [current, setCurrent] = useState(0)
   const sectionRef = useRef<HTMLElement>(null)
+  const timerRef = useRef<NodeJS.Timeout | null>(null)
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -24,6 +44,35 @@ export function Testimonial() {
     return () => observer.disconnect()
   }, [])
 
+  const startAutoPlay = useCallback(() => {
+    if (timerRef.current) clearInterval(timerRef.current)
+    timerRef.current = setInterval(() => {
+      setCurrent((prev) => (prev + 1) % testimonials.length)
+    }, 6000)
+  }, [])
+
+  useEffect(() => {
+    startAutoPlay()
+    return () => {
+      if (timerRef.current) clearInterval(timerRef.current)
+    }
+  }, [startAutoPlay])
+
+  const goTo = (index: number) => {
+    setCurrent(index)
+    startAutoPlay()
+  }
+
+  const goPrev = () => {
+    setCurrent((prev) => (prev - 1 + testimonials.length) % testimonials.length)
+    startAutoPlay()
+  }
+
+  const goNext = () => {
+    setCurrent((prev) => (prev + 1) % testimonials.length)
+    startAutoPlay()
+  }
+
   return (
     <section ref={sectionRef} className="py-16 sm:py-20 lg:py-28 bg-teal-tint">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -36,13 +85,63 @@ export function Testimonial() {
             <Quote className="w-8 h-8 text-teal" />
           </div>
           
-          <blockquote className="font-[var(--font-syne)] text-xl sm:text-2xl lg:text-3xl text-near-black leading-relaxed">
-            {"\"I had no idea our Google profile was costing us customers. Ad Wali Didi fixed everything and within weeks we were getting calls we never got before. The best part — I didn't have to explain anything twice.\""}
-          </blockquote>
-          
-          <div className="mt-8">
-            <p className="font-semibold text-near-black">Travel Agency Client</p>
-            <p className="text-muted-text">India</p>
+          {/* Carousel */}
+          <div className="relative min-h-[200px] sm:min-h-[180px]">
+            {testimonials.map((testimonial, index) => (
+              <div
+                key={index}
+                className={`absolute inset-0 transition-all duration-500 ${
+                  index === current
+                    ? 'opacity-100 translate-x-0'
+                    : index < current
+                    ? 'opacity-0 -translate-x-8'
+                    : 'opacity-0 translate-x-8'
+                }`}
+              >
+                <blockquote className="font-[var(--font-syne)] text-xl sm:text-2xl lg:text-3xl text-near-black leading-relaxed">
+                  {`"${testimonial.quote}"`}
+                </blockquote>
+                
+                <div className="mt-8">
+                  <p className="font-semibold text-near-black">{testimonial.client}</p>
+                  <p className="text-muted-text">{testimonial.location}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Controls */}
+          <div className="mt-10 flex items-center justify-center gap-6">
+            <button
+              onClick={goPrev}
+              className="w-10 h-10 rounded-full flex items-center justify-center text-teal hover:bg-teal/10 transition-colors"
+              aria-label="Previous testimonial"
+            >
+              <ChevronLeft size={22} />
+            </button>
+
+            <div className="flex items-center gap-2">
+              {testimonials.map((_, index) => (
+                <button
+                  key={index}
+                  onClick={() => goTo(index)}
+                  className={`rounded-full transition-all duration-300 ${
+                    index === current
+                      ? 'w-8 h-2.5 bg-teal'
+                      : 'w-2.5 h-2.5 bg-teal/30 hover:bg-teal/50'
+                  }`}
+                  aria-label={`Go to testimonial ${index + 1}`}
+                />
+              ))}
+            </div>
+
+            <button
+              onClick={goNext}
+              className="w-10 h-10 rounded-full flex items-center justify-center text-teal hover:bg-teal/10 transition-colors"
+              aria-label="Next testimonial"
+            >
+              <ChevronRight size={22} />
+            </button>
           </div>
         </div>
       </div>

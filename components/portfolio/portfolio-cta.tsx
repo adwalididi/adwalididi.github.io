@@ -1,7 +1,8 @@
 "use client"
 
 import { useEffect, useRef, useState } from "react"
-import { MessageCircle, Search } from "lucide-react"
+import { Search } from "lucide-react"
+import { WhatsAppIcon } from "@/components/ui/whatsapp-icon"
 
 export function PortfolioCTA() {
   const [isVisible, setIsVisible] = useState(false)
@@ -53,7 +54,7 @@ export function PortfolioCTA() {
             }`}
             style={{ transitionDelay: '200ms' }}
           >
-            <MessageCircle size={22} />
+            <WhatsAppIcon size={20} />
             WhatsApp for a Free Audit
           </a>
         </div>

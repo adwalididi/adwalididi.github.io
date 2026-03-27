@@ -73,6 +73,18 @@ export function Footer() {
             Made with care for Indian small businesses
           </p>
 
+          {/* Free Audit CTA */}
+          <div className="text-center mt-5">
+            <a
+              href="https://wa.me/916261643774?text=Hi!%20I'd%20like%20a%20free%20audit%20of%20my%20business."
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 text-gold hover:text-[#F5CB5C] transition-colors font-medium text-sm"
+            >
+              Get a Free Audit →
+            </a>
+          </div>
+
           {/* Social Icons */}
           <div className="flex items-center justify-center gap-4 mt-5">
             <a

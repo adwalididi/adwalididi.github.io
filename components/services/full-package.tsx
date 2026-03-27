@@ -1,7 +1,8 @@
 "use client"
 
 import { useEffect, useRef, useState } from "react"
-import { MessageCircle, Package } from "lucide-react"
+import { Package } from "lucide-react"
+import { WhatsAppIcon } from "@/components/ui/whatsapp-icon"
 
 export function FullPackage() {
   const [isVisible, setIsVisible] = useState(false)
@@ -56,7 +57,7 @@ export function FullPackage() {
             }`}
             style={{ transitionDelay: '200ms' }}
           >
-            <MessageCircle size={22} />
+            <WhatsAppIcon size={20} />
             WhatsApp to Discuss Pricing
           </a>
         </div>

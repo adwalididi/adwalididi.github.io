@@ -1,7 +1,8 @@
 "use client"
 
 import Link from "next/link"
-import { ArrowRight, MessageCircle } from "lucide-react"
+import { ArrowRight } from "lucide-react"
+import { WhatsAppIcon } from "@/components/ui/whatsapp-icon"
 import { useEffect, useRef, useState } from "react"
 
 export function HeroSection() {
@@ -49,7 +50,7 @@ export function HeroSection() {
             rel="noopener noreferrer"
             className="inline-flex items-center gap-2 bg-gold text-near-black px-8 py-4 rounded-full font-medium text-lg hover:bg-[#c49b2e] transition-all hover:scale-105 shadow-lg"
           >
-            <MessageCircle size={22} />
+            <WhatsAppIcon size={20} />
             WhatsApp Us Now
           </a>
           <Link

@@ -1,7 +1,7 @@
 "use client"
 
 import { useEffect, useRef, useState } from "react"
-import { MessageCircle } from "lucide-react"
+import { WhatsAppIcon } from "@/components/ui/whatsapp-icon"
 
 export function CTASection() {
   const [isVisible, setIsVisible] = useState(false)
@@ -48,7 +48,7 @@ export function CTASection() {
             }`}
             style={{ transitionDelay: '200ms' }}
           >
-            <MessageCircle size={22} />
+            <WhatsAppIcon size={20} />
             {"WhatsApp Karo — It's Free"}
           </a>
         </div>

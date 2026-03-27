@@ -66,7 +66,7 @@ export function PortfolioPreview() {
             return (
             <div
               key={index}
-              className={`relative overflow-hidden rounded-2xl transition-all duration-700 ${
+              className={`relative overflow-hidden rounded-2xl transition-all duration-700 card-hover-lift ${
                 isHighlighted ? 'bg-deep-teal text-white' : 'bg-white'
               } ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}
               style={{ 

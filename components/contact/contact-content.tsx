@@ -1,7 +1,8 @@
 "use client"
 
 import { useEffect, useRef, useState } from "react"
-import { MessageCircle, Instagram, Facebook, Linkedin, Clock } from "lucide-react"
+import { Instagram, Facebook, Linkedin, Clock } from "lucide-react"
+import { WhatsAppIcon } from "@/components/ui/whatsapp-icon"
 
 export function ContactContent() {
   const [isVisible, setIsVisible] = useState(false)
@@ -52,7 +53,7 @@ export function ContactContent() {
             rel="noopener noreferrer"
             className="inline-flex items-center gap-3 bg-[#25D366] text-white px-8 py-4 rounded-full font-semibold text-lg hover:bg-[#25D366]/90 transition-all hover:scale-105 shadow-lg w-full sm:w-auto justify-center"
           >
-            <MessageCircle size={24} fill="white" />
+            <WhatsAppIcon size={20} />
             WhatsApp Karo
           </a>
 

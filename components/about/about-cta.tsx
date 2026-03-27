@@ -1,7 +1,7 @@
 "use client"
 
 import { useEffect, useRef, useState } from "react"
-import { MessageCircle } from "lucide-react"
+import { WhatsAppIcon } from "@/components/ui/whatsapp-icon"
 
 export function AboutCTA() {
   const [isVisible, setIsVisible] = useState(false)
@@ -45,7 +45,7 @@ export function AboutCTA() {
             }`}
             style={{ transitionDelay: '200ms' }}
           >
-            <MessageCircle size={22} />
+            <WhatsAppIcon size={20} />
             Baat Karte Hain — WhatsApp Us
           </a>
         </div>
