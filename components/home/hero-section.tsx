@@ -45,7 +45,7 @@ export function HeroSection() {
           className={`mt-10 sm:mt-12 flex flex-col sm:flex-row items-center justify-center gap-4 transition-all duration-700 delay-300 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}
         >
           <a
-            href="https://wa.me/916261643774"
+            href="https://wa.me/916261643774?text=Hi!%20I%20want%20to%20get%20more%20enquiries%20for%20my%20business.%20Can%20we%20talk%3F"
             target="_blank"
             rel="noopener noreferrer"
             className="inline-flex items-center gap-2 bg-gold text-near-black px-8 py-4 rounded-full font-medium text-lg hover:bg-[#c49b2e] transition-all hover:scale-105 shadow-lg"

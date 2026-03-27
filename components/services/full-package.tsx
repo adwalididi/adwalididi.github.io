@@ -49,7 +49,7 @@ export function FullPackage() {
           </p>
           
           <a
-            href="https://wa.me/916261643774"
+            href="https://wa.me/916261643774?text=Hi!%20I'm%20interested%20in%20the%20Full%20Package%20for%20my%20business.%20I'd%20like%20to%20discuss%20pricing."
             target="_blank"
             rel="noopener noreferrer"
             className={`inline-flex items-center gap-2 bg-gold text-near-black px-8 py-4 rounded-full font-medium text-lg hover:bg-[#c49b2e] transition-all hover:scale-105 shadow-lg mt-8 ${

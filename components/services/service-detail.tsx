@@ -73,7 +73,7 @@ export function ServiceDetail({ service, index }: ServiceDetailProps) {
             </p>
 
             <a
-              href="https://wa.me/916261643774"
+              href={`https://wa.me/916261643774?text=${encodeURIComponent(`Hi! I'm interested in your ${service.title} service.`)}`}
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center gap-2 px-6 py-3 rounded-full font-medium transition-all hover:scale-105 mt-8 bg-gold text-near-black hover:bg-[#c49b2e]"

@@ -48,7 +48,7 @@ export function ContactContent() {
 
           {/* Primary CTA */}
           <a
-            href="https://wa.me/916261643774"
+            href="https://wa.me/916261643774?text=Hi!%20I%20have%20some%20questions%20about%20your%20digital%20marketing%20services."
             target="_blank"
             rel="noopener noreferrer"
             className="inline-flex items-center gap-3 bg-[#25D366] text-white px-8 py-4 rounded-full font-semibold text-lg hover:bg-[#25D366]/90 transition-all hover:scale-105 shadow-lg w-full sm:w-auto justify-center"

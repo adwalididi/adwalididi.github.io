@@ -1,5 +1,6 @@
 import { Metadata } from "next"
 import { ServicesHero } from "@/components/services/services-hero"
+import { ServiceTabs } from "@/components/services/service-tabs"
 import { ServiceDetail } from "@/components/services/service-detail"
 import { FullPackage } from "@/components/services/full-package"
 
@@ -65,6 +66,7 @@ export default function ServicesPage() {
   return (
     <>
       <ServicesHero />
+      <ServiceTabs />
       <div className="divide-y divide-border">
         {services.map((service, index) => (
           <ServiceDetail

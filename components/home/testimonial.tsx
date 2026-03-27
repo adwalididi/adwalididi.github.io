@@ -86,16 +86,16 @@ export function Testimonial() {
           </div>
           
           {/* Carousel */}
-          <div className="relative min-h-[200px] sm:min-h-[180px]">
+          <div className="grid">
             {testimonials.map((testimonial, index) => (
               <div
                 key={index}
-                className={`absolute inset-0 transition-all duration-500 ${
+                className={`col-start-1 row-start-1 transition-all duration-500 ${
                   index === current
-                    ? 'opacity-100 translate-x-0'
+                    ? 'opacity-100 translate-x-0 z-10'
                     : index < current
-                    ? 'opacity-0 -translate-x-8'
-                    : 'opacity-0 translate-x-8'
+                    ? 'opacity-0 -translate-x-8 z-0 pointer-events-none'
+                    : 'opacity-0 translate-x-8 z-0 pointer-events-none'
                 }`}
               >
                 <blockquote className="font-[var(--font-syne)] text-xl sm:text-2xl lg:text-3xl text-near-black leading-relaxed">

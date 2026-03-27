@@ -37,7 +37,7 @@ export function AboutCTA() {
           </p>
           
           <a
-            href="https://wa.me/916261643774"
+            href="https://wa.me/916261643774?text=Hi%20Ad%20Wali%20Didi!%20I%20read%20about%20your%20story%20and%20I'd%20love%20to%20work%20together."
             target="_blank"
             rel="noopener noreferrer"
             className={`inline-flex items-center gap-2 bg-gold text-near-black px-8 py-4 rounded-full font-medium text-lg hover:bg-[#c49b2e] transition-all hover:scale-105 shadow-lg mt-8 ${
