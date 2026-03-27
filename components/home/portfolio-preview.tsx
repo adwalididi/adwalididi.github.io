@@ -14,12 +14,12 @@ const caseStudies = [
     featured: true,
   },
   {
-    client: "Your Business Here",
-    challenge: "Good product. Nobody finding it online.",
-    solution: "That's what we're here for.",
-    result: "Let's find out together",
-    tags: ["Coming Soon"],
-    featured: false,
+    client: "Construction Business, India",
+    challenge: "No structured digital ad presence.",
+    solution: "Built and managed full Meta Ads campaign with in-house creatives over 6 months",
+    result: "550+ leads over 6 month campaign",
+    tags: ["Meta Ads", "Ad Creatives"],
+    featured: true,
   },
 ]
 
@@ -45,35 +45,38 @@ export function PortfolioPreview() {
   }, [])
 
   return (
-    <section ref={sectionRef} className="py-16 sm:py-20 lg:py-28 bg-cream">
+    <section ref={sectionRef} className="py-16 sm:py-20 lg:py-28 bg-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div 
           className={`text-center mb-12 sm:mb-16 transition-all duration-700 ${
             isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
           }`}
         >
-          <h2 className="font-[var(--font-syne)] text-3xl sm:text-4xl lg:text-5xl font-bold text-charcoal">
+          <h2 className="font-[var(--font-syne)] text-3xl sm:text-4xl lg:text-5xl font-bold text-near-black">
             Results That Speak
           </h2>
-          <p className="mt-4 text-charcoal/70 text-lg max-w-2xl mx-auto">
+          <p className="mt-4 text-muted-text text-lg max-w-2xl mx-auto">
             We let the numbers do the talking.
           </p>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8">
-          {caseStudies.map((study, index) => (
+          {caseStudies.map((study, index) => {
+            const isHighlighted = index === 0
+            return (
             <div
               key={index}
               className={`relative overflow-hidden rounded-2xl transition-all duration-700 ${
-                study.featured 
-                  ? 'bg-charcoal text-white' 
-                  : 'bg-white border-2 border-dashed border-charcoal/20'
+                isHighlighted ? 'bg-deep-teal text-white' : 'bg-white'
               } ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}
-              style={{ transitionDelay: `${index * 200 + 200}ms` }}
+              style={{ 
+                transitionDelay: `${index * 200 + 200}ms`,
+                border: isHighlighted ? 'none' : '0.5px solid #C8E8E3',
+              }}
             >
               <div className="p-6 sm:p-8 lg:p-10">
                 {study.featured && (
-                  <div className="flex items-center gap-2 text-saffron mb-4">
+                  <div className={`flex items-center gap-2 mb-4 ${isHighlighted ? 'text-gold' : 'text-teal'}`}>
                     <TrendingUp size={20} />
                     <span className="text-sm font-semibold uppercase tracking-wider">
                       Featured Result
@@ -81,36 +84,32 @@ export function PortfolioPreview() {
                   </div>
                 )}
                 
-                <h3 className={`font-[var(--font-syne)] text-xl sm:text-2xl font-bold ${
-                  study.featured ? 'text-white' : 'text-charcoal'
-                }`}>
+                <h3 className={`font-[var(--font-syne)] text-xl sm:text-2xl font-bold ${isHighlighted ? 'text-white' : 'text-near-black'}`}>
                   {study.client}
                 </h3>
 
                 <div className="mt-6 space-y-4">
                   <div>
-                    <p className={`text-sm font-medium ${study.featured ? 'text-white/60' : 'text-charcoal/50'}`}>
+                    <p className={`text-sm font-medium ${isHighlighted ? 'text-white/60' : 'text-muted-text'}`}>
                       Challenge
                     </p>
-                    <p className={study.featured ? 'text-white/90' : 'text-charcoal/80'}>
+                    <p className={isHighlighted ? 'text-white/85' : 'text-muted-text'}>
                       {study.challenge}
                     </p>
                   </div>
                   <div>
-                    <p className={`text-sm font-medium ${study.featured ? 'text-white/60' : 'text-charcoal/50'}`}>
+                    <p className={`text-sm font-medium ${isHighlighted ? 'text-white/60' : 'text-muted-text'}`}>
                       What We Did
                     </p>
-                    <p className={study.featured ? 'text-white/90' : 'text-charcoal/80'}>
+                    <p className={isHighlighted ? 'text-white/85' : 'text-muted-text'}>
                       {study.solution}
                     </p>
                   </div>
                   <div>
-                    <p className={`text-sm font-medium ${study.featured ? 'text-white/60' : 'text-charcoal/50'}`}>
+                    <p className={`text-sm font-medium ${isHighlighted ? 'text-white/60' : 'text-muted-text'}`}>
                       Result
                     </p>
-                    <p className={`font-[var(--font-syne)] text-2xl sm:text-3xl font-bold ${
-                      study.featured ? 'text-saffron' : 'text-saffron'
-                    }`}>
+                    <p className={`font-[var(--font-syne)] text-2xl sm:text-3xl font-bold ${isHighlighted ? 'text-gold' : 'text-teal'}`}>
                       {study.result}
                     </p>
                   </div>
@@ -121,10 +120,9 @@ export function PortfolioPreview() {
                     <span
                       key={tagIndex}
                       className={`px-3 py-1 rounded-full text-sm ${
-                        study.featured 
-                          ? 'bg-white/10 text-white/80' 
-                          : 'bg-charcoal/5 text-charcoal/70'
+                        isHighlighted ? 'bg-white/10 text-white/80' : 'bg-teal-tint'
                       }`}
+                      style={isHighlighted ? undefined : { color: '#005C4E' }}
                     >
                       {tag}
                     </span>
@@ -132,7 +130,8 @@ export function PortfolioPreview() {
                 </div>
               </div>
             </div>
-          ))}
+            )
+          })}
         </div>
 
         <div 
@@ -142,7 +141,7 @@ export function PortfolioPreview() {
         >
           <Link
             href="/portfolio"
-            className="inline-flex items-center gap-2 text-saffron font-semibold hover:gap-4 transition-all"
+            className="inline-flex items-center gap-2 text-teal font-semibold hover:text-deep-teal hover:gap-4 transition-all"
           >
             View All Case Studies
             <ArrowRight size={20} />

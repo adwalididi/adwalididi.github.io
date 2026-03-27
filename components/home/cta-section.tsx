@@ -25,7 +25,7 @@ export function CTASection() {
   }, [])
 
   return (
-    <section ref={sectionRef} className="py-16 sm:py-20 lg:py-28 bg-charcoal">
+    <section ref={sectionRef} className="py-16 sm:py-20 lg:py-28 bg-deep-teal">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
         <div 
           className={`transition-all duration-700 ${
@@ -43,7 +43,7 @@ export function CTASection() {
             href="https://wa.me/916261643774"
             target="_blank"
             rel="noopener noreferrer"
-            className={`inline-flex items-center gap-2 bg-saffron text-white px-8 py-4 rounded-full font-semibold text-lg hover:bg-saffron/90 transition-all hover:scale-105 shadow-lg shadow-saffron/25 mt-8 ${
+            className={`inline-flex items-center gap-2 bg-gold text-near-black px-8 py-4 rounded-full font-medium text-lg hover:bg-[#c49b2e] transition-all hover:scale-105 shadow-lg mt-8 ${
               isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
             }`}
             style={{ transitionDelay: '200ms' }}

@@ -43,14 +43,14 @@ export function WhatMakesUsDifferent() {
   }, [])
 
   return (
-    <section ref={sectionRef} className="py-16 sm:py-20 lg:py-28 bg-muted">
+    <section ref={sectionRef} className="py-16 sm:py-20 lg:py-28 bg-teal-tint">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         <div 
           className={`text-center mb-12 sm:mb-16 transition-all duration-700 ${
             isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
           }`}
         >
-          <h2 className="font-[var(--font-syne)] text-3xl sm:text-4xl lg:text-5xl font-bold text-charcoal">
+          <h2 className="font-[var(--font-syne)] text-3xl sm:text-4xl lg:text-5xl font-bold text-near-black">
             What Makes Us Different
           </h2>
         </div>
@@ -59,18 +59,21 @@ export function WhatMakesUsDifferent() {
           {differentiators.map((item, index) => (
             <div
               key={index}
-              className={`bg-white rounded-2xl p-6 sm:p-8 shadow-sm border border-border transition-all duration-700 ${
+              className={`bg-white rounded-2xl p-6 sm:p-8 shadow-sm transition-all duration-700 ${
                 isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
               }`}
-              style={{ transitionDelay: `${index * 150 + 200}ms` }}
+              style={{ 
+                transitionDelay: `${index * 150 + 200}ms`,
+                border: '0.5px solid #C8E8E3',
+              }}
             >
-              <div className="w-14 h-14 bg-plum/10 rounded-xl flex items-center justify-center mb-6">
-                <item.icon className="w-7 h-7 text-plum" />
+              <div className="w-14 h-14 bg-teal/10 rounded-xl flex items-center justify-center mb-6">
+                <item.icon className="w-7 h-7 text-teal" />
               </div>
-              <h3 className="font-[var(--font-syne)] text-xl font-bold text-charcoal mb-3">
+              <h3 className="font-[var(--font-syne)] text-xl font-bold text-near-black mb-3">
                 {item.title}
               </h3>
-              <p className="text-charcoal/70 leading-relaxed">
+              <p className="text-muted-text leading-relaxed">
                 {item.description}
               </p>
             </div>

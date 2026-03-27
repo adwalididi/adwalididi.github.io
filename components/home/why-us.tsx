@@ -32,7 +32,7 @@ export function WhyUs() {
   }, [])
 
   return (
-    <section ref={sectionRef} className="py-16 sm:py-20 lg:py-28 bg-plum">
+    <section ref={sectionRef} className="py-16 sm:py-20 lg:py-28 bg-deep-teal">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-center">
           {/* Left - Bold Statement */}
@@ -43,7 +43,7 @@ export function WhyUs() {
           >
             <h2 className="font-[var(--font-syne)] text-3xl sm:text-4xl lg:text-5xl font-bold text-white leading-tight">
               {"We don't just run your ads."}
-              <span className="block text-saffron mt-2">
+              <span className="block mt-2" style={{ color: '#F5CB5C' }}>
                 We think about your business.
               </span>
             </h2>
@@ -62,8 +62,8 @@ export function WhyUs() {
                   className="flex items-start gap-4"
                   style={{ animationDelay: `${index * 100}ms` }}
                 >
-                  <div className="flex-shrink-0 w-6 h-6 bg-saffron rounded-full flex items-center justify-center mt-0.5">
-                    <Check className="w-4 h-4 text-white" />
+                  <div className="flex-shrink-0 w-6 h-6 bg-gold rounded-full flex items-center justify-center mt-0.5">
+                    <Check className="w-4 h-4 text-near-black" />
                   </div>
                   <span className="text-white/90 text-lg">
                     {item}

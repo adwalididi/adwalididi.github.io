@@ -16,6 +16,12 @@ interface ServiceDetailProps {
   index: number
 }
 
+const colorMap = {
+  saffron: { accent: '#008573', bg: '#00857315', text: '#005C4E' },
+  plum: { accent: '#107D98', bg: '#107D9815', text: '#0A5F74' },
+  charcoal: { accent: '#dbad3e', bg: '#dbad3e15', text: '#9A7A1A' },
+}
+
 export function ServiceDetail({ service, index }: ServiceDetailProps) {
   const [isVisible, setIsVisible] = useState(false)
   const sectionRef = useRef<HTMLElement>(null)
@@ -37,7 +43,8 @@ export function ServiceDetail({ service, index }: ServiceDetailProps) {
     return () => observer.disconnect()
   }, [])
 
-  const bgColor = index % 2 === 0 ? "bg-cream" : "bg-muted"
+  const bgColor = index % 2 === 0 ? "bg-white" : "bg-teal-tint"
+  const colors = colorMap[service.color]
 
   return (
     <section ref={sectionRef} className={`py-16 sm:py-20 lg:py-28 ${bgColor}`} id={service.id}>
@@ -49,19 +56,18 @@ export function ServiceDetail({ service, index }: ServiceDetailProps) {
               isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
             }`}
           >
-            <div className={`inline-block px-4 py-1.5 rounded-full text-sm font-semibold mb-6 ${
-              service.color === 'saffron' ? 'bg-saffron/10 text-saffron' :
-              service.color === 'plum' ? 'bg-plum/10 text-plum' :
-              'bg-charcoal/10 text-charcoal'
-            }`}>
+            <div 
+              className="inline-block px-4 py-1.5 rounded-full text-sm font-semibold mb-6"
+              style={{ backgroundColor: colors.bg, color: colors.accent }}
+            >
               {service.title}
             </div>
             
-            <h2 className="font-[var(--font-syne)] text-2xl sm:text-3xl lg:text-4xl font-bold text-charcoal leading-tight">
+            <h2 className="font-[var(--font-syne)] text-2xl sm:text-3xl lg:text-4xl font-bold text-near-black leading-tight">
               {service.headline}
             </h2>
             
-            <p className="mt-6 text-charcoal/70 text-lg leading-relaxed">
+            <p className="mt-6 text-muted-text text-lg leading-relaxed">
               {service.description}
             </p>
 
@@ -69,11 +75,7 @@ export function ServiceDetail({ service, index }: ServiceDetailProps) {
               href="https://wa.me/916261643774"
               target="_blank"
               rel="noopener noreferrer"
-              className={`inline-flex items-center gap-2 px-6 py-3 rounded-full font-semibold transition-all hover:scale-105 mt-8 ${
-                service.color === 'saffron' ? 'bg-saffron text-white hover:bg-saffron/90' :
-                service.color === 'plum' ? 'bg-plum text-white hover:bg-plum/90' :
-                'bg-charcoal text-white hover:bg-charcoal/90'
-              }`}
+              className="inline-flex items-center gap-2 px-6 py-3 rounded-full font-medium transition-all hover:scale-105 mt-8 bg-gold text-near-black hover:bg-[#c49b2e]"
             >
               <MessageCircle size={20} />
               WhatsApp us about {service.title}
@@ -86,28 +88,27 @@ export function ServiceDetail({ service, index }: ServiceDetailProps) {
               isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
             }`}
           >
-            <div className="bg-white rounded-2xl p-6 sm:p-8 shadow-sm border border-border">
-              <h3 className="font-semibold text-lg text-charcoal mb-6">
+            <div className="bg-white rounded-2xl p-6 sm:p-8 shadow-sm" style={{ border: '0.5px solid #C8E8E3' }}>
+              <h3 className="font-semibold text-lg text-near-black mb-6">
                 What We Handle
               </h3>
               <ul className="space-y-4">
                 {service.features.map((feature, featureIndex) => (
                   <li key={featureIndex} className="flex items-start gap-3">
-                    <div className={`flex-shrink-0 w-5 h-5 rounded-full flex items-center justify-center mt-0.5 ${
-                      service.color === 'saffron' ? 'bg-saffron' :
-                      service.color === 'plum' ? 'bg-plum' :
-                      'bg-charcoal'
-                    }`}>
+                    <div 
+                      className="flex-shrink-0 w-5 h-5 rounded-full flex items-center justify-center mt-0.5"
+                      style={{ backgroundColor: colors.accent }}
+                    >
                       <Check className="w-3 h-3 text-white" />
                     </div>
-                    <span className="text-charcoal/80">{feature}</span>
+                    <span className="text-muted-text">{feature}</span>
                   </li>
                 ))}
               </ul>
 
-              <div className="mt-8 pt-6 border-t border-border">
-                <p className="text-sm font-medium text-charcoal/50 mb-2">Best For</p>
-                <p className="text-charcoal/80">{service.bestFor}</p>
+              <div className="mt-8 pt-6" style={{ borderTop: '0.5px solid #C8E8E3' }}>
+                <p className="text-sm font-medium text-muted-text mb-2">Best For</p>
+                <p className="text-muted-text">{service.bestFor}</p>
               </div>
             </div>
           </div>

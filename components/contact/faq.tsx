@@ -39,10 +39,10 @@ export function FAQ() {
   }, [])
 
   return (
-    <section ref={sectionRef} className="py-16 sm:py-20 bg-muted">
+    <section ref={sectionRef} className="py-16 sm:py-20 bg-white">
       <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
         <h2 
-          className={`font-[var(--font-syne)] text-2xl sm:text-3xl font-bold text-charcoal text-center mb-10 transition-all duration-700 ${
+          className={`font-[var(--font-syne)] text-2xl sm:text-3xl font-bold text-near-black text-center mb-10 transition-all duration-700 ${
             isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
           }`}
         >
@@ -53,15 +53,18 @@ export function FAQ() {
           {faqs.map((faq, index) => (
             <div
               key={index}
-              className={`bg-white rounded-xl p-6 shadow-sm border border-border transition-all duration-700 ${
+              className={`bg-white rounded-xl p-6 shadow-sm transition-all duration-700 ${
                 isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
               }`}
-              style={{ transitionDelay: `${index * 100 + 200}ms` }}
+              style={{ 
+                transitionDelay: `${index * 100 + 200}ms`,
+                border: '0.5px solid #C8E8E3',
+              }}
             >
-              <h3 className="font-semibold text-charcoal mb-2">
+              <h3 className="font-semibold text-near-black mb-2">
                 {faq.question}
               </h3>
-              <p className="text-charcoal/70 leading-relaxed">
+              <p className="text-muted-text leading-relaxed">
                 {faq.answer}
               </p>
             </div>

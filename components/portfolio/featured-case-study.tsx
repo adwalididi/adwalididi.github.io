@@ -31,17 +31,17 @@ export function FeaturedCaseStudy() {
   }, [])
 
   return (
-    <section ref={sectionRef} className="py-16 sm:py-20 bg-cream">
+    <section ref={sectionRef} className="py-16 sm:py-20 bg-white">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         <div 
-          className={`bg-charcoal rounded-3xl overflow-hidden transition-all duration-700 ${
+          className={`bg-deep-teal rounded-3xl overflow-hidden transition-all duration-700 ${
             isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
           }`}
         >
           <div className="p-6 sm:p-10 lg:p-12">
             {/* Header */}
             <div className="flex flex-wrap items-center gap-3 mb-8">
-              <span className="bg-saffron text-white px-4 py-1.5 rounded-full text-sm font-semibold">
+              <span className="bg-gold text-near-black px-4 py-1.5 rounded-full text-sm font-semibold">
                 Case Study 01
               </span>
               <span className="text-white/60 text-sm">
@@ -61,9 +61,9 @@ export function FeaturedCaseStudy() {
                   key={index} 
                   className="bg-white/5 rounded-xl p-6 border border-white/10"
                 >
-                  <metric.icon className="w-8 h-8 text-saffron mb-3" />
+                  <metric.icon className="w-8 h-8 mb-3" style={{ color: '#F5CB5C' }} />
                   <p className="text-white/60 text-sm mb-1">{metric.label}</p>
-                  <p className="font-[var(--font-syne)] text-3xl font-bold text-saffron">
+                  <p className="font-[var(--font-syne)] text-3xl font-bold" style={{ color: '#F5CB5C' }}>
                     {metric.value}
                   </p>
                 </div>

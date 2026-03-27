@@ -29,7 +29,7 @@ export const metadata: Metadata = {
 }
 
 export const viewport: Viewport = {
-  themeColor: '#E8650A',
+  themeColor: '#008573',
   width: 'device-width',
   initialScale: 1,
 }
@@ -41,7 +41,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={`${inter.variable} ${syne.variable}`} data-scroll-behavior="smooth">
-      <body className="font-sans antialiased bg-cream text-charcoal">
+      <body className="font-sans antialiased bg-white text-near-black">
         <Navbar />
         <main>{children}</main>
         <Footer />

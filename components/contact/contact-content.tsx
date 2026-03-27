@@ -25,22 +25,23 @@ export function ContactContent() {
   }, [])
 
   return (
-    <section ref={sectionRef} className="py-12 sm:py-16 bg-cream">
+    <section ref={sectionRef} className="py-12 sm:py-16 bg-teal-tint">
       <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
         <div 
-          className={`bg-white rounded-3xl p-8 sm:p-12 shadow-sm border border-border transition-all duration-700 ${
+          className={`bg-white rounded-3xl p-8 sm:p-12 shadow-sm transition-all duration-700 ${
             isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
           }`}
+          style={{ border: '0.5px solid #C8E8E3' }}
         >
-          <p className="text-lg text-charcoal/80 leading-relaxed mb-8">
+          <p className="text-lg text-muted-text leading-relaxed mb-8">
             We don&apos;t do contact forms. Because nobody wants to fill out a form and wait 48 hours for a reply.
           </p>
           
-          <p className="text-lg text-charcoal/80 leading-relaxed mb-8">
+          <p className="text-lg text-muted-text leading-relaxed mb-8">
             WhatsApp us directly — we&apos;ll respond same day, ask you a few simple questions about your business, and tell you honestly whether we think we can help.
           </p>
           
-          <p className="text-xl font-semibold text-charcoal mb-8">
+          <p className="text-xl font-semibold text-near-black mb-8">
             That conversation costs nothing.
           </p>
 
@@ -56,15 +57,15 @@ export function ContactContent() {
           </a>
 
           {/* Additional Contact Info */}
-          <div className="mt-10 pt-8 border-t border-border">
-            <p className="text-charcoal/60 text-sm font-medium mb-4">Also find us here:</p>
+          <div className="mt-10 pt-8" style={{ borderTop: '0.5px solid #C8E8E3' }}>
+            <p className="text-muted-text text-sm font-medium mb-4">Also find us here:</p>
             
             <div className="space-y-4">
               <a
                 href="https://www.instagram.com/adwalididi"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center gap-3 text-charcoal/80 hover:text-saffron transition-colors"
+                className="flex items-center gap-3 text-muted-text hover:text-teal transition-colors"
               >
                 <Instagram size={22} />
                 <span>@adwalididi</span>
@@ -74,7 +75,7 @@ export function ContactContent() {
                 href="https://www.facebook.com/adwalididi"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center gap-3 text-charcoal/80 hover:text-saffron transition-colors"
+                className="flex items-center gap-3 text-muted-text hover:text-teal transition-colors"
               >
                 <Facebook size={22} />
                 <span>Ad Wali Didi</span>
@@ -84,13 +85,13 @@ export function ContactContent() {
                 href="https://www.linkedin.com/company/112985325"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center gap-3 text-charcoal/80 hover:text-saffron transition-colors"
+                className="flex items-center gap-3 text-muted-text hover:text-teal transition-colors"
               >
                 <Linkedin size={22} />
                 <span>Ad Wali Didi</span>
               </a>
               
-              <div className="flex items-center gap-3 text-charcoal/60">
+              <div className="flex items-center gap-3 text-muted-text">
                 <Clock size={22} />
                 <span>Response time: Same day, usually faster</span>
               </div>

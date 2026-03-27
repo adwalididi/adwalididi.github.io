@@ -16,7 +16,7 @@ const caseStudies = [
       { label: "Total Leads Generated", value: "550+", icon: Users },
       { label: "Campaign Duration", value: "6 Months", icon: Calendar },
     ],
-    color: "plum" as const,
+    accentColor: "#008573",
   },
   {
     label: "Case Study 03",
@@ -30,7 +30,7 @@ const caseStudies = [
       { label: "Service Used", value: "Ad Creatives", icon: Palette },
       { label: "Focus", value: "Footfall & In-Store Visits", icon: Store },
     ],
-    color: "saffron" as const,
+    accentColor: "#107D98",
   },
 ]
 
@@ -56,37 +56,39 @@ export function CaseStudies() {
   }, [])
 
   return (
-    <section ref={sectionRef} className="py-8 sm:py-12 bg-cream">
+    <section ref={sectionRef} className="py-8 sm:py-12 bg-white">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="space-y-8">
           {caseStudies.map((caseStudy, index) => (
             <div
               key={index}
-              className={`bg-white rounded-3xl overflow-hidden shadow-sm border border-border transition-all duration-700 ${
+              className={`bg-white rounded-3xl overflow-hidden shadow-sm transition-all duration-700 ${
                 isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
               }`}
-              style={{ transitionDelay: `${index * 150}ms` }}
+              style={{ 
+                transitionDelay: `${index * 150}ms`,
+                border: '0.5px solid #C8E8E3',
+              }}
             >
               <div className="p-6 sm:p-8 lg:p-10">
                 {/* Header */}
                 <div className="flex flex-wrap items-center gap-3 mb-6">
-                  <span className={`px-4 py-1.5 rounded-full text-sm font-semibold ${
-                    caseStudy.color === 'plum' ? 'bg-plum/10 text-plum' : 'bg-saffron/10 text-saffron'
-                  }`}>
+                  <span 
+                    className="px-4 py-1.5 rounded-full text-sm font-semibold"
+                    style={{ backgroundColor: `${caseStudy.accentColor}15`, color: caseStudy.accentColor }}
+                  >
                     {caseStudy.label}
                   </span>
-                  <span className="text-charcoal/60 text-sm">
+                  <span className="text-muted-text text-sm">
                     {caseStudy.industry}
                   </span>
                 </div>
 
                 {/* Client & Service */}
-                <h3 className="font-[var(--font-syne)] text-2xl sm:text-3xl font-bold text-charcoal mb-2">
+                <h3 className="font-[var(--font-syne)] text-2xl sm:text-3xl font-bold text-near-black mb-2">
                   {caseStudy.client}
                 </h3>
-                <p className={`font-medium mb-6 ${
-                  caseStudy.color === 'plum' ? 'text-plum' : 'text-saffron'
-                }`}>
+                <p className="font-medium mb-6" style={{ color: caseStudy.accentColor }}>
                   {caseStudy.services}
                 </p>
 
@@ -94,45 +96,45 @@ export function CaseStudies() {
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8">
                   {/* Challenge */}
                   <div>
-                    <h4 className="font-semibold text-charcoal mb-2">The Challenge</h4>
-                    <p className="text-charcoal/70 leading-relaxed">{caseStudy.challenge}</p>
+                    <h4 className="font-semibold text-near-black mb-2">The Challenge</h4>
+                    <p className="text-muted-text leading-relaxed">{caseStudy.challenge}</p>
                   </div>
 
                   {/* Solution */}
                   <div>
-                    <h4 className="font-semibold text-charcoal mb-2">What We Did</h4>
-                    <p className="text-charcoal/70 leading-relaxed">{caseStudy.solution}</p>
+                    <h4 className="font-semibold text-near-black mb-2">What We Did</h4>
+                    <p className="text-muted-text leading-relaxed">{caseStudy.solution}</p>
                   </div>
 
                   {/* Result */}
                   <div>
-                    <h4 className="font-semibold text-charcoal mb-2">The Result</h4>
-                    <p className="text-charcoal/70 leading-relaxed">{caseStudy.result}</p>
+                    <h4 className="font-semibold text-near-black mb-2">The Result</h4>
+                    <p className="text-muted-text leading-relaxed">{caseStudy.result}</p>
                   </div>
                 </div>
 
                 {/* Metrics */}
-                <div className={`mt-8 pt-6 border-t border-border grid grid-cols-2 gap-4 ${
+                <div className={`mt-8 pt-6 grid grid-cols-2 gap-4 ${
                   caseStudy.metrics.length > 2 ? 'sm:grid-cols-3' : 'sm:grid-cols-2 max-w-md'
-                }`}>
+                }`} style={{ borderTop: '0.5px solid #C8E8E3' }}>
                   {caseStudy.metrics.map((metric, metricIndex) => {
                     const IconComponent = metric.icon
                     return (
                       <div key={metricIndex} className="flex items-center gap-3">
-                        <div className={`flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center ${
-                          caseStudy.color === 'plum' ? 'bg-plum/10' : 'bg-saffron/10'
-                        }`}>
-                          <IconComponent className={`w-5 h-5 ${
-                            caseStudy.color === 'plum' ? 'text-plum' : 'text-saffron'
-                          }`} />
+                        <div 
+                          className="flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center"
+                          style={{ backgroundColor: `${caseStudy.accentColor}15` }}
+                        >
+                          <IconComponent className="w-5 h-5" style={{ color: caseStudy.accentColor }} />
                         </div>
                         <div>
-                          <p className={`font-[var(--font-syne)] font-bold text-lg ${
-                            caseStudy.color === 'plum' ? 'text-plum' : 'text-saffron'
-                          }`}>
+                          <p 
+                            className="font-[var(--font-syne)] font-bold text-lg"
+                            style={{ color: caseStudy.accentColor }}
+                          >
                             {metric.value}
                           </p>
-                          <p className="text-charcoal/60 text-xs">{metric.label}</p>
+                          <p className="text-muted-text text-xs">{metric.label}</p>
                         </div>
                       </div>
                     )

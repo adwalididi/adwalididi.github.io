@@ -4,36 +4,45 @@
 @custom-variant dark (&:is(.dark *));
 
 :root {
-  /* Ad Wali Didi - Warm Indian Palette */
-  --saffron: #E8650A;
-  --plum: #4A0E4E;
-  --cream: #FFF8F0;
-  --charcoal: #1A1A1A;
-  
-  --background: #FFF8F0;
-  --foreground: #1A1A1A;
+  /* Ad Wali Didi - Teal & Gold Palette */
+  --teal: #008573;
+  --deep-teal: #006B5C;
+  --ocean-blue: #107D98;
+  --gold: #dbad3e;
+  --dark-gold: #9A7A1A;
+  --near-black: #1a1a1a;
+  --muted-text: #555555;
+  --teal-tint: #F2FAF8;
+  --blue-tint: #EEF6FA;
+  --gold-tint: #FDF7E8;
+  --teal-border: #C8E8E3;
+  --blue-border: #B8D8E8;
+  --gold-border: #EDD98A;
+
+  --background: #ffffff;
+  --foreground: #1a1a1a;
   --card: #FFFFFF;
-  --card-foreground: #1A1A1A;
+  --card-foreground: #1a1a1a;
   --popover: #FFFFFF;
-  --popover-foreground: #1A1A1A;
-  --primary: #E8650A;
+  --popover-foreground: #1a1a1a;
+  --primary: #008573;
   --primary-foreground: #FFFFFF;
-  --secondary: #4A0E4E;
+  --secondary: #107D98;
   --secondary-foreground: #FFFFFF;
-  --muted: #F5EDE4;
-  --muted-foreground: #666666;
-  --accent: #4A0E4E;
-  --accent-foreground: #FFFFFF;
+  --muted: #F2FAF8;
+  --muted-foreground: #555555;
+  --accent: #dbad3e;
+  --accent-foreground: #1a1a1a;
   --destructive: #dc2626;
   --destructive-foreground: #FFFFFF;
-  --border: #E8DDD0;
-  --input: #E8DDD0;
-  --ring: #E8650A;
-  --chart-1: #E8650A;
-  --chart-2: #4A0E4E;
-  --chart-3: #1A1A1A;
-  --chart-4: #F5EDE4;
-  --chart-5: #FFF8F0;
+  --border: #C8E8E3;
+  --input: #C8E8E3;
+  --ring: #008573;
+  --chart-1: #008573;
+  --chart-2: #107D98;
+  --chart-3: #dbad3e;
+  --chart-4: #F2FAF8;
+  --chart-5: #EEF6FA;
   --radius: 0.5rem;
 }
 
@@ -65,10 +74,19 @@
   --color-chart-3: var(--chart-3);
   --color-chart-4: var(--chart-4);
   --color-chart-5: var(--chart-5);
-  --color-saffron: var(--saffron);
-  --color-plum: var(--plum);
-  --color-cream: var(--cream);
-  --color-charcoal: var(--charcoal);
+  --color-teal: var(--teal);
+  --color-deep-teal: var(--deep-teal);
+  --color-ocean-blue: var(--ocean-blue);
+  --color-gold: var(--gold);
+  --color-dark-gold: var(--dark-gold);
+  --color-near-black: var(--near-black);
+  --color-muted-text: var(--muted-text);
+  --color-teal-tint: var(--teal-tint);
+  --color-blue-tint: var(--blue-tint);
+  --color-gold-tint: var(--gold-tint);
+  --color-teal-border: var(--teal-border);
+  --color-blue-border: var(--blue-border);
+  --color-gold-border: var(--gold-border);
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);

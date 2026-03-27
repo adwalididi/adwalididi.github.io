@@ -17,40 +17,27 @@ export function HeroSection() {
       ref={sectionRef}
       className="min-h-screen flex items-center justify-center pt-20 pb-12 px-4 sm:px-6 lg:px-8 relative overflow-hidden"
       style={{
-        backgroundColor: '#FFF8F0',
-        backgroundImage: `repeating-linear-gradient(
-          0deg,
-          transparent,
-          transparent 40px,
-          rgba(232, 101, 10, 0.06) 40px,
-          rgba(232, 101, 10, 0.06) 41px
-        ),
-        repeating-linear-gradient(
-          90deg,
-          transparent,
-          transparent 40px,
-          rgba(74, 14, 78, 0.04) 40px,
-          rgba(74, 14, 78, 0.04) 41px
-        )`
+        background: 'linear-gradient(135deg, #006B5C 0%, #0D6B82 100%)',
       }}
     >
       {/* Decorative elements */}
-      <div className="absolute top-20 right-10 w-64 h-64 bg-saffron/10 rounded-full blur-3xl" />
-      <div className="absolute bottom-20 left-10 w-96 h-96 bg-plum/5 rounded-full blur-3xl" />
+      <div className="absolute top-20 right-10 w-64 h-64 bg-white/5 rounded-full blur-3xl" />
+      <div className="absolute bottom-20 left-10 w-96 h-96 bg-white/5 rounded-full blur-3xl" />
       
       <div className="max-w-6xl mx-auto text-center relative z-10">
         <div className={`transition-all duration-700 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
-          <h1 className="font-[var(--font-syne)] text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-charcoal leading-tight">
+          <h1 className="font-[var(--font-syne)] text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-white leading-tight">
             <span className="block">Aapka Business.</span>
-            <span className="block text-saffron mt-2">Humari Zimmedari.</span>
+            <span className="block mt-2" style={{ color: '#F5CB5C' }}>Humari Zimmedari.</span>
           </h1>
         </div>
         
         <p 
-          className={`mt-6 sm:mt-8 text-lg sm:text-xl md:text-2xl text-charcoal/70 max-w-3xl mx-auto leading-relaxed transition-all duration-700 delay-200 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}
+          className={`mt-6 sm:mt-8 text-lg sm:text-xl md:text-2xl max-w-3xl mx-auto leading-relaxed transition-all duration-700 delay-200 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}
+          style={{ color: 'rgba(255,255,255,0.80)' }}
         >
           We handle your Google profile, run your ads, and make your creatives — 
-          <span className="text-charcoal font-medium"> so you get enquiries, not excuses.</span>
+          <span className="text-white font-medium"> so you get enquiries, not excuses.</span>
         </p>
 
         <div 
@@ -60,14 +47,15 @@ export function HeroSection() {
             href="https://wa.me/916261643774"
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 bg-saffron text-white px-8 py-4 rounded-full font-semibold text-lg hover:bg-saffron/90 transition-all hover:scale-105 shadow-lg shadow-saffron/25"
+            className="inline-flex items-center gap-2 bg-gold text-near-black px-8 py-4 rounded-full font-medium text-lg hover:bg-[#c49b2e] transition-all hover:scale-105 shadow-lg"
           >
             <MessageCircle size={22} />
             WhatsApp Us Now
           </a>
           <Link
             href="/portfolio"
-            className="inline-flex items-center gap-2 bg-charcoal text-white px-8 py-4 rounded-full font-semibold text-lg hover:bg-charcoal/90 transition-all hover:scale-105"
+            className="inline-flex items-center gap-2 px-8 py-4 rounded-full font-semibold text-lg text-white transition-all hover:scale-105"
+            style={{ background: 'rgba(255,255,255,0.15)', border: '1px solid rgba(255,255,255,0.30)' }}
           >
             See Our Work
             <ArrowRight size={20} />
