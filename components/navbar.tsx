@@ -38,9 +38,8 @@ export function Navbar() {
 
   return (
     <header
-      className={`fixed top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-sm transition-shadow duration-300 ${
-        scrolled ? 'shadow-sm' : ''
-      }`}
+      className={`fixed top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-sm transition-shadow duration-300 pt-[env(safe-area-inset-top)] ${scrolled ? 'shadow-sm' : ''
+        }`}
       style={{ borderBottom: '0.5px solid #C8E8E3' }}
     >
       <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -63,11 +62,10 @@ export function Navbar() {
               <Link
                 key={link.href}
                 href={link.href}
-                className={`relative font-medium transition-colors py-1 ${
-                  isActive(link.href)
-                    ? 'text-teal'
-                    : 'text-muted-text hover:text-teal'
-                }`}
+                className={`relative font-medium transition-colors py-1 ${isActive(link.href)
+                  ? 'text-teal'
+                  : 'text-muted-text hover:text-teal'
+                  }`}
               >
                 {link.label}
                 {isActive(link.href) && (
@@ -77,11 +75,10 @@ export function Navbar() {
             ))}
             <Link
               href="/contact"
-              className={`px-5 py-2.5 rounded-full font-medium transition-colors ${
-                isActive("/contact")
-                  ? 'bg-[#c49b2e] text-near-black'
-                  : 'bg-gold text-near-black hover:bg-[#c49b2e]'
-              }`}
+              className={`px-5 py-2.5 rounded-full font-medium transition-colors ${isActive("/contact")
+                ? 'bg-[#c49b2e] text-near-black'
+                : 'bg-gold text-near-black hover:bg-[#c49b2e]'
+                }`}
             >
               {"Let's Talk"}
             </Link>
@@ -99,9 +96,8 @@ export function Navbar() {
 
         {/* Mobile Navigation */}
         <div
-          className={`md:hidden overflow-hidden transition-all duration-300 ease-in-out ${
-            isOpen ? 'max-h-80 opacity-100' : 'max-h-0 opacity-0'
-          }`}
+          className={`md:hidden overflow-hidden transition-all duration-300 ease-in-out ${isOpen ? 'max-h-80 opacity-100' : 'max-h-0 opacity-0'
+            }`}
           style={{ borderTop: isOpen ? '0.5px solid #C8E8E3' : 'none' }}
         >
           <div className="py-4 flex flex-col gap-1">
@@ -109,11 +105,10 @@ export function Navbar() {
               <Link
                 key={link.href}
                 href={link.href}
-                className={`font-medium py-2.5 px-3 rounded-lg transition-colors ${
-                  isActive(link.href)
-                    ? 'text-teal bg-teal-tint'
-                    : 'text-muted-text hover:text-teal hover:bg-teal-tint/50'
-                }`}
+                className={`font-medium py-2.5 px-3 rounded-lg transition-colors ${isActive(link.href)
+                  ? 'text-teal bg-teal-tint'
+                  : 'text-muted-text hover:text-teal hover:bg-teal-tint/50'
+                  }`}
               >
                 {link.label}
               </Link>

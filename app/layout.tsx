@@ -7,13 +7,13 @@ import { Footer } from '@/components/footer'
 import { WhatsAppButton } from '@/components/whatsapp-button'
 import { ScrollToTop } from '@/components/scroll-to-top'
 
-const inter = Inter({ 
+const inter = Inter({
   subsets: ['latin'],
   variable: '--font-inter',
   display: 'swap',
 })
 
-const syne = Syne({ 
+const syne = Syne({
   subsets: ['latin'],
   variable: '--font-syne',
   display: 'swap',
@@ -73,6 +73,18 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${inter.variable} ${syne.variable}`} data-scroll-behavior="smooth">
       <head>
+        <script async src="https://www.googletagmanager.com/gtag/js?id=G-57N60F5L40"></script>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              window.dataLayer = window.dataLayer || [];
+              function gtag(){dataLayer.push(arguments);}
+              gtag('js', new Date());
+
+              gtag('config', 'G-57N60F5L40');
+            `
+          }}
+        />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
