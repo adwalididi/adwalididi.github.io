@@ -27,6 +27,24 @@ export const metadata: Metadata = {
     icon: [{ url: '/favicon.png', sizes: '64x64' }],
     apple: '/favicon.png',
   },
+  openGraph: {
+    type: 'website',
+    locale: 'en_IN',
+    url: 'https://adwalididi.github.io',
+    siteName: 'Ad Wali Didi',
+    title: 'Ad Wali Didi | Google Ads, Meta Ads & Ad Creatives for Indian Businesses',
+    description: 'We help Indian businesses get more enquiries through Google Business Profile, Meta Ads, and Ad Creatives. 150+ enquiries generated in Month 1 for a travel startup.',
+    images: [{ url: 'https://adwalididi.github.io/og-image.png', width: 1200, height: 630, alt: 'Ad Wali Didi — Digital Marketing for Indian Businesses' }],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Ad Wali Didi | Google Ads, Meta Ads & Ad Creatives for Indian Businesses',
+    description: 'We help Indian businesses get more enquiries through Google Business Profile, Meta Ads, and Ad Creatives.',
+    images: ['https://adwalididi.github.io/og-image.png'],
+  },
+  alternates: {
+    canonical: 'https://adwalididi.github.io',
+  },
 }
 
 export const viewport: Viewport = {
@@ -45,6 +63,7 @@ const jsonLd = {
   "contactPoint": {
     "@type": "ContactPoint",
     "telephone": "+91-6261643774",
+    "email": "adwalididi@gmail.com",
     "contactType": "customer service",
     "availableLanguage": ["English", "Hindi"]
   },

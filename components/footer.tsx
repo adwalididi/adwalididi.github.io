@@ -2,7 +2,7 @@
 
 import Link from "next/link"
 import Image from "next/image"
-import { Instagram, Facebook, Linkedin } from "lucide-react"
+import { Instagram, Facebook, Linkedin, Mail } from "lucide-react"
 
 export function Footer() {
   return (
@@ -26,6 +26,16 @@ export function Footer() {
               Digital marketing that actually works for Indian small businesses. 
               Google Ads, Meta Ads, and Google Business Profile — all under one roof.
             </p>
+            <a
+              href="mailto:adwalididi@gmail.com"
+              className="inline-flex items-center gap-2 mt-4 transition-colors"
+              style={{ color: 'rgba(255,255,255,0.70)' }}
+              onMouseEnter={(e) => e.currentTarget.style.color = 'rgba(255,255,255,1)'}
+              onMouseLeave={(e) => e.currentTarget.style.color = 'rgba(255,255,255,0.70)'}
+            >
+              <Mail size={16} />
+              <span>adwalididi@gmail.com</span>
+            </a>
           </div>
 
           {/* Quick Links */}
@@ -50,6 +60,11 @@ export function Footer() {
               <li>
                 <Link href="/contact" className="transition-colors" style={{ color: 'rgba(255,255,255,0.70)' }} onMouseEnter={(e) => e.currentTarget.style.color = 'rgba(255,255,255,1)'} onMouseLeave={(e) => e.currentTarget.style.color = 'rgba(255,255,255,0.70)'}>
                   Contact
+                </Link>
+              </li>
+              <li>
+                <Link href="/blog" className="transition-colors" style={{ color: 'rgba(255,255,255,0.70)' }} onMouseEnter={(e) => e.currentTarget.style.color = 'rgba(255,255,255,1)'} onMouseLeave={(e) => e.currentTarget.style.color = 'rgba(255,255,255,0.70)'}>
+                  Blog
                 </Link>
               </li>
             </ul>

@@ -15,6 +15,10 @@ const faqs = [
     question: "How quickly can you start?",
     answer: "Usually within a week of our first conversation, depending on what you need.",
   },
+  {
+    question: "How much do your services cost?",
+    answer: "We don't have one-size-fits-all packages because every business is different. But we're not expensive — most small businesses we work with spend between ₹5,000–₹15,000/month depending on what they need. WhatsApp us and we'll be upfront about numbers in the first conversation.",
+  },
 ]
 
 export function FAQ() {
@@ -38,8 +42,25 @@ export function FAQ() {
     return () => observer.disconnect()
   }, [])
 
+  const faqSchema = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": faqs.map((faq) => ({
+      "@type": "Question",
+      "name": faq.question,
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": faq.answer
+      }
+    }))
+  }
+
   return (
     <section ref={sectionRef} className="py-16 sm:py-20 bg-white">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
+      />
       <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
         <h2 
           className={`font-[var(--font-syne)] text-2xl sm:text-3xl font-bold text-near-black text-center mb-10 transition-all duration-700 ${

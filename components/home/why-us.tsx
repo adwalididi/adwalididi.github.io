@@ -38,7 +38,7 @@ export function WhyUs() {
           {/* Left - Bold Statement */}
           <div 
             className={`transition-all duration-700 ${
-              isVisible ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-8'
+              isVisible ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-12'
             }`}
           >
             <h2 className="font-[var(--font-syne)] text-3xl sm:text-4xl lg:text-5xl font-bold text-white leading-tight">
@@ -52,20 +52,20 @@ export function WhyUs() {
           {/* Right - Differentiators */}
           <div 
             className={`transition-all duration-700 delay-300 ${
-              isVisible ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-8'
+              isVisible ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-12'
             }`}
           >
-            <ul className="space-y-5">
+            <ul className="space-y-6 sm:space-y-8">
               {differentiators.map((item, index) => (
                 <li 
                   key={index} 
-                  className="flex items-start gap-4"
-                  style={{ animationDelay: `${index * 100}ms` }}
+                  className="flex items-start gap-4 transition-all duration-500"
+                  style={{ transitionDelay: `${index * 150 + 500}ms` }}
                 >
-                  <div className="flex-shrink-0 w-6 h-6 bg-gold rounded-full flex items-center justify-center mt-0.5">
+                  <div className="flex-shrink-0 w-6 h-6 bg-gold rounded-full flex items-center justify-center mt-1">
                     <Check className="w-4 h-4 text-near-black" />
                   </div>
-                  <span className="text-white/90 text-lg">
+                  <span className="text-white/90 text-lg sm:text-xl leading-relaxed">
                     {item}
                   </span>
                 </li>

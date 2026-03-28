@@ -1,7 +1,7 @@
 "use client"
 
 import { useEffect, useRef, useState } from "react"
-import { Instagram, Facebook, Linkedin, Clock } from "lucide-react"
+import { Instagram, Facebook, Linkedin, Clock, Mail } from "lucide-react"
 import { WhatsAppIcon } from "@/components/ui/whatsapp-icon"
 
 export function ContactContent() {
@@ -92,6 +92,14 @@ export function ContactContent() {
                 <span>Ad Wali Didi</span>
               </a>
               
+              <a
+                href="mailto:adwalididi@gmail.com"
+                className="flex items-center gap-3 text-muted-text hover:text-teal transition-colors"
+              >
+                <Mail size={22} />
+                <span>adwalididi@gmail.com</span>
+              </a>
+
               <div className="flex items-center gap-3 text-muted-text">
                 <Clock size={22} />
                 <span>Response time: Same day, usually faster</span>

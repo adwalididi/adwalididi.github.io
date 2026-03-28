@@ -1,0 +1,138 @@
+1:"$Sreact.fragment"
+2:I[63780,["/_next/static/chunks/0.j7og6649~0f.js","/_next/static/chunks/0d3shmwh5_nmn.js"],"Navbar"]
+3:I[39756,["/_next/static/chunks/0.j7og6649~0f.js","/_next/static/chunks/0d3shmwh5_nmn.js"],"default"]
+4:I[37457,["/_next/static/chunks/0.j7og6649~0f.js","/_next/static/chunks/0d3shmwh5_nmn.js"],"default"]
+5:I[76841,["/_next/static/chunks/0.j7og6649~0f.js","/_next/static/chunks/0d3shmwh5_nmn.js"],"Footer"]
+6:I[2291,["/_next/static/chunks/0.j7og6649~0f.js","/_next/static/chunks/0d3shmwh5_nmn.js"],"WhatsAppButton"]
+7:I[34581,["/_next/static/chunks/0.j7og6649~0f.js","/_next/static/chunks/0d3shmwh5_nmn.js"],"ScrollToTop"]
+8:I[2355,["/_next/static/chunks/0.j7og6649~0f.js","/_next/static/chunks/0d3shmwh5_nmn.js"],"Analytics"]
+d:I[68027,["/_next/static/chunks/0.j7og6649~0f.js","/_next/static/chunks/0d3shmwh5_nmn.js"],"default",1]
+:HL["/_next/static/chunks/0mycg6d.pie3_.css","style"]
+:HL["/_next/static/media/0c795a286deabae8-s.p.14tvuu96~wkr0.woff2","font",{"crossOrigin":"","type":"font/woff2"}]
+:HL["/_next/static/media/83afe278b6a6bb3c-s.p.0q-301v4kxxnr.woff2","font",{"crossOrigin":"","type":"font/woff2"}]
+0:{"P":null,"c":["","blog","5-signs-business-needs-digital-marketing-agency-india"],"q":"","i":false,"f":[[["",{"children":["blog",{"children":[["slug","5-signs-business-needs-digital-marketing-agency-india","d",null],{"children":["__PAGE__",{}]}]}]},"$undefined","$undefined",16],[["$","$1","c",{"children":[[["$","link","0",{"rel":"stylesheet","href":"/_next/static/chunks/0mycg6d.pie3_.css","precedence":"next","crossOrigin":"$undefined","nonce":"$undefined"}],["$","script","script-0",{"src":"/_next/static/chunks/0.j7og6649~0f.js","async":true,"nonce":"$undefined"}],["$","script","script-1",{"src":"/_next/static/chunks/0d3shmwh5_nmn.js","async":true,"nonce":"$undefined"}]],["$","html",null,{"lang":"en","className":"inter_c15e96cb-module__0bjUvq__variable syne_89eecdd9-module__ON88Zq__variable","data-scroll-behavior":"smooth","children":[["$","head",null,{"children":[["$","script",null,{"async":true,"src":"https://www.googletagmanager.com/gtag/js?id=G-57N60F5L40"}],["$","script",null,{"dangerouslySetInnerHTML":{"__html":"\n              window.dataLayer = window.dataLayer || [];\n              function gtag(){dataLayer.push(arguments);}\n              gtag('js', new Date());\n\n              gtag('config', 'G-57N60F5L40');\n            "}}],["$","script",null,{"type":"application/ld+json","dangerouslySetInnerHTML":{"__html":"{\"@context\":\"https://schema.org\",\"@type\":\"LocalBusiness\",\"name\":\"Ad Wali Didi\",\"description\":\"Digital marketing agency for Indian small businesses. Google Ads, Meta Ads, Google Business Profile management, and Ad Creatives.\",\"url\":\"https://adwalididi.github.io\",\"logo\":\"https://adwalididi.github.io/logo-dark.webp\",\"contactPoint\":{\"@type\":\"ContactPoint\",\"telephone\":\"+91-6261643774\",\"email\":\"adwalididi@gmail.com\",\"contactType\":\"customer service\",\"availableLanguage\":[\"English\",\"Hindi\"]},\"sameAs\":[\"https://www.facebook.com/adwalididi\",\"https://www.instagram.com/adwalididi\",\"https://www.linkedin.com/company/112985325\"],\"areaServed\":{\"@type\":\"Country\",\"name\":\"India\"},\"serviceType\":[\"Google Business Profile Management\",\"Google Ads Management\",\"Meta Ads Management\",\"Ad Creative Design\"]}"}}]]}],["$","body",null,{"className":"font-sans antialiased bg-white text-near-black","children":[["$","$L2",null,{}],["$","main",null,{"children":["$","$L3",null,{"parallelRouterKey":"children","error":"$undefined","errorStyles":"$undefined","errorScripts":"$undefined","template":["$","$L4",null,{}],"templateStyles":"$undefined","templateScripts":"$undefined","notFound":[[["$","title",null,{"children":"404: This page could not be found."}],["$","div",null,{"style":{"fontFamily":"system-ui,\"Segoe UI\",Roboto,Helvetica,Arial,sans-serif,\"Apple Color Emoji\",\"Segoe UI Emoji\"","height":"100vh","textAlign":"center","display":"flex","flexDirection":"column","alignItems":"center","justifyContent":"center"},"children":["$","div",null,{"children":[["$","style",null,{"dangerouslySetInnerHTML":{"__html":"body{color:#000;background:#fff;margin:0}.next-error-h1{border-right:1px solid rgba(0,0,0,.3)}@media (prefers-color-scheme:dark){body{color:#fff;background:#000}.next-error-h1{border-right:1px solid rgba(255,255,255,.3)}}"}}],["$","h1",null,{"className":"next-error-h1","style":{"display":"inline-block","margin":"0 20px 0 0","padding":"0 23px 0 0","fontSize":24,"fontWeight":500,"verticalAlign":"top","lineHeight":"49px"},"children":404}],["$","div",null,{"style":{"display":"inline-block"},"children":["$","h2",null,{"style":{"fontSize":14,"fontWeight":400,"lineHeight":"49px","margin":0},"children":"This page could not be found."}]}]]}]}]],[]],"forbidden":"$undefined","unauthorized":"$undefined"}]}],["$","$L5",null,{}],["$","$L6",null,{}],["$","$L7",null,{}],["$","$L8",null,{}]]}]]}]]}],{"children":[["$","$1","c",{"children":[null,["$","$L3",null,{"parallelRouterKey":"children","error":"$undefined","errorStyles":"$undefined","errorScripts":"$undefined","template":["$","$L4",null,{}],"templateStyles":"$undefined","templateScripts":"$undefined","notFound":"$undefined","forbidden":"$undefined","unauthorized":"$undefined"}]]}],{"children":[["$","$1","c",{"children":[null,["$","$L3",null,{"parallelRouterKey":"children","error":"$undefined","errorStyles":"$undefined","errorScripts":"$undefined","template":["$","$L4",null,{}],"templateStyles":"$undefined","templateScripts":"$undefined","notFound":"$undefined","forbidden":"$undefined","unauthorized":"$undefined"}]]}],{"children":[["$","$1","c",{"children":["$L9",[["$","script","script-0",{"src":"/_next/static/chunks/0b7m7w8pq4k42.js","async":true,"nonce":"$undefined"}]],"$La"]}],{},null,false,null]},null,false,"$@b"]},null,false,"$@b"]},null,false,null],"$Lc",false]],"m":"$undefined","G":["$d",["$Le"]],"S":true,"h":null,"s":"$undefined","l":"$undefined","p":"$undefined","d":"$undefined","b":"yR3jkDtPWUV_NqThBaKSG"}
+f:I[97367,["/_next/static/chunks/0.j7og6649~0f.js","/_next/static/chunks/0d3shmwh5_nmn.js"],"OutletBoundary"]
+10:"$Sreact.suspense"
+13:I[97367,["/_next/static/chunks/0.j7og6649~0f.js","/_next/static/chunks/0d3shmwh5_nmn.js"],"ViewportBoundary"]
+15:I[97367,["/_next/static/chunks/0.j7og6649~0f.js","/_next/static/chunks/0d3shmwh5_nmn.js"],"MetadataBoundary"]
+a:["$","$Lf",null,{"children":["$","$10",null,{"name":"Next.MetadataOutlet","children":"$@11"}]}]
+12:[]
+b:"$W12"
+c:["$","$1","h",{"children":[null,["$","$L13",null,{"children":"$L14"}],["$","div",null,{"hidden":true,"children":["$","$L15",null,{"children":["$","$10",null,{"name":"Next.Metadata","children":"$L16"}]}]}],["$","meta",null,{"name":"next-size-adjust","content":""}]]}]
+e:["$","link","0",{"rel":"stylesheet","href":"/_next/static/chunks/0mycg6d.pie3_.css","precedence":"next","crossOrigin":"$undefined","nonce":"$undefined"}]
+17:I[22016,["/_next/static/chunks/0.j7og6649~0f.js","/_next/static/chunks/0d3shmwh5_nmn.js","/_next/static/chunks/0b7m7w8pq4k42.js"],""]
+18:I[24114,["/_next/static/chunks/0.j7og6649~0f.js","/_next/static/chunks/0d3shmwh5_nmn.js","/_next/static/chunks/0b7m7w8pq4k42.js"],"BlogPostContent"]
+19:T202a,## Not Every Business Needs an Agency
+
+Let's start with honesty — not every business needs a digital marketing agency. If you're a freelancer who gets clients through referrals and you're happy with your workload, keep doing what you're doing.
+
+But if you're a business that depends on a steady flow of new customers — a clinic, a salon, a gym, a restaurant, a travel agency, a coaching institute — and that flow isn't consistent, that's a different situation.
+
+Here are the five signs that tell you it's time to stop trying to figure out digital marketing on your own.
+
+## Sign #1: You're Getting Fewer Enquiries Than You Should
+
+Your business is good. Your product or service is solid. Your existing customers are happy. But new enquiries? They're either not coming, or they're coming in too slowly.
+
+This usually happens because:
+- Your Google Business Profile is invisible or poorly optimised
+- You're not showing up when people search for businesses like yours
+- Your competitors are running ads and you're not
+- Your social media posts are getting 15 likes from your friends and family, not from potential customers
+
+**The test:** Google your business type + your city. Example: "dentist in Jaipur" or "travel agent in Bhopal." If you're not in the top 3-5 results (either in ads or maps), potential customers are literally choosing your competitors over you — not because they're better, but because they're more visible.
+
+**What an agency does:** We figure out exactly where you're losing visibility and fix it. Sometimes it's your Google profile. Sometimes it's that you need ads. Sometimes it's both. But first, we diagnose the actual problem.
+
+## Sign #2: You Tried Running Ads Yourself (And It Didn't Go Great)
+
+This is one of the most common situations we see. A business owner watches a YouTube tutorial, sets up a Meta or Google Ads campaign, spends ₹10,000-20,000, gets a bunch of random clicks, and decides "ads don't work for my business."
+
+But here's the reality — the ads didn't fail because the platform doesn't work. They failed because:
+
+- **Wrong targeting:** Showing your dental clinic to everyone in Maharashtra instead of people within 5 km
+- **Wrong keywords:** Bidding on broad terms that attract job seekers and students instead of customers
+- **Bad creatives:** Using a blurry photo with Comic Sans text doesn't stop anyone from scrolling
+- **No tracking:** You have no idea which clicks turned into actual enquiries
+- **No optimisation:** The campaign ran for 30 days with zero adjustments
+
+Running ads well requires 4-6 hours per week of active management. That's 15-25 hours per month that you could be spending on running your business.
+
+**What an agency does:** We set up the campaigns properly from day one — right targeting, right keywords, right creatives, proper tracking. Then we optimise every week. Same budget, dramatically different results.
+
+## Sign #3: You're Spending More Time on Marketing Than on Your Business
+
+You know something's wrong when:
+- You're staying up late trying to design a Facebook post in Canva
+- You're watching the 15th YouTube video on "how to rank on Google"
+- You're spending your evenings responding to Instagram DMs instead of being with your family
+- You're trying to figure out Google Analytics when you should be seeing patients/clients/customers
+
+Here's a question: what's your hourly earning potential? If you're a doctor, lawyer, consultant, or business owner earning ₹1,000-5,000+ per hour, spending 3-4 hours a day on DIY marketing is literally losing you ₹3,000-20,000 per day.
+
+Hiring an agency that costs ₹15,000-30,000 per month is almost always cheaper than the time and opportunity cost of doing it yourself (badly).
+
+**What an agency does:** We take the entire marketing workload off your plate. You focus on your business. We focus on getting you more customers. You get a WhatsApp update from us, you say "looks good," and that's the extent of your marketing involvement.
+
+## Sign #4: Your Competitors Are Pulling Ahead Online
+
+Warning signs:
+- Your competitor has 200+ Google reviews and you have 12
+- When you search for your service + city, their name appears everywhere
+- They're running ads and showing up at the top of Google
+- Their Instagram looks professional while yours has phone photos with bad lighting
+- Customers tell you "I found them on Google" when you ask how they heard about them
+
+Digital marketing has a compounding effect. The business that starts early and stays consistent builds a massive advantage over time. Every month you wait, the gap gets wider.
+
+**This isn't about being on "every platform."** It's about being findable when a customer is looking for exactly what you offer. If your competitor is there and you're not, you're losing that customer — every single time.
+
+**What an agency does:** We analyse what your competitors are doing online, identify the gaps, and build a plan that gets you visible. We don't need you to be on 10 platforms. We need you to dominate the 1-2 platforms that matter for your business.
+
+## Sign #5: You Don't Know What's Working and What's Not
+
+Can you answer these questions about your business right now?
+
+1. How many people find your business on Google each month?
+2. How many calls come from your Google Business Profile?
+3. What percentage of your customers found you online vs. through referrals?
+4. If you're running ads, what's your cost per enquiry?
+5. Which marketing channel brings you the most revenue?
+
+If you can't answer even one of these questions, you're making decisions without data. And decisions without data are expensive.
+
+Most business owners we talk to have no idea how customers are finding them. They're spending money on social media, sometimes running ads, maybe paying for a website — but they can't tell you which of these things is actually bringing in business.
+
+**What an agency does:** We install proper tracking from day one. Every month, you know exactly how many enquiries came from where, what each enquiry cost, and what's working vs. what isn't. No fancy dashboards with meaningless metrics — just the numbers that matter for your business.
+
+## But Which Agency?
+
+If you've recognised yourself in 2 or more of these signs, the next question is who to hire. Here's our honest advice:
+
+### Avoid agencies that:
+- **Lock you into long contracts** — If they're confident in their work, they don't need a 6-month lock-in
+- **Promise unrealistic results** — "We'll 10x your revenue in 30 days" is a lie
+- **Won't tell you what they're doing** — If you can't understand the strategy, something is wrong
+- **Outsource everything** — Your brand deserves more than a freelancer in another city who's managing 30 other clients
+- **Only talk about impressions and reach** — These are vanity metrics. Ask about enquiries and leads.
+
+### Look for agencies that:
+- **Speak in results** — enquiries, calls, leads, customers — not impressions and clicks
+- **Work with businesses like yours** — They understand your challenges because they've solved them before
+- **Are transparent** — You know what they're doing, why, and how it's performing
+- **Handle multiple things together** — Ads + creatives + GBP working as one system, not three separate invoices
+- **Respond quickly** — If an agency takes 3 days to reply to your initial message, imagine how they'll treat you as a client
+
+## Our Honest Take
+
+We built Ad Wali Didi specifically for Indian small businesses that need real marketing help without the enterprise price tag. We handle three things — Google Business Profile, Paid Ads (Meta + Google), and Ad Creatives — because these three things, done together, are the most complete local marketing system a small business can have.
+
+We've taken a travel startup from zero to 150+ enquiries in Month 1. We've generated 550+ leads for a construction business over 6 months. We don't promise magic — we promise consistent, transparent, results-focused work.
+
+**If you're seeing these signs in your business, let's have a conversation. No pitch deck, no pressure — just a straightforward WhatsApp chat about your business and what we can do. WhatsApp us — it's free and we respond same day.**9:[["$","script",null,{"type":"application/ld+json","dangerouslySetInnerHTML":{"__html":"{\"@context\":\"https://schema.org\",\"@type\":\"BlogPosting\",\"headline\":\"5 Signs Your Local Business Needs a Digital Marketing Agency\",\"description\":\"5 clear signs your Indian small business needs professional digital marketing help. When DIY stops working and it's time to hire an agency that understands your business.\",\"datePublished\":\"2026-03-20\",\"author\":{\"@type\":\"Organization\",\"name\":\"Ad Wali Didi\",\"url\":\"https://adwalididi.github.io\"},\"publisher\":{\"@type\":\"Organization\",\"name\":\"Ad Wali Didi\",\"logo\":{\"@type\":\"ImageObject\",\"url\":\"https://adwalididi.github.io/logo-dark.webp\"}},\"mainEntityOfPage\":{\"@type\":\"WebPage\",\"@id\":\"https://adwalididi.github.io/blog/5-signs-business-needs-digital-marketing-agency-india\"},\"keywords\":\"digital marketing agency for small business india, when to hire digital marketing agency, local business marketing india, small business digital marketing\"}"}}],["$","section",null,{"className":"pt-32 pb-8 sm:pt-40 sm:pb-12 bg-teal-tint","children":["$","div",null,{"className":"max-w-3xl mx-auto px-4 sm:px-6 lg:px-8","children":[["$","$L17",null,{"href":"/blog","className":"inline-flex items-center gap-2 text-sm text-muted-text hover:text-teal transition-colors mb-8","children":[["$","svg",null,{"ref":"$undefined","xmlns":"http://www.w3.org/2000/svg","width":14,"height":14,"viewBox":"0 0 24 24","fill":"none","stroke":"currentColor","strokeWidth":2,"strokeLinecap":"round","strokeLinejoin":"round","className":"lucide lucide-arrow-left","aria-hidden":"true","children":[["$","path","1l729n",{"d":"m12 19-7-7 7-7"}],["$","path","x3x0zl",{"d":"M19 12H5"}],"$undefined"]}],"Back to Blog"]}],["$","span",null,{"className":"inline-block px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wider mb-4","style":{"backgroundColor":"#00857315","color":"#008573"},"children":"Business Growth"}],["$","h1",null,{"className":"font-[var(--font-syne)] text-3xl sm:text-4xl lg:text-5xl font-bold text-near-black leading-tight","children":"5 Signs Your Local Business Needs a Digital Marketing Agency"}],["$","div",null,{"className":"flex items-center gap-4 mt-6 text-sm text-muted-text","children":[["$","span",null,{"className":"flex items-center gap-1.5","children":[["$","svg",null,{"ref":"$undefined","xmlns":"http://www.w3.org/2000/svg","width":14,"height":14,"viewBox":"0 0 24 24","fill":"none","stroke":"currentColor","strokeWidth":2,"strokeLinecap":"round","strokeLinejoin":"round","className":"lucide lucide-calendar","aria-hidden":"true","children":[["$","path","1cmpym",{"d":"M8 2v4"}],["$","path","4m81vk",{"d":"M16 2v4"}],["$","rect","1hopcy",{"width":"18","height":"18","x":"3","y":"4","rx":"2"}],["$","path","8toen8",{"d":"M3 10h18"}],"$undefined"]}],"20 March 2026"]}],["$","span",null,{"className":"flex items-center gap-1.5","children":[["$","svg",null,{"ref":"$undefined","xmlns":"http://www.w3.org/2000/svg","width":14,"height":14,"viewBox":"0 0 24 24","fill":"none","stroke":"currentColor","strokeWidth":2,"strokeLinecap":"round","strokeLinejoin":"round","className":"lucide lucide-clock","aria-hidden":"true","children":[["$","path","mmk7yg",{"d":"M12 6v6l4 2"}],["$","circle","1mglay",{"cx":"12","cy":"12","r":"10"}],"$undefined"]}],"8 min read"]}]]}]]}]}],["$","article",null,{"className":"py-12 sm:py-16 bg-white","children":["$","div",null,{"className":"max-w-3xl mx-auto px-4 sm:px-6 lg:px-8","children":[["$","$L18",null,{"content":"$19"}],"$L1a"]}]}],"$L1b"]
+1c:T450,M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z1a:["$","div",null,{"className":"mt-12 bg-teal-tint rounded-2xl p-6 sm:p-8","style":{"border":"0.5px solid #C8E8E3"},"children":[["$","p",null,{"className":"font-[var(--font-syne)] text-xl sm:text-2xl font-bold text-near-black mb-4","children":"Need help implementing this for your business?"}],["$","p",null,{"className":"text-muted-text mb-6","children":"We handle Google Business Profile, Paid Ads, and Ad Creatives for Indian small businesses. WhatsApp us for a free audit."}],["$","a",null,{"href":"https://wa.me/916261643774?text=Hi!%20I%20read%20your%20blog%20and%20I'd%20like%20to%20discuss%20marketing%20for%20my%20business.","target":"_blank","rel":"noopener noreferrer","className":"inline-flex items-center gap-2 bg-gold text-near-black px-6 py-3 rounded-full font-medium hover:bg-[#c49b2e] transition-all hover:scale-105","children":[["$","svg",null,{"role":"img","viewBox":"0 0 24 24","xmlns":"http://www.w3.org/2000/svg","width":18,"height":18,"fill":"currentColor","className":"$undefined","children":["$","path",null,{"d":"$1c"}]}],"WhatsApp Us — It's Free"]}]]}]
+1b:["$","section",null,{"className":"py-12 sm:py-16 bg-teal-tint","children":["$","div",null,{"className":"max-w-6xl mx-auto px-4 sm:px-6 lg:px-8","children":[["$","h2",null,{"className":"font-[var(--font-syne)] text-2xl sm:text-3xl font-bold text-near-black text-center mb-10","children":"Keep Reading"}],["$","div",null,{"className":"grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto","children":[["$","$L17","how-to-set-up-google-business-profile-india-2026",{"href":"/blog/how-to-set-up-google-business-profile-india-2026","className":"group bg-white rounded-2xl p-6 sm:p-8 shadow-sm hover:shadow-lg transition-all duration-300","style":{"border":"0.5px solid #C8E8E3"},"children":[["$","span",null,{"className":"inline-block px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wider mb-3","style":{"backgroundColor":"#00857315","color":"#008573"},"children":"Google Business Profile"}],["$","h3",null,{"className":"font-[var(--font-syne)] text-lg font-bold text-near-black group-hover:text-teal transition-colors","children":"How to Set Up and Optimise Your Google Business Profile (2026 Guide)"}],["$","p",null,{"className":"mt-2 text-sm text-muted-text line-clamp-2","children":"Your Google Business Profile is the first thing customers see when they search for your business. Here's how to set it up right — and the mistakes most Indian businesses make."}]]}],["$","$L17","meta-ads-vs-google-ads-small-business-india",{"href":"/blog/meta-ads-vs-google-ads-small-business-india","className":"group bg-white rounded-2xl p-6 sm:p-8 shadow-sm hover:shadow-lg transition-all duration-300","style":{"border":"0.5px solid #C8E8E3"},"children":[["$","span",null,{"className":"inline-block px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wider mb-3","style":{"backgroundColor":"#00857315","color":"#008573"},"children":"Paid Ads"}],["$","h3",null,{"className":"font-[var(--font-syne)] text-lg font-bold text-near-black group-hover:text-teal transition-colors","children":"Meta Ads vs Google Ads: Which One Should Your Small Business Start With?"}],["$","p",null,{"className":"mt-2 text-sm text-muted-text line-clamp-2","children":"Every business owner asks this question. The answer isn't 'both' — it depends on your business, your budget, and what kind of customers you're trying to reach."}]]}]]}]]}]}]
+14:[["$","meta","0",{"charSet":"utf-8"}],["$","meta","1",{"name":"viewport","content":"width=device-width, initial-scale=1"}],["$","meta","2",{"name":"theme-color","content":"#008573"}]]
+1d:I[27201,["/_next/static/chunks/0.j7og6649~0f.js","/_next/static/chunks/0d3shmwh5_nmn.js"],"IconMark"]
+11:null
+16:[["$","title","0",{"children":"5 Signs Your Local Business Needs a Digital Marketing Agency — Ad Wali Didi Blog"}],["$","meta","1",{"name":"description","content":"5 clear signs your Indian small business needs professional digital marketing help. When DIY stops working and it's time to hire an agency that understands your business."}],["$","meta","2",{"name":"keywords","content":"digital marketing agency for small business india,when to hire digital marketing agency,local business marketing india,small business digital marketing"}],["$","link","3",{"rel":"canonical","href":"https://adwalididi.github.io/blog/5-signs-business-needs-digital-marketing-agency-india"}],["$","meta","4",{"property":"og:title","content":"5 Signs Your Local Business Needs a Digital Marketing Agency"}],["$","meta","5",{"property":"og:description","content":"5 clear signs your Indian small business needs professional digital marketing help. When DIY stops working and it's time to hire an agency that understands your business."}],["$","meta","6",{"property":"og:url","content":"https://adwalididi.github.io/blog/5-signs-business-needs-digital-marketing-agency-india"}],["$","meta","7",{"property":"og:site_name","content":"Ad Wali Didi"}],["$","meta","8",{"property":"og:type","content":"article"}],["$","meta","9",{"property":"article:published_time","content":"2026-03-20"}],["$","meta","10",{"property":"article:author","content":"Ad Wali Didi"}],["$","meta","11",{"name":"twitter:card","content":"summary_large_image"}],["$","meta","12",{"name":"twitter:title","content":"5 Signs Your Local Business Needs a Digital Marketing Agency"}],["$","meta","13",{"name":"twitter:description","content":"5 clear signs your Indian small business needs professional digital marketing help. When DIY stops working and it's time to hire an agency that understands your business."}],["$","link","14",{"rel":"icon","href":"/favicon.png","sizes":"64x64"}],["$","link","15",{"rel":"apple-touch-icon","href":"/favicon.png"}],["$","$L1d","16",{}]]

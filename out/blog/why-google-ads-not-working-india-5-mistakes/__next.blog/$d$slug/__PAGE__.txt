@@ -1,0 +1,135 @@
+1:"$Sreact.fragment"
+2:I[22016,["/_next/static/chunks/0.j7og6649~0f.js","/_next/static/chunks/0d3shmwh5_nmn.js","/_next/static/chunks/0b7m7w8pq4k42.js"],""]
+3:I[24114,["/_next/static/chunks/0.j7og6649~0f.js","/_next/static/chunks/0d3shmwh5_nmn.js","/_next/static/chunks/0b7m7w8pq4k42.js"],"BlogPostContent"]
+a:I[97367,["/_next/static/chunks/0.j7og6649~0f.js","/_next/static/chunks/0d3shmwh5_nmn.js"],"OutletBoundary"]
+b:"$Sreact.suspense"
+4:T1d69,## "I Tried Google Ads. It Didn't Work."
+
+We hear this all the time. A business owner spends ₹10,000-30,000 on Google Ads, gets a bunch of clicks, maybe a few random calls, and concludes that "Google Ads don't work for my business."
+
+But here's the thing — Google Ads do work. Millions of businesses worldwide depend on them. When they don't work for you, it's almost always because of one of these five mistakes.
+
+Let's go through each one.
+
+## Mistake #1: Targeting the Wrong Keywords
+
+This is the single biggest money-waster in Google Ads. Most businesses either:
+
+- **Target keywords that are too broad:** Like "dental" or "travel" — these get tons of clicks from people who aren't your customers (students researching, people looking for dental colleges, etc.)
+- **Target keywords that are too competitive:** Like "best dentist in Mumbai" — you're competing against massive clinics with massive budgets
+- **Forget negative keywords entirely:** Negative keywords tell Google what NOT to show your ads for. Without them, you'll get clicks for "dental admission," "dental job," or "free dental check-up" when you're a premium clinic
+
+### The Fix:
+- Use **specific, intent-driven keywords:** "teeth whitening cost Jaipur" beats "dental clinic"
+- Add **negative keywords** aggressively: "jobs," "salary," "free," "admission," "PDF," "course," "YouTube"
+- Use **location targeting** properly: If you serve Bhopal, don't show ads nationally
+- Start with **phrase match or exact match** keywords, not broad match
+
+**Example:** One of our clients was spending ₹15,000/month on the keyword "construction" in broad match. They were getting clicks from people searching "construction job vacancy" and "construction material price." After we switched to specific keywords like "building contractor [city name]" and "house construction cost per sq ft," their cost per enquiry dropped by 60%.
+
+## Mistake #2: Your Landing Page is Terrible (or Missing)
+
+Imagine you click an ad for "best biryani in Hyderabad" and you land on a generic homepage with no mention of biryani, no menu, no address, and no way to order. You'd leave immediately, right?
+
+That's what happens when your Google Ad sends people to:
+- Your generic homepage instead of a relevant page
+- A page that takes 10 seconds to load
+- A page with no clear call-to-action (phone number, WhatsApp button, booking form)
+- A page that isn't mobile-friendly (80%+ of Indian searches happen on mobile)
+
+### The Fix:
+- Send ad traffic to a **specific, relevant page** — not your homepage
+- Make sure your phone number and WhatsApp button are **visible within 2 seconds** of landing
+- **Optimise for mobile first** — test your pages on a phone, not just a laptop
+- Page load time should be under 3 seconds (Google will actually show your ads less if your page is slow)
+
+If you don't have a website at all, that's actually not a deal-breaker. Your Google Business Profile can serve as your landing page for local search ads. But you need it to be fully optimised — complete information, good photos, and plenty of reviews.
+
+## Mistake #3: You're Not Tracking Conversions
+
+Here's a scenario we see constantly:
+
+Business owner: "Google Ads aren't working. I only got 50 clicks."
+Us: "How many of those 50 clicks called you or WhatsApped you?"
+Business owner: "...I don't know."
+
+If you're not tracking conversions, you literally have no idea if your ads are working or not. Clicks alone mean nothing. What matters is:
+- How many people **called** you from the ad?
+- How many people **submitted a form** or sent a message?
+- How many of those turned into **actual paying customers?**
+
+### The Fix:
+- Set up **Google Ads conversion tracking** (calls, form submissions, WhatsApp clicks)
+- Use **call tracking** to know which calls came from ads vs. organic
+- Track the entire funnel: click → call → customer
+- Review your conversion data weekly, not monthly
+
+Without conversion tracking, you're literally guessing. And guessing with your ad budget is expensive.
+
+## Mistake #4: You Set It and Forgot It
+
+This is painfully common. Someone (often the business owner themselves, or a "digital marketing guy" they hired for ₹5,000/month) sets up a Google Ads campaign, and then nobody touches it for weeks or months.
+
+Google Ads is not a set-and-forget system. It needs regular attention:
+- **Keywords need pruning:** Some keywords will waste money and need to be paused or removed
+- **Bids need adjusting:** As competition changes, your bids need to change too
+- **Ad copy needs testing:** The first ad you write is rarely the best one
+- **Negative keywords need updating:** New irrelevant searches pop up every week
+- **Budget allocation needs shifting:** You need to put more budget on what's working and cut what isn't
+
+### The Fix:
+- Review and optimise your campaigns **at least once a week**
+- Check the **Search Terms report** weekly — this shows you exactly what people searched before clicking your ad
+- A/B test at least 2-3 different ad variations
+- Adjust bids based on which times of day and days of week perform best
+- Kill underperforming keywords quickly — don't let them drain your budget
+
+**This is honestly the main reason businesses hire us.** Most business owners don't have 3-4 hours a week to properly manage their Google Ads. It's our job, and we do it consistently because that's how results happen.
+
+## Mistake #5: Your Offer Isn't Compelling Enough
+
+Sometimes the ads are set up perfectly — right keywords, good landing page, proper tracking — but the offer itself doesn't motivate anyone to act.
+
+Compare these two ads:
+
+**Ad A:** "Dental Clinic in Jaipur. Book Now."
+**Ad B:** "Teeth Cleaning Starting ₹999. Same-day appointments. 4.8★ rated on Google."
+
+Which one would you click? Ad B gives you a reason to act — price transparency, convenience, social proof.
+
+### The Fix:
+- Include **specific benefits** in your ad copy, not just features
+- Use **numbers:** prices, ratings, years of experience, customer count
+- Add **urgency** when genuine: "Limited slots," "Offer ends Sunday"
+- Show **social proof:** "500+ patients treated," "4.8★ Google reviews"
+- Include a **clear call-to-action:** "Call now," "Book today," "WhatsApp for a quote"
+
+## Bonus: One More Thing That Kills Performance
+
+**Your Google Business Profile is weak or non-existent.**
+
+When someone clicks on a local search ad, they often also check your Google Business Profile. If your profile has:
+- Few or no reviews
+- No photos
+- Incomplete information
+- A 3.2-star rating
+
+...they'll choose your competitor with 50 reviews and a 4.7-star rating instead. Your ad got the click, but your GBP lost the customer.
+
+This is why we always tell clients: **fix your Google Business Profile before spending money on Google Ads.** The two work together.
+
+## The Real Problem
+
+Most of the time, Google Ads don't fail because the platform doesn't work. They fail because:
+1. They're set up by someone who doesn't understand the platform deeply
+2. They're not managed regularly
+3. The supporting infrastructure (GBP, landing page, tracking) isn't in place
+
+We've taken over campaigns from businesses who were spending ₹30,000/month with zero enquiries, and turned them into ₹30,000/month with 30-40 enquiries. Same budget, completely different results. The difference? Proper setup, proper management, and proper creatives.
+
+**Think your Google Ads could be performing better? WhatsApp us for a free audit — we'll tell you exactly what's wrong and how to fix it.**0:{"rsc":["$","$1","c",{"children":[[["$","script",null,{"type":"application/ld+json","dangerouslySetInnerHTML":{"__html":"{\"@context\":\"https://schema.org\",\"@type\":\"BlogPosting\",\"headline\":\"Why Your Google Ads Are Not Working — 5 Mistakes Indian Businesses Make\",\"description\":\"Google Ads not bringing enquiries for your Indian business? Here are 5 common mistakes — wrong keywords, bad landing pages, no tracking, and more — with fixes.\",\"datePublished\":\"2026-03-24\",\"author\":{\"@type\":\"Organization\",\"name\":\"Ad Wali Didi\",\"url\":\"https://adwalididi.github.io\"},\"publisher\":{\"@type\":\"Organization\",\"name\":\"Ad Wali Didi\",\"logo\":{\"@type\":\"ImageObject\",\"url\":\"https://adwalididi.github.io/logo-dark.webp\"}},\"mainEntityOfPage\":{\"@type\":\"WebPage\",\"@id\":\"https://adwalididi.github.io/blog/why-google-ads-not-working-india-5-mistakes\"},\"keywords\":\"google ads not working, google ads mistakes india, why google ads no results, google ads for small business india\"}"}}],["$","section",null,{"className":"pt-32 pb-8 sm:pt-40 sm:pb-12 bg-teal-tint","children":["$","div",null,{"className":"max-w-3xl mx-auto px-4 sm:px-6 lg:px-8","children":[["$","$L2",null,{"href":"/blog","className":"inline-flex items-center gap-2 text-sm text-muted-text hover:text-teal transition-colors mb-8","children":[["$","svg",null,{"xmlns":"http://www.w3.org/2000/svg","width":14,"height":14,"viewBox":"0 0 24 24","fill":"none","stroke":"currentColor","strokeWidth":2,"strokeLinecap":"round","strokeLinejoin":"round","className":"lucide lucide-arrow-left","aria-hidden":"true","children":[["$","path","1l729n",{"d":"m12 19-7-7 7-7"}],["$","path","x3x0zl",{"d":"M19 12H5"}],"$undefined"]}],"Back to Blog"]}],["$","span",null,{"className":"inline-block px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wider mb-4","style":{"backgroundColor":"#00857315","color":"#008573"},"children":"Google Ads"}],["$","h1",null,{"className":"font-[var(--font-syne)] text-3xl sm:text-4xl lg:text-5xl font-bold text-near-black leading-tight","children":"Why Your Google Ads Are Not Working — 5 Mistakes Indian Businesses Make"}],["$","div",null,{"className":"flex items-center gap-4 mt-6 text-sm text-muted-text","children":[["$","span",null,{"className":"flex items-center gap-1.5","children":[["$","svg",null,{"xmlns":"http://www.w3.org/2000/svg","width":14,"height":14,"viewBox":"0 0 24 24","fill":"none","stroke":"currentColor","strokeWidth":2,"strokeLinecap":"round","strokeLinejoin":"round","className":"lucide lucide-calendar","aria-hidden":"true","children":[["$","path","1cmpym",{"d":"M8 2v4"}],["$","path","4m81vk",{"d":"M16 2v4"}],["$","rect","1hopcy",{"width":"18","height":"18","x":"3","y":"4","rx":"2"}],["$","path","8toen8",{"d":"M3 10h18"}],"$undefined"]}],"24 March 2026"]}],["$","span",null,{"className":"flex items-center gap-1.5","children":[["$","svg",null,{"xmlns":"http://www.w3.org/2000/svg","width":14,"height":14,"viewBox":"0 0 24 24","fill":"none","stroke":"currentColor","strokeWidth":2,"strokeLinecap":"round","strokeLinejoin":"round","className":"lucide lucide-clock","aria-hidden":"true","children":[["$","path","mmk7yg",{"d":"M12 6v6l4 2"}],["$","circle","1mglay",{"cx":"12","cy":"12","r":"10"}],"$undefined"]}],"9 min read"]}]]}]]}]}],["$","article",null,{"className":"py-12 sm:py-16 bg-white","children":["$","div",null,{"className":"max-w-3xl mx-auto px-4 sm:px-6 lg:px-8","children":[["$","$L3",null,{"content":"$4"}],"$L5"]}]}],"$L6"],["$L7"],"$L8"]}],"isPartial":false,"staleTime":300,"varyParams":null,"buildId":"yR3jkDtPWUV_NqThBaKSG"}
+9:T450,M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z5:["$","div",null,{"className":"mt-12 bg-teal-tint rounded-2xl p-6 sm:p-8","style":{"border":"0.5px solid #C8E8E3"},"children":[["$","p",null,{"className":"font-[var(--font-syne)] text-xl sm:text-2xl font-bold text-near-black mb-4","children":"Need help implementing this for your business?"}],["$","p",null,{"className":"text-muted-text mb-6","children":"We handle Google Business Profile, Paid Ads, and Ad Creatives for Indian small businesses. WhatsApp us for a free audit."}],["$","a",null,{"href":"https://wa.me/916261643774?text=Hi!%20I%20read%20your%20blog%20and%20I'd%20like%20to%20discuss%20marketing%20for%20my%20business.","target":"_blank","rel":"noopener noreferrer","className":"inline-flex items-center gap-2 bg-gold text-near-black px-6 py-3 rounded-full font-medium hover:bg-[#c49b2e] transition-all hover:scale-105","children":[["$","svg",null,{"role":"img","viewBox":"0 0 24 24","xmlns":"http://www.w3.org/2000/svg","width":18,"height":18,"fill":"currentColor","children":["$","path",null,{"d":"$9"}]}],"WhatsApp Us — It's Free"]}]]}]
+6:["$","section",null,{"className":"py-12 sm:py-16 bg-teal-tint","children":["$","div",null,{"className":"max-w-6xl mx-auto px-4 sm:px-6 lg:px-8","children":[["$","h2",null,{"className":"font-[var(--font-syne)] text-2xl sm:text-3xl font-bold text-near-black text-center mb-10","children":"Keep Reading"}],["$","div",null,{"className":"grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto","children":[["$","$L2","how-to-set-up-google-business-profile-india-2026",{"href":"/blog/how-to-set-up-google-business-profile-india-2026","className":"group bg-white rounded-2xl p-6 sm:p-8 shadow-sm hover:shadow-lg transition-all duration-300","style":{"border":"0.5px solid #C8E8E3"},"children":[["$","span",null,{"className":"inline-block px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wider mb-3","style":{"backgroundColor":"#00857315","color":"#008573"},"children":"Google Business Profile"}],["$","h3",null,{"className":"font-[var(--font-syne)] text-lg font-bold text-near-black group-hover:text-teal transition-colors","children":"How to Set Up and Optimise Your Google Business Profile (2026 Guide)"}],["$","p",null,{"className":"mt-2 text-sm text-muted-text line-clamp-2","children":"Your Google Business Profile is the first thing customers see when they search for your business. Here's how to set it up right — and the mistakes most Indian businesses make."}]]}],["$","$L2","meta-ads-vs-google-ads-small-business-india",{"href":"/blog/meta-ads-vs-google-ads-small-business-india","className":"group bg-white rounded-2xl p-6 sm:p-8 shadow-sm hover:shadow-lg transition-all duration-300","style":{"border":"0.5px solid #C8E8E3"},"children":[["$","span",null,{"className":"inline-block px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wider mb-3","style":{"backgroundColor":"#00857315","color":"#008573"},"children":"Paid Ads"}],["$","h3",null,{"className":"font-[var(--font-syne)] text-lg font-bold text-near-black group-hover:text-teal transition-colors","children":"Meta Ads vs Google Ads: Which One Should Your Small Business Start With?"}],["$","p",null,{"className":"mt-2 text-sm text-muted-text line-clamp-2","children":"Every business owner asks this question. The answer isn't 'both' — it depends on your business, your budget, and what kind of customers you're trying to reach."}]]}]]}]]}]}]
+7:["$","script","script-0",{"src":"/_next/static/chunks/0b7m7w8pq4k42.js","async":true}]
+8:["$","$La",null,{"children":["$","$b",null,{"name":"Next.MetadataOutlet","children":"$@c"}]}]
+c:null

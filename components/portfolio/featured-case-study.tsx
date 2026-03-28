@@ -51,7 +51,7 @@ export function FeaturedCaseStudy() {
 
             {/* Client Name */}
             <h2 className="font-[var(--font-syne)] text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-8">
-              Travel Startup — India
+              Mrs. Bhagyashri, Bhurr Holidays
             </h2>
 
             {/* Metrics Grid */}

@@ -11,8 +11,8 @@ const stats = [
     numberColor: "#008573",
   },
   {
-    number: "3",
-    text: "Services. 1 Agency. Zero coordination headache.",
+    number: "700+",
+    text: "leads generated across clients",
     bg: "#EEF6FA",
     border: "#B8D8E8",
     numberColor: "#107D98",

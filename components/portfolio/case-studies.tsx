@@ -6,7 +6,7 @@ import { Users, Calendar, Palette, Store } from "lucide-react"
 const caseStudies = [
   {
     label: "Case Study 02",
-    client: "Construction Business — India",
+    client: "Mr. Borse, Jijau Constructions",
     industry: "Construction & Real Estate",
     services: "Meta Ads + Ad Creatives",
     challenge: "A construction business needed consistent quality leads but had no structured digital ad presence. Their previous efforts were scattered and unmeasured.",
@@ -20,12 +20,12 @@ const caseStudies = [
   },
   {
     label: "Case Study 03",
-    client: "Dairy Business — India",
+    client: "Mr. Chetan, Hemraj Dairy",
     industry: "Food & Retail",
     services: "Ad Creatives",
     challenge: "A local dairy business wanted more customers walking into their shop but had no compelling visual presence to attract attention or communicate their offering.",
     solution: "Designed a complete set of ad creatives for the dairy business — visually appealing, locally relevant, and built to drive physical footfall rather than just online engagement.",
-    result: "Noticeable increase in footfall at the shop directly attributed to the creative campaign.",
+    result: "Regular walk-in customers increased within the first 2 weeks of creatives going live. Chetan reported the shop 'felt busier' — we're tracking properly from Month 2.",
     metrics: [
       { label: "Service Used", value: "Ad Creatives", icon: Palette },
       { label: "Focus", value: "Footfall & In-Store Visits", icon: Store },

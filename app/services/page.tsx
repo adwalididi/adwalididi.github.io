@@ -26,6 +26,7 @@ const services = [
     ],
     bestFor: "Local service businesses — clinics, salons, gyms, restaurants, travel agencies, coaching institutes, contractors",
     color: "saffron" as const,
+    pricing: "Starting from ₹3,000/month",
   },
   {
     id: "ads",
@@ -43,6 +44,7 @@ const services = [
     ],
     bestFor: "Businesses with a product or service people search for or can be targeted by interest — travel agencies, e-commerce, clinics, gyms, real estate, courses",
     color: "plum" as const,
+    pricing: "Starting from ₹5,000/month + ad spend",
   },
   {
     id: "creatives",
@@ -59,6 +61,7 @@ const services = [
     ],
     bestFor: "Any business running or planning to run paid ads — works as a standalone service or paired with our ads management",
     color: "charcoal" as const,
+    pricing: "Starting from ₹2,500 for a creative set",
   },
 ]
 

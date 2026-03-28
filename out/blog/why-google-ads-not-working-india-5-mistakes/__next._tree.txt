@@ -1,0 +1,4 @@
+:HL["/_next/static/chunks/0mycg6d.pie3_.css","style"]
+:HL["/_next/static/media/0c795a286deabae8-s.p.14tvuu96~wkr0.woff2","font",{"crossOrigin":"","type":"font/woff2"}]
+:HL["/_next/static/media/83afe278b6a6bb3c-s.p.0q-301v4kxxnr.woff2","font",{"crossOrigin":"","type":"font/woff2"}]
+0:{"tree":{"name":"","param":null,"prefetchHints":16,"slots":{"children":{"name":"blog","param":null,"prefetchHints":0,"slots":{"children":{"name":"slug","param":{"type":"d","key":"why-google-ads-not-working-india-5-mistakes","siblings":null},"prefetchHints":0,"slots":{"children":{"name":"__PAGE__","param":null,"prefetchHints":0,"slots":null}}}}}}},"staleTime":300,"buildId":"yR3jkDtPWUV_NqThBaKSG"}

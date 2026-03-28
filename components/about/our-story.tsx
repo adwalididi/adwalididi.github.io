@@ -1,6 +1,7 @@
 "use client"
 
 import { useEffect, useRef, useState } from "react"
+import Image from "next/image"
 
 export function OurStory() {
   const [isVisible, setIsVisible] = useState(false)
@@ -42,6 +43,15 @@ export function OurStory() {
           <p>
             Ad Wali Didi started because small Indian businesses deserve better. Not because they can&apos;t afford big agencies — but because big agencies don&apos;t care enough about businesses their size. Your dental clinic, your travel agency, your salon — these are real businesses built by real people who work incredibly hard. You deserve marketing that actually brings in customers.
           </p>
+          
+          <div className="relative w-full aspect-video md:aspect-[21/9] my-10 rounded-2xl overflow-hidden shadow-lg border border-teal-border">
+            <Image
+              src="/images/about_team.png"
+              alt="Digital Marketing Team Collaboration"
+              fill
+              className="object-cover"
+            />
+          </div>
           
           <div className="bg-teal-tint rounded-2xl p-6 sm:p-8 my-8" style={{ border: '0.5px solid #C8E8E3' }}>
             <p className="text-near-black">

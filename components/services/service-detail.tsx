@@ -12,6 +12,7 @@ interface ServiceDetailProps {
     description: string
     features: string[]
     bestFor: string
+    pricing: string
     color: "saffron" | "plum" | "charcoal"
   }
   index: number
@@ -107,9 +108,15 @@ export function ServiceDetail({ service, index }: ServiceDetailProps) {
                 ))}
               </ul>
 
-              <div className="mt-8 pt-6" style={{ borderTop: '0.5px solid #C8E8E3' }}>
-                <p className="text-sm font-medium text-muted-text mb-2">Best For</p>
-                <p className="text-muted-text">{service.bestFor}</p>
+              <div className="mt-8 pt-6 grid grid-cols-1 sm:grid-cols-2 gap-6" style={{ borderTop: '0.5px solid #C8E8E3' }}>
+                <div>
+                  <p className="text-sm font-medium text-muted-text mb-1">Pricing</p>
+                  <p className="text-near-black font-semibold">{service.pricing}</p>
+                </div>
+                <div>
+                  <p className="text-sm font-medium text-muted-text mb-1">Best For</p>
+                  <p className="text-muted-text text-sm leading-tight">{service.bestFor}</p>
+                </div>
               </div>
             </div>
           </div>
