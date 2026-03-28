@@ -1,12 +1,12 @@
 "use client"
 
 import { useEffect, useRef, useState } from "react"
-import { Users, Calendar, Palette, Store } from "lucide-react"
+import { Users, Calendar, Palette, Store, TrendingUp, Target } from "lucide-react"
 
 const caseStudies = [
   {
     label: "Case Study 02",
-    client: "Mr. Borse, Jijau Constructions",
+    client: "Jijau Construction",
     industry: "Construction & Real Estate",
     services: "Meta Ads + Ad Creatives",
     challenge: "A construction business needed consistent quality leads but had no structured digital ad presence. Their previous efforts were scattered and unmeasured.",
@@ -20,17 +20,31 @@ const caseStudies = [
   },
   {
     label: "Case Study 03",
-    client: "Mr. Chetan, Hemraj Dairy",
+    client: "Cowshala",
     industry: "Food & Retail",
     services: "Ad Creatives",
     challenge: "A local dairy business wanted more customers walking into their shop but had no compelling visual presence to attract attention or communicate their offering.",
     solution: "Designed a complete set of ad creatives for the dairy business — visually appealing, locally relevant, and built to drive physical footfall rather than just online engagement.",
-    result: "Regular walk-in customers increased within the first 2 weeks of creatives going live. Chetan reported the shop 'felt busier' — we're tracking properly from Month 2.",
+    result: "18% month-on-month sales increase. 15% increase in brand awareness. Achieved through Out of Home advertising creatives designed and executed in-house.",
     metrics: [
-      { label: "Service Used", value: "Ad Creatives", icon: Palette },
-      { label: "Focus", value: "Footfall & In-Store Visits", icon: Store },
+      { label: "MoM Sales Growth", value: "18%", icon: TrendingUp },
+      { label: "Brand Awareness Increase", value: "15%", icon: Target },
     ],
     accentColor: "#107D98",
+  },
+  {
+    label: "Case Study 04",
+    client: "Sponsor Representation (Events)",
+    industry: "Events & Sponsorship",
+    services: "Event Marketing, Print Advertising, OOH",
+    challenge: "A brand sponsoring major public events needed to maximize their visibility and engage attendees effectively on-ground.",
+    solution: "Represented a key sponsor at two major Pune events — Sakal Tourism Expo and Lokmat Maha Marathon. Managed their entire on-ground presence, stall branding, and marketing collateral.",
+    result: "Successfully managed high-visibility sponsor presence and on-ground engagement at events with thousands of attendees.",
+    metrics: [
+      { label: "Attendees", value: "Thousands", icon: Users },
+      { label: "Sponsorships Managed", value: "2 Major", icon: Calendar },
+    ],
+    accentColor: "#dbad3e",
   },
 ]
 

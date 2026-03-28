@@ -6,7 +6,7 @@ import { Quote, ChevronLeft, ChevronRight } from "lucide-react"
 const testimonials = [
   {
     quote: "I had no idea our Google profile was costing us customers. Ad Wali Didi fixed everything and within weeks we were getting calls we never got before. The best part — I didn't have to explain anything twice.",
-    client: "Mrs. Bhagyashri",
+    client: "Bhagyashri",
     location: "Bhurr Holidays",
   },
   {
@@ -16,8 +16,8 @@ const testimonials = [
   },
   {
     quote: "The creatives they designed actually made people stop scrolling. We saw more walk-ins within the first week itself. They understood the local audience perfectly.",
-    client: "Mr. Chetan",
-    location: "Hemraj Dairy",
+    client: "Chetan",
+    location: "Cowshala",
   },
 ]
 

@@ -1,6 +1,7 @@
 import { Metadata } from "next"
 import { notFound } from "next/navigation"
 import Link from "next/link"
+import Image from "next/image"
 import { blogPosts, getBlogPost, getAllBlogSlugs } from "@/lib/blog-data"
 import { ArrowLeft, Calendar, Clock } from "lucide-react"
 import { WhatsAppIcon } from "@/components/ui/whatsapp-icon"
@@ -110,6 +111,11 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
           </h1>
 
           <div className="flex items-center gap-4 mt-6 text-sm text-muted-text">
+            {post.author && (
+              <span className="flex items-center gap-1.5 font-medium text-near-black">
+                By {post.author}
+              </span>
+            )}
             <span className="flex items-center gap-1.5">
               <Calendar size={14} />
               {new Date(post.date).toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' })}
@@ -125,6 +131,17 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
       {/* Article Content */}
       <article className="py-12 sm:py-16 bg-white">
         <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+          {/* Featured Image */}
+          <div className="relative aspect-video mb-12 rounded-3xl overflow-hidden shadow-xl border border-teal-border">
+            <Image
+              src={post.coverImage}
+              alt={post.title}
+              fill
+              className="object-cover"
+              priority
+            />
+          </div>
+
           <BlogPostContent content={post.content} />
 
           {/* CTA After Article */}
@@ -133,10 +150,10 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
             style={{ border: '0.5px solid #C8E8E3' }}
           >
             <p className="font-[var(--font-syne)] text-xl sm:text-2xl font-bold text-near-black mb-4">
-              Need help implementing this for your business?
+              {post.ctaHeadline}
             </p>
             <p className="text-muted-text mb-6">
-              We handle Google Business Profile, Paid Ads, and Ad Creatives for Indian small businesses. WhatsApp us for a free audit.
+              {post.ctaBody}
             </p>
             <a
               href="https://wa.me/916261643774?text=Hi!%20I%20read%20your%20blog%20and%20I'd%20like%20to%20discuss%20marketing%20for%20my%20business."
@@ -145,7 +162,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
               className="inline-flex items-center gap-2 bg-gold text-near-black px-6 py-3 rounded-full font-medium hover:bg-[#c49b2e] transition-all hover:scale-105"
             >
               <WhatsAppIcon size={18} />
-              WhatsApp Us — It&apos;s Free
+              {post.ctaButton}
             </a>
           </div>
         </div>
@@ -163,21 +180,31 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
                 <Link
                   key={relatedPost.slug}
                   href={`/blog/${relatedPost.slug}`}
-                  className="group bg-white rounded-2xl p-6 sm:p-8 shadow-sm hover:shadow-lg transition-all duration-300"
+                  className="group bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-lg transition-all duration-300 flex flex-col"
                   style={{ border: '0.5px solid #C8E8E3' }}
                 >
-                  <span
-                    className="inline-block px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wider mb-3"
-                    style={{ backgroundColor: '#00857315', color: '#008573' }}
-                  >
-                    {relatedPost.category}
-                  </span>
-                  <h3 className="font-[var(--font-syne)] text-lg font-bold text-near-black group-hover:text-teal transition-colors">
-                    {relatedPost.title}
-                  </h3>
-                  <p className="mt-2 text-sm text-muted-text line-clamp-2">
-                    {relatedPost.excerpt}
-                  </p>
+                  <div className="relative aspect-video overflow-hidden">
+                    <Image
+                      src={relatedPost.coverImage}
+                      alt={relatedPost.title}
+                      fill
+                      className="object-cover transition-transform duration-500 group-hover:scale-105"
+                    />
+                  </div>
+                  <div className="p-6 sm:p-8 flex-1 flex flex-col">
+                    <span
+                      className="inline-block px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wider mb-3 self-start"
+                      style={{ backgroundColor: '#00857315', color: '#008573' }}
+                    >
+                      {relatedPost.category}
+                    </span>
+                    <h3 className="font-[var(--font-syne)] text-lg font-bold text-near-black group-hover:text-teal transition-colors line-clamp-2">
+                      {relatedPost.title}
+                    </h3>
+                    <p className="mt-2 text-sm text-muted-text line-clamp-2">
+                      {relatedPost.excerpt}
+                    </p>
+                  </div>
                 </Link>
               ))}
             </div>

@@ -6,7 +6,7 @@ import { TrendingUp, Zap, Target } from "lucide-react"
 const metrics = [
   { label: "Month 1 Enquiries", value: "150+", icon: TrendingUp },
   { label: "Starting Point", value: "Zero", icon: Zap },
-  { label: "Services Used", value: "All 3", icon: Target },
+  { label: "Services Used", value: "All 6", icon: Target },
 ]
 
 export function FeaturedCaseStudy() {
@@ -51,7 +51,7 @@ export function FeaturedCaseStudy() {
 
             {/* Client Name */}
             <h2 className="font-[var(--font-syne)] text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-8">
-              Mrs. Bhagyashri, Bhurr Holidays
+              Bhurr Technologies LLP (Bhurr Holidays)
             </h2>
 
             {/* Metrics Grid */}
@@ -87,14 +87,14 @@ export function FeaturedCaseStudy() {
               <div>
                 <h3 className="text-white/60 text-sm font-medium mb-3">The Result</h3>
                 <p className="text-white/90 leading-relaxed">
-                  150+ enquiries in their very first month. Managed everything end to end — they didn&apos;t have to brief anyone or manage multiple vendors.
+                  Instagram: 1.7M+ views, 500+ leads. YouTube: 321K short video views, 100K+ long video views, 200+ additional leads. Full-scope engagement across brand identity, social media, influencer marketing, ORM, digital ads, print, and event marketing — all under one agency.
                 </p>
               </div>
             </div>
 
             {/* Tags */}
             <div className="flex flex-wrap gap-2 mt-8 pt-8 border-t border-white/10">
-              {["Google Business Profile", "Meta Ads", "Google Ads", "Ad Creatives"].map((tag, index) => (
+              {["Brand Identity", "Social Media", "Influencer Marketing", "ORM", "Meta Ads", "Google Ads", "GBP", "Ad Creatives", "Print", "Event Marketing"].map((tag, index) => (
                 <span 
                   key={index}
                   className="bg-white/10 text-white/80 px-4 py-2 rounded-full text-sm"

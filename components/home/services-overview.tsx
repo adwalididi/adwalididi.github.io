@@ -67,7 +67,7 @@ export function ServicesOverview() {
             What We Do Best
           </h2>
           <p className="mt-4 text-muted-text text-lg max-w-2xl mx-auto">
-            Three services that work together to get your business found, trusted, and chosen.
+            Six services that work together to get your business found, trusted, and chosen.
           </p>
         </div>
 
@@ -111,6 +111,9 @@ export function ServicesOverview() {
             isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
           }`}
         >
+          <p className="text-muted-text text-lg mb-6 max-w-2xl mx-auto">
+            Plus: Social Media Marketing, Influencer Marketing & Outdoor Advertising (OOH)
+          </p>
           <Link
             href="/services"
             className="inline-flex items-center gap-2 text-teal font-semibold hover:text-deep-teal hover:gap-4 transition-all"

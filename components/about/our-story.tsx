@@ -66,6 +66,39 @@ export function OurStory() {
           <p className="font-[var(--font-syne)] text-2xl text-near-black font-bold">
             So here we are.
           </p>
+
+          {/* New Section: The People Behind It */}
+          <div className="mt-16 pt-16 border-t" style={{ borderColor: '#C8E8E3' }}>
+            <h2 className="font-[var(--font-syne)] text-3xl sm:text-4xl font-bold text-near-black mb-10">
+              The People Behind It
+            </h2>
+            
+            <div className="space-y-8">
+              <div 
+                className="relative w-full aspect-video md:aspect-[21/9] rounded-2xl overflow-hidden flex items-center justify-center"
+                style={{ backgroundColor: '#F0F5F4', border: '0.5px solid #C8E8E3' }}
+              >
+                <span className="text-muted-text font-medium">[Photo: Shivani and Shubham]</span>
+                {/* 
+                <Image 
+                  src="/images/shivani_shubham.jpg" 
+                  alt="Shivani and Shubham Nile" 
+                  fill 
+                  className="object-cover" 
+                /> 
+                */}
+              </div>
+
+              <div className="space-y-4">
+                <p className="text-lg text-muted-text leading-relaxed">
+                  <span className="font-bold text-near-black">Shivani and Shubham Nile</span> — a husband-wife team based in Chalisgaon, Maharashtra. We work with businesses across India remotely. We started Ad Wali Didi because small businesses in smaller cities deserve the same quality of marketing that big-city brands get — and we knew how to deliver it.
+                </p>
+                <p className="text-lg text-muted-text leading-relaxed">
+                  When you work with Ad Wali Didi, you work with us directly — not a junior, not a freelancer we outsourced to.
+                </p>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </section>

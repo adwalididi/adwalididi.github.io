@@ -13,7 +13,7 @@ interface ServiceDetailProps {
     features: string[]
     bestFor: string
     pricing: string
-    color: "saffron" | "plum" | "charcoal"
+    color: "saffron" | "plum" | "charcoal" | "coral" | "azure" | "sage"
   }
   index: number
 }
@@ -22,6 +22,9 @@ const colorMap = {
   saffron: { accent: '#008573', bg: '#00857315', text: '#005C4E' },
   plum: { accent: '#107D98', bg: '#107D9815', text: '#0A5F74' },
   charcoal: { accent: '#dbad3e', bg: '#dbad3e15', text: '#9A7A1A' },
+  coral: { accent: '#e86a58', bg: '#e86a5815', text: '#b34232' },
+  azure: { accent: '#2c7abb', bg: '#2c7abb15', text: '#195484' },
+  sage: { accent: '#5c8c6b', bg: '#5c8c6b15', text: '#3c6348' },
 }
 
 export function ServiceDetail({ service, index }: ServiceDetailProps) {

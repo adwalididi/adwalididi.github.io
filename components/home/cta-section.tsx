@@ -49,7 +49,7 @@ export function CTASection() {
             style={{ transitionDelay: '200ms' }}
           >
             <WhatsAppIcon size={20} />
-            {"WhatsApp Karo — It's Free"}
+            {"WhatsApp Karo — Get a Free Audit"}
           </a>
         </div>
       </div>

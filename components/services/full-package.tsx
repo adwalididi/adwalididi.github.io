@@ -45,7 +45,7 @@ export function FullPackage() {
           </p>
           
           <p className="mt-6 text-white/80 text-lg max-w-2xl mx-auto leading-relaxed">
-            GBP Management + Paid Ads + Creatives together is the most complete local marketing system a small business can have. One agency, one brief, one point of contact. No coordination. No gaps.
+            All six services working as one system — one brief, one team, zero coordination headache.
           </p>
           
           <a

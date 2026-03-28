@@ -6,6 +6,9 @@ const tabs = [
   { id: "gbp", label: "Google Profile", color: "#008573" },
   { id: "ads", label: "Paid Ads", color: "#107D98" },
   { id: "creatives", label: "Creatives", color: "#dbad3e" },
+  { id: "social", label: "Social Media", color: "#e86a58" },
+  { id: "influencer", label: "Influencer Marketing", color: "#2c7abb" },
+  { id: "ooh", label: "Outdoor (OOH)", color: "#5c8c6b" },
 ]
 
 export function ServiceTabs() {
@@ -50,13 +53,13 @@ export function ServiceTabs() {
       }`}
       style={{ borderBottom: '0.5px solid #C8E8E3' }}
     >
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-center gap-2 sm:gap-6 py-3">
+      <div className="w-full">
+        <div className="flex items-center justify-start xl:justify-center gap-3 sm:gap-6 py-3 overflow-x-auto scrollbar-hide px-4 sm:px-6 lg:px-8 snap-x max-w-7xl mx-auto">
           {tabs.map((tab) => (
             <button
               key={tab.id}
               onClick={() => scrollTo(tab.id)}
-              className={`relative px-4 py-2 rounded-full text-sm font-medium transition-all ${
+              className={`relative px-4 py-2 rounded-full text-sm font-medium transition-all whitespace-nowrap shrink-0 snap-center ${
                 activeId === tab.id
                   ? 'text-white'
                   : 'text-muted-text hover:text-near-black'

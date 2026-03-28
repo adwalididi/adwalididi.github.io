@@ -5,7 +5,7 @@ import { Check } from "lucide-react"
 
 const differentiators = [
   "Hum reports nahi, enquiries dete hain",
-  "One team handles everything — no briefing three vendors",
+  "One team handles everything — no briefing multiple vendors",
   "We've built from zero before. We know what works for small businesses.",
   "You'll always know what's happening and why",
 ]

@@ -11,8 +11,8 @@ const differentiators = [
   },
   {
     icon: Layers,
-    title: "One System, Not Three",
-    description: "We handle Google Business Profile, paid ads, and creatives — together, not separately. Because the three things need to work as one system, not three different briefs sent to three different people.",
+    title: "One Unified System",
+    description: "From paid ads and Google profiles to social media and influencer campaigns — we handle everything as a single, connected strategy. One brief, one team, zero coordination headache.",
   },
   {
     icon: Heart,

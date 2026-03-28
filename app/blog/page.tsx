@@ -1,5 +1,6 @@
 import { Metadata } from "next"
 import Link from "next/link"
+import Image from "next/image"
 import { blogPosts } from "@/lib/blog-data"
 import { ArrowRight, Calendar, Clock } from "lucide-react"
 
@@ -34,11 +35,22 @@ export default function BlogPage() {
               <Link
                 key={post.slug}
                 href={`/blog/${post.slug}`}
-                className="group bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-lg transition-all duration-300"
+                className="group bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-lg transition-all duration-300 flex flex-col"
                 style={{ border: '0.5px solid #C8E8E3' }}
               >
-                {/* Category Badge */}
-                <div className="p-6 sm:p-8">
+                {/* Thumbnail */}
+                <div className="relative aspect-[16/9] overflow-hidden">
+                  <Image
+                    src={post.coverImage}
+                    alt={post.title}
+                    fill
+                    className="object-cover transition-transform duration-500 group-hover:scale-105"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-near-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+                </div>
+
+                {/* Content */}
+                <div className="p-6 sm:p-8 flex-1 flex flex-col">
                   <div className="flex items-center gap-3 mb-4">
                     <span
                       className="px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wider"

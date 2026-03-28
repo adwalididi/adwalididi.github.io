@@ -31,9 +31,6 @@ export function HeroSection() {
         <div className="absolute inset-0 bg-[#001A16]/75" />
       </div>
 
-      {/* Decorative elements */}
-      <div className="absolute top-20 right-10 w-64 h-64 bg-teal/30 rounded-full blur-3xl z-0" />
-      <div className="absolute bottom-20 left-10 w-96 h-96 bg-ocean-blue/20 rounded-full blur-3xl z-0" />
 
       <div className="max-w-4xl mx-auto text-center relative z-10 w-full">
         <div className={`transition-all duration-700 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>

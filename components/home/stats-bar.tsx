@@ -12,14 +12,14 @@ const stats = [
   },
   {
     number: "700+",
-    text: "leads generated across clients",
+    text: "Leads generated across client campaigns",
     bg: "#EEF6FA",
     border: "#B8D8E8",
     numberColor: "#107D98",
   },
   {
-    number: "Zero",
-    text: "to fully visible — that's our specialty",
+    number: "1.7M+",
+    text: "Organic views generated through strategic influencer campaigns",
     bg: "#FDF7E8",
     border: "#EDD98A",
     numberColor: "#9A7A1A",

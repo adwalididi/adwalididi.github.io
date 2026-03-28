@@ -2,6 +2,11 @@ export interface BlogPost {
   slug: string
   title: string
   date: string
+  author: string
+  coverImage: string
+  ctaHeadline: string
+  ctaBody: string
+  ctaButton: string
   excerpt: string
   category: string
   readingTime: string
@@ -15,6 +20,11 @@ export const blogPosts: BlogPost[] = [
     slug: "how-to-set-up-google-business-profile-india-2026",
     title: "How to Set Up and Optimise Your Google Business Profile (2026 Guide)",
     date: "2026-03-28",
+    author: "Shivani Nile",
+    coverImage: "/images/blog/GMB.webp",
+    ctaHeadline: "Think your Google profile is costing you customers?",
+    ctaBody: "Most local business profiles are missing the easiest fixes. WhatsApp us for a free audit.",
+    ctaButton: "WhatsApp us for a free audit",
     excerpt: "Your Google Business Profile is the first thing customers see when they search for your business. Here's how to set it up right — and the mistakes most Indian businesses make.",
     category: "Google Business Profile",
     readingTime: "8 min read",
@@ -73,7 +83,9 @@ You get 750 characters. Use them wisely. Write what you do, who you serve, and w
 
 ## Step 3: Add Photos (This Is Huge)
 
-Businesses with photos get **42% more direction requests** and **35% more clicks** to their websites, according to Google's own data. Yet most Indian businesses have either zero photos or blurry ones taken on a phone in 2019.
+![Google Business Profile Photos Example](/images/blog/GMB.webp)
+
+Businesses with photos get **42% more direction requests** and **35% more clicks** to their websites, according to Google's own published data. Yet most Indian businesses have either zero photos or blurry ones taken on a phone in 2019.
 
 Here's what to add:
 
@@ -143,6 +155,11 @@ If you've read this far and realised your GBP needs work — we can help. We set
     slug: "meta-ads-vs-google-ads-small-business-india",
     title: "Meta Ads vs Google Ads: Which One Should Your Small Business Start With?",
     date: "2026-03-26",
+    author: "Shivani Nile",
+    coverImage: "/images/blog/Paid-ads.webp",
+    ctaHeadline: "Still not sure which platform is right for your business?",
+    ctaBody: "Stop guessing and wasting your ad budget. WhatsApp us and we'll tell you the exact strategy we'd use.",
+    ctaButton: "Get a Free Ad Strategy",
     excerpt: "Every business owner asks this question. The answer isn't 'both' — it depends on your business, your budget, and what kind of customers you're trying to reach.",
     category: "Paid Ads",
     readingTime: "10 min read",
@@ -157,6 +174,8 @@ We hear this question at least once a week. And the honest answer isn't "both" �
 Let us break it down properly.
 
 ## Understanding the Fundamental Difference
+
+![Meta Ads vs Google Ads Comparison](/images/blog/Paid-ads.webp)
 
 This is the most important thing to understand, and once you get it, everything else makes sense:
 
@@ -211,8 +230,8 @@ Meta Ads don't just drive immediate sales — they build recognition. If someone
 ### Example 1: A Dental Clinic in Bhopal
 **Problem:** Needs more patients walking in for consultations
 **Our recommendation:** Google Ads
-**Why:** People search "dentist near me" or "teeth cleaning Bhopal" when they have a problem. Google Ads captures that intent. Combined with a strong GBP, this clinic can dominate local search results.
-**Typical result:** 15-25 calls per week at ₹30-50 per click
+**Why:** People search "dentist near me" or "teeth cleaning Bhopal" when they have a problem. Google Ads captures that intent. Combined with a strong [Google Business Profile](/blog/how-to-set-up-google-business-profile-india-2026), this clinic can dominate local search results.
+**Typical result:** 15-25 calls per week at ₹80-200+ per click (highly competitive)
 
 ### Example 2: A New Clothing Brand
 **Problem:** Nobody knows the brand exists yet
@@ -284,6 +303,11 @@ And for the creatives that go into these ads? That's the third thing we handle �
     slug: "why-google-ads-not-working-india-5-mistakes",
     title: "Why Your Google Ads Are Not Working — 5 Mistakes Indian Businesses Make",
     date: "2026-03-24",
+    author: "Shivani Nile",
+    coverImage: "/images/blog/google-ads.webp",
+    ctaHeadline: "Spending on Google Ads and not getting calls?",
+    ctaBody: "WhatsApp us — we'll tell you exactly what's wrong with your campaign.",
+    ctaButton: "Get Your Ads Audited",
     excerpt: "You're spending money on Google Ads but not getting calls or enquiries? These are the 5 most common reasons — and what to do about each one.",
     category: "Google Ads",
     readingTime: "9 min read",
@@ -298,6 +322,8 @@ But here's the thing — Google Ads do work. Millions of businesses worldwide de
 Let's go through each one.
 
 ## Mistake #1: Targeting the Wrong Keywords
+
+![Google Ads Keyword targeting](/images/blog/google-ads.webp)
 
 This is the single biggest money-waster in Google Ads. Most businesses either:
 
@@ -329,7 +355,7 @@ That's what happens when your Google Ad sends people to:
 - **Optimise for mobile first** — test your pages on a phone, not just a laptop
 - Page load time should be under 3 seconds (Google will actually show your ads less if your page is slow)
 
-If you don't have a website at all, that's actually not a deal-breaker. Your Google Business Profile can serve as your landing page for local search ads. But you need it to be fully optimised — complete information, good photos, and plenty of reviews.
+If you don't have a website at all, that's actually not a deal-breaker. Your [Google Business Profile](/blog/how-to-set-up-google-business-profile-india-2026) can serve as your landing page for local search ads. But you need it to be fully optimised — complete information, good photos, and plenty of reviews.
 
 ## Mistake #3: You're Not Tracking Conversions
 
@@ -402,7 +428,7 @@ When someone clicks on a local search ad, they often also check your Google Busi
 
 ...they'll choose your competitor with 50 reviews and a 4.7-star rating instead. Your ad got the click, but your GBP lost the customer.
 
-This is why we always tell clients: **fix your Google Business Profile before spending money on Google Ads.** The two work together.
+This is why we always tell clients: **fix your [Google Business Profile](/blog/how-to-set-up-google-business-profile-india-2026) before spending money on Google Ads.** The two work together.
 
 ## The Real Problem
 
@@ -419,6 +445,11 @@ We've taken over campaigns from businesses who were spending ₹30,000/month wit
     slug: "facebook-ads-cost-india-2026-real-numbers",
     title: "How Much Do Facebook Ads Cost in India? Real Numbers, No Fluff",
     date: "2026-03-22",
+    author: "Shivani Nile",
+    coverImage: "/images/blog/meta-ads.webp",
+    ctaHeadline: "Want realistic numbers for your specific business?",
+    ctaBody: "WhatsApp us for a custom budget breakdown based on your industry and city.",
+    ctaButton: "Get Custom Estimates",
     excerpt: "Everyone wants to know the cost before they start. Here's what Facebook/Meta Ads actually cost in India across different industries, with real benchmarks.",
     category: "Meta Ads",
     readingTime: "9 min read",
@@ -428,9 +459,11 @@ We've taken over campaigns from businesses who were spending ₹30,000/month wit
 
 If you Google "Facebook ads cost in India," you'll find articles saying "it depends" 47 different ways without actually telling you anything useful. We're going to do better than that.
 
-After managing Meta (Facebook + Instagram) ad campaigns for multiple Indian businesses, here are the real numbers — not theoretical, not global averages, but actual India-specific costs.
+After managing Meta (Facebook + Instagram) ad campaigns for multiple Indian businesses, here are the real numbers — not theoretical, not global averages, but actual India-specific costs. *(Note: These are 2026 benchmarks based on campaigns we've managed; costs vary by season and competition.)*
 
 ## How Facebook Ads Pricing Works
+
+![Facebook Ads Pricing Model](/images/blog/meta-ads.webp)
 
 Before we get into numbers, you need to understand the basics:
 
@@ -574,6 +607,11 @@ If any of these four things are missing, you'll spend money and feel like "it do
     slug: "5-signs-business-needs-digital-marketing-agency-india",
     title: "5 Signs Your Local Business Needs a Digital Marketing Agency",
     date: "2026-03-20",
+    author: "Shivani Nile",
+    coverImage: "/images/blog/business-growth.webp",
+    ctaHeadline: "Ready to stop doing it all yourself?",
+    ctaBody: "If you're seeing these signs, it's time to bring in proper help. WhatsApp us to see if we're a fit.",
+    ctaButton: "WhatsApp Us",
     excerpt: "Not every business needs an agency. But if you're seeing these 5 signs, trying to do it yourself is costing you more than hiring help would.",
     category: "Business Growth",
     readingTime: "8 min read",
@@ -618,6 +656,8 @@ Running ads well requires 4-6 hours per week of active management. That's 15-25 
 **What an agency does:** We set up the campaigns properly from day one — right targeting, right keywords, right creatives, proper tracking. Then we optimise every week. Same budget, dramatically different results.
 
 ## Sign #3: You're Spending More Time on Marketing Than on Your Business
+
+![Business Owner Overwhelmed with Marketing](/images/blog/business-growth.webp)
 
 You know something's wrong when:
 - You're staying up late trying to design a Facebook post in Canva
@@ -682,11 +722,9 @@ If you've recognised yourself in 2 or more of these signs, the next question is 
 
 ## Our Honest Take
 
-We built Ad Wali Didi specifically for Indian small businesses that need real marketing help without the enterprise price tag. We handle three things — Google Business Profile, Paid Ads (Meta + Google), and Ad Creatives — because these three things, done together, are the most complete local marketing system a small business can have.
+We built Ad Wali Didi specifically for Indian small businesses that need real marketing help without the enterprise price tag. We handle Google Business Profile, Paid Ads, and Ad Creatives.
 
-We've taken a travel startup from zero to 150+ enquiries in Month 1. We've generated 550+ leads for a construction business over 6 months. We don't promise magic — we promise consistent, transparent, results-focused work.
-
-**If you're seeing these signs in your business, let's have a conversation. No pitch deck, no pressure — just a straightforward WhatsApp chat about your business and what we can do. WhatsApp us — it's free and we respond same day.**`,
+If your current marketing isn't bringing in the enquiries you need, let's have a straightforward WhatsApp chat about what we can do.`,
   },
 ]
 

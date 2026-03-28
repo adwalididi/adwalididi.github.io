@@ -4,8 +4,8 @@ import { useEffect, useRef, useState } from "react"
 import { Users, Building2, Star } from "lucide-react"
 
 const metrics = [
-  { icon: Users, value: "700+", label: "Total Leads Generated", color: "#008573" },
-  { icon: Building2, value: "3", label: "Industries Served", color: "#107D98" },
+  { icon: Users, value: "2,000+", label: "Total Leads & Views Generated", color: "#008573" },
+  { icon: Building2, value: "5+", label: "Industries Served", color: "#107D98" },
   { icon: Star, value: "100%", label: "Client Retention", color: "#dbad3e" },
 ]
 

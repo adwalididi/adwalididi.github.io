@@ -6,15 +6,15 @@ import { ArrowRight, TrendingUp } from "lucide-react"
 
 const caseStudies = [
   {
-    client: "Travel Startup, India",
+    client: "Mrs. Bhagyashri, Bhurr Holidays",
     challenge: "Zero online presence. No ads, no Google profile, no creatives.",
-    solution: "Built everything from scratch — GBP, Meta ads, full creative suite",
+    solution: "Full-scope engagement — GBP, Ads, Social Media, Influencers, and more",
     result: "150+ enquiries in Month 1",
-    tags: ["Google Ads", "Meta Ads", "GBP", "Creatives"],
+    tags: ["GBP", "Paid Ads", "Social Media", "Influencers", "Creatives"],
     featured: true,
   },
   {
-    client: "Construction Business, India",
+    client: "Mr. Borse, Jijau Constructions",
     challenge: "No structured digital ad presence.",
     solution: "Built and managed full Meta Ads campaign with in-house creatives over 6 months",
     result: "550+ leads over 6 month campaign",

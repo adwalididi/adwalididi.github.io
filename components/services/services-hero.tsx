@@ -23,7 +23,7 @@ export function ServicesHero() {
             isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
           }`}
         >
-          We don&apos;t do everything. We do three things exceptionally well — and we make sure they work together.
+          We don&apos;t do everything. We do six things exceptionally well — and we make sure they work together.
         </p>
       </div>
     </section>

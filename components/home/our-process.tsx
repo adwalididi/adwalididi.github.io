@@ -8,14 +8,14 @@ const steps = [
     number: "01",
     icon: Search,
     title: "We Audit",
-    description: "We look at your current Google presence, ad activity, and competition — then tell you exactly what's missing and what to fix first.",
+    description: "We look at your complete digital presence — from Google & ads to social media and content — then tell you what's missing.",
     accentColor: "#008573",
   },
   {
     number: "02",
     icon: Rocket,
     title: "We Build",
-    description: "We set up your Google profile, launch your ads, and design your creatives — all in one shot, no coordination needed from your side.",
+    description: "We set up your entire marketing ecosystem — profiles, ads, content, and strategy — all in one shot, no coordination needed.",
     accentColor: "#107D98",
   },
   {

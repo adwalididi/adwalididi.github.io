@@ -23,8 +23,8 @@ export function Footer() {
           {/* Brand */}
           <div className="md:col-span-2">
             <p className="mt-4" style={{ color: 'rgba(255,255,255,0.85)' }}>
-              Digital marketing that actually works for Indian small businesses. 
-              Google Ads, Meta Ads, and Google Business Profile — all under one roof.
+              A complete digital marketing ecosystem for Indian small businesses. 
+              From Google & Meta ads to social media, influencers, and outdoor branding — one team, one strategy.
             </p>
             <a
               href="mailto:adwalididi@gmail.com"
@@ -75,9 +75,11 @@ export function Footer() {
             <h4 className="font-semibold text-lg mb-4 text-white">Services</h4>
             <ul className="space-y-3">
               <li style={{ color: 'rgba(255,255,255,0.70)' }}>Google Business Profile</li>
-              <li style={{ color: 'rgba(255,255,255,0.70)' }}>Google Ads</li>
-              <li style={{ color: 'rgba(255,255,255,0.70)' }}>Meta Ads</li>
+              <li style={{ color: 'rgba(255,255,255,0.70)' }}>Paid Ads (Meta + Google)</li>
               <li style={{ color: 'rgba(255,255,255,0.70)' }}>Ad Creatives</li>
+              <li style={{ color: 'rgba(255,255,255,0.70)' }}>Social Media Marketing</li>
+              <li style={{ color: 'rgba(255,255,255,0.70)' }}>Influencer Marketing</li>
+              <li style={{ color: 'rgba(255,255,255,0.70)' }}>Outdoor Advertising (OOH)</li>
             </ul>
           </div>
         </div>
