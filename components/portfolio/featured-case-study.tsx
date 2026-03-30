@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react"
 import { TrendingUp, Zap, Target } from "lucide-react"
+import { CaseStudyGallery } from "./case-study-gallery"
 
 const metrics = [
   { label: "Month 1 Enquiries", value: "150+", icon: TrendingUp },
@@ -71,22 +72,38 @@ export function FeaturedCaseStudy() {
             </div>
 
             {/* Content Grid */}
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 pt-8 border-t border-white/10">
-              <div>
-                <h3 className="text-white/60 text-sm font-medium mb-3">The Challenge</h3>
-                <p className="text-white/90 leading-relaxed">
-                  A travel startup came to us with zero online presence. No website visibility, no Google profile, no ads, no creatives. They had great packages but nobody was finding them.
-                </p>
+            <div className="pt-8 border-t border-white/10">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+                <div>
+                  <h3 className="text-white/60 text-sm font-medium mb-3">The Challenge</h3>
+                  <p className="text-white/90 leading-relaxed">
+                    A travel startup came to us with zero online presence. No website visibility, no Google profile, no ads, no creatives. They had great packages but nobody was finding them.
+                  </p>
+                </div>
+                <div>
+                  <h3 className="text-white/60 text-sm font-medium mb-3">What We Did</h3>
+                  <p className="text-white/90 leading-relaxed">
+                    Set up and fully optimised their Google Business Profile from scratch. Built their Meta and Google ad campaigns. Designed all creatives in-house so the ads were consistent, sharp, and on-brand.
+                  </p>
+                </div>
               </div>
-              <div>
-                <h3 className="text-white/60 text-sm font-medium mb-3">What We Did</h3>
-                <p className="text-white/90 leading-relaxed">
-                  Set up and fully optimised their Google Business Profile from scratch. Built their Meta and Google ad campaigns. Designed all creatives in-house so the ads were consistent, sharp, and on-brand.
-                </p>
+
+              {/* Gallery Section */}
+              <div className="mb-8">
+                <h3 className="text-white/60 text-sm font-medium mb-4 uppercase tracking-wider">Visuals</h3>
+                <CaseStudyGallery 
+                  images={[
+                    { src: "/images/bhurr-reel.webp" },
+                    { src: "/images/bhurr-app-1.webp" },
+                    { src: "/images/bhurr-app-2.webp" },
+                    { src: "/images/bhurr-website.webp", spanAll: true },
+                  ]} 
+                />
               </div>
+
               <div>
                 <h3 className="text-white/60 text-sm font-medium mb-3">The Result</h3>
-                <p className="text-white/90 leading-relaxed">
+                <p className="text-white/90 leading-relaxed max-w-4xl">
                   Instagram: 1.7M+ views, 500+ leads. YouTube: 321K short video views, 100K+ long video views, 200+ additional leads. Full-scope engagement across brand identity, social media, influencer marketing, ORM, digital ads, print, and event marketing — all under one agency.
                 </p>
               </div>

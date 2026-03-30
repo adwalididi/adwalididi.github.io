@@ -75,18 +75,15 @@ export function OurStory() {
             
             <div className="space-y-8">
               <div 
-                className="relative w-full aspect-video md:aspect-[21/9] rounded-2xl overflow-hidden flex items-center justify-center"
-                style={{ backgroundColor: '#F0F5F4', border: '0.5px solid #C8E8E3' }}
+                className="relative w-full aspect-[1150/686] rounded-2xl overflow-hidden shadow-md"
+                style={{ border: '0.5px solid #C8E8E3' }}
               >
-                <span className="text-muted-text font-medium">[Photo: Shivani and Shubham]</span>
-                {/* 
                 <Image 
-                  src="/images/shivani_shubham.jpg" 
+                  src="/images/About-us.webp" 
                   alt="Shivani and Shubham Nile" 
                   fill 
                   className="object-cover" 
-                /> 
-                */}
+                />
               </div>
 
               <div className="space-y-4">

@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react"
 import { Users, Calendar, Palette, Store, TrendingUp, Target } from "lucide-react"
+import { CaseStudyGallery } from "./case-study-gallery"
 
 const caseStudies = [
   {
@@ -17,6 +18,11 @@ const caseStudies = [
       { label: "Campaign Duration", value: "6 Months", icon: Calendar },
     ],
     accentColor: "#008573",
+    images: [
+      { src: "/images/jijau-creative-1.png", label: "Ad Creative" },
+      { src: "/images/jijau-creative-2.png", label: "Ad Creative" },
+      { src: "/images/jijau-dashboard.webp", label: "Lead Generation Dashboard", spanAll: true },
+    ],
   },
   {
     label: "Case Study 03",
@@ -31,6 +37,11 @@ const caseStudies = [
       { label: "Brand Awareness Increase", value: "15%", icon: Target },
     ],
     accentColor: "#107D98",
+    images: [
+      { src: "/images/cowshala-creative-1.webp" },
+      { src: "/images/cowshala-creative-2.webp" },
+      { src: "/images/cowshala-creative-3.webp" },
+    ],
   },
   {
     label: "Case Study 04",
@@ -45,6 +56,11 @@ const caseStudies = [
       { label: "Sponsorships Managed", value: "2 Major", icon: Calendar },
     ],
     accentColor: "#dbad3e",
+    images: [
+      { src: "/images/Event-1.webp" },
+      { src: "/images/Event-2.webp" },
+      { src: "/images/Event-3.webp", spanAll: true },
+    ],
   },
 ]
 
@@ -106,24 +122,33 @@ export function CaseStudies() {
                   {caseStudy.services}
                 </p>
 
-                {/* Content Grid */}
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8">
-                  {/* Challenge */}
-                  <div>
-                    <h4 className="font-semibold text-near-black mb-2">The Challenge</h4>
-                    <p className="text-muted-text leading-relaxed">{caseStudy.challenge}</p>
+                {/* Content Sections */}
+                <div className="space-y-8">
+                  {/* Row 1: Challenge & Solution */}
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8">
+                    {/* Challenge */}
+                    <div>
+                      <h4 className="font-semibold text-near-black mb-2">The Challenge</h4>
+                      <p className="text-muted-text leading-relaxed">{caseStudy.challenge}</p>
+                    </div>
+
+                    {/* Solution */}
+                    <div>
+                      <h4 className="font-semibold text-near-black mb-2">What We Did</h4>
+                      <p className="text-muted-text leading-relaxed">{caseStudy.solution}</p>
+                    </div>
                   </div>
 
-                  {/* Solution */}
+                  {/* Gallery Section */}
                   <div>
-                    <h4 className="font-semibold text-near-black mb-2">What We Did</h4>
-                    <p className="text-muted-text leading-relaxed">{caseStudy.solution}</p>
+                    <h4 className="font-semibold text-near-black mb-4">Case Study Visuals</h4>
+                    <CaseStudyGallery images={caseStudy.images} />
                   </div>
 
-                  {/* Result */}
+                  {/* Row 3: Result */}
                   <div>
                     <h4 className="font-semibold text-near-black mb-2">The Result</h4>
-                    <p className="text-muted-text leading-relaxed">{caseStudy.result}</p>
+                    <p className="text-muted-text leading-relaxed max-w-4xl">{caseStudy.result}</p>
                   </div>
                 </div>
 
