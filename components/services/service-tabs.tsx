@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useEffect, useState, useRef } from "react"
 
 const tabs = [
   { id: "gbp", label: "Google Profile", color: "#008573" },
@@ -14,32 +14,46 @@ const tabs = [
 export function ServiceTabs() {
   const [activeId, setActiveId] = useState("")
   const [isVisible, setIsVisible] = useState(false)
+  const [mounted, setMounted] = useState(false)
+  const observers = useRef<IntersectionObserver[]>([])
 
   useEffect(() => {
-    const handleScroll = () => {
-      // Show tabs after scrolling past hero
-      setIsVisible(window.scrollY > 300)
+    setMounted(true)
 
-      // Detect which section is in view
-      for (const tab of tabs) {
-        const el = document.getElementById(tab.id)
-        if (el) {
-          const rect = el.getBoundingClientRect()
-          if (rect.top <= 160 && rect.bottom > 160) {
-            setActiveId(tab.id)
-            break
-          }
-        }
-      }
+    const handleScrollVisibility = () => {
+      setIsVisible(window.scrollY > 300)
     }
 
-    window.addEventListener("scroll", handleScroll, { passive: true })
-    handleScroll() // Check initial scroll position
-    return () => window.removeEventListener("scroll", handleScroll)
+    window.addEventListener("scroll", handleScrollVisibility, { passive: true })
+    handleScrollVisibility()
+
+    // Use IntersectionObserver for more accurate section detection
+    const options = {
+      rootMargin: '-160px 0px -40% 0px',
+      threshold: 0
+    }
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          setActiveId(entry.target.id)
+        }
+      })
+    }, options)
+
+    tabs.forEach(tab => {
+      const el = document.getElementById(tab.id)
+      if (el) observer.observe(el)
+    })
+
+    return () => {
+      window.removeEventListener("scroll", handleScrollVisibility)
+      observer.disconnect()
+    }
   }, [])
 
   useEffect(() => {
-    if (activeId) {
+    if (activeId && mounted) {
       const activeBtn = document.getElementById(`tab-${activeId}`)
       if (activeBtn) {
         activeBtn.scrollIntoView({
@@ -49,7 +63,7 @@ export function ServiceTabs() {
         })
       }
     }
-  }, [activeId])
+  }, [activeId, mounted])
 
   const scrollTo = (id: string) => {
     const el = document.getElementById(id)
@@ -60,22 +74,23 @@ export function ServiceTabs() {
     }
   }
 
+  if (!mounted) return null
+
   return (
     <div
-      className={`sticky z-40 bg-white/95 backdrop-blur-sm transition-all duration-300 ${
-        isVisible ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-2 pointer-events-none"
-      }`}
+      className={`service-tabs-sticky-container sticky z-40 bg-white/95 backdrop-blur-sm transition-all duration-300 ${isVisible ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-2 pointer-events-none"
+        }`}
       style={{
         borderBottom: "0.5px solid #C8E8E3",
         top: '64px'
       }}
     >
       <style jsx>{`
-        div {
+        .service-tabs-sticky-container {
           top: calc(4rem + env(safe-area-inset-top)) !important;
         }
         @media (min-width: 640px) {
-          div {
+          .service-tabs-sticky-container {
             top: calc(5rem + env(safe-area-inset-top)) !important;
           }
         }
