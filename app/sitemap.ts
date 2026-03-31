@@ -4,7 +4,7 @@ import { getAllBlogSlugs } from '@/lib/blog-data'
 export const dynamic = 'force-static'
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const baseUrl = 'https://adwalididi.github.io'
+  const baseUrl = 'https://adwalididi.com'
 
   // Define the core pages of the website
   const coreRoutes = [
