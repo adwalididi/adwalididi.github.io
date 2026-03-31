@@ -8,7 +8,7 @@ export const metadata: Metadata = {
   title: "Blog | Digital Marketing Tips for Indian Businesses — Ad Wali Didi",
   description: "Practical digital marketing tips, guides, and insights for Indian small businesses. Google Ads, Meta Ads, GBP optimisation, and more — no jargon, just real advice.",
   alternates: {
-    canonical: 'https://adwalididi.github.io/blog',
+    canonical: 'https://adwalididi.com/blog',
   },
 }
 

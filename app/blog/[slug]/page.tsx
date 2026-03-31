@@ -28,7 +28,7 @@ export async function generateMetadata({ params }: BlogPostPageProps): Promise<M
       type: 'article',
       title: post.title,
       description: post.metaDescription,
-      url: `https://adwalididi.github.io/blog/${post.slug}`,
+      url: `https://adwalididi.com/blog/${post.slug}`,
       siteName: 'Ad Wali Didi',
       publishedTime: post.date,
       authors: ['Ad Wali Didi'],
@@ -39,7 +39,7 @@ export async function generateMetadata({ params }: BlogPostPageProps): Promise<M
       description: post.metaDescription,
     },
     alternates: {
-      canonical: `https://adwalididi.github.io/blog/${post.slug}`,
+      canonical: `https://adwalididi.com/blog/${post.slug}`,
     },
   }
 }
@@ -63,19 +63,19 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
     "author": {
       "@type": "Organization",
       "name": "Ad Wali Didi",
-      "url": "https://adwalididi.github.io",
+      "url": "https://adwalididi.com",
     },
     "publisher": {
       "@type": "Organization",
       "name": "Ad Wali Didi",
       "logo": {
         "@type": "ImageObject",
-        "url": "https://adwalididi.github.io/logo-dark.webp",
+        "url": "https://adwalididi.com/logo-dark.webp",
       },
     },
     "mainEntityOfPage": {
       "@type": "WebPage",
-      "@id": `https://adwalididi.github.io/blog/${post.slug}`,
+      "@id": `https://adwalididi.com/blog/${post.slug}`,
     },
     "keywords": post.keywords.join(", "),
   }

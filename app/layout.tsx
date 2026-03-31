@@ -30,20 +30,20 @@ export const metadata: Metadata = {
   openGraph: {
     type: 'website',
     locale: 'en_IN',
-    url: 'https://adwalididi.github.io',
+    url: 'https://adwalididi.com',
     siteName: 'Ad Wali Didi',
     title: 'Ad Wali Didi | Google Ads, Meta Ads & Ad Creatives for Indian Businesses',
     description: 'We help Indian businesses get more enquiries through Google Business Profile, Meta Ads, and Ad Creatives. 150+ enquiries generated in Month 1 for a travel startup.',
-    images: [{ url: 'https://adwalididi.github.io/og-image.png', width: 1200, height: 630, alt: 'Ad Wali Didi — Digital Marketing for Indian Businesses' }],
+    images: [{ url: 'https://adwalididi.com/og-image.png', width: 1200, height: 630, alt: 'Ad Wali Didi — Digital Marketing for Indian Businesses' }],
   },
   twitter: {
     card: 'summary_large_image',
     title: 'Ad Wali Didi | Google Ads, Meta Ads & Ad Creatives for Indian Businesses',
     description: 'We help Indian businesses get more enquiries through Google Business Profile, Meta Ads, and Ad Creatives.',
-    images: ['https://adwalididi.github.io/og-image.png'],
+    images: ['https://adwalididi.com/og-image.png'],
   },
   alternates: {
-    canonical: 'https://adwalididi.github.io',
+    canonical: 'https://adwalididi.com',
   },
 }
 
@@ -58,8 +58,8 @@ const jsonLd = {
   "@type": "LocalBusiness",
   "name": "Ad Wali Didi",
   "description": "Digital marketing agency for Indian small businesses. Google Ads, Meta Ads, Google Business Profile management, and Ad Creatives.",
-  "url": "https://adwalididi.github.io",
-  "logo": "https://adwalididi.github.io/logo-dark.webp",
+  "url": "https://adwalididi.com",
+  "logo": "https://adwalididi.com/logo-dark.webp",
   "contactPoint": {
     "@type": "ContactPoint",
     "telephone": "+91-6261643774",
@@ -101,6 +101,17 @@ export default function RootLayout({
               gtag('js', new Date());
 
               gtag('config', 'G-57N60F5L40');
+            `
+          }}
+        />
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              (function(c,l,a,r,i,t,y){
+                  c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+                  t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+                  y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+              })(window, document, "clarity", "script", "w4dj594vj3");
             `
           }}
         />
