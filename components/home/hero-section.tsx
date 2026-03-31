@@ -19,7 +19,7 @@ export function HeroSection() {
       ref={sectionRef}
       className="min-h-screen flex items-center justify-center pt-20 pb-12 px-4 sm:px-6 lg:px-8 relative overflow-hidden bg-near-black"
     >
-      <div className="absolute inset-0 z-0">
+      <div className="absolute inset-0 z-0 overflow-hidden">
         <Image 
           src="/images/hero_meeting.jpg" 
           alt="Ad Wali Didi Team Meeting" 

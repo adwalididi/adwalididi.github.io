@@ -74,7 +74,7 @@ export function Testimonial() {
   }
 
   return (
-    <section ref={sectionRef} className="py-16 sm:py-20 lg:py-28 bg-teal-tint">
+    <section ref={sectionRef} className="py-16 sm:py-20 lg:py-28 bg-teal-tint overflow-hidden">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         <div 
           className={`text-center transition-all duration-700 ${
