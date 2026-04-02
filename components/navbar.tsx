@@ -39,9 +39,8 @@ export function Navbar() {
 
   return (
     <header
-      className={`fixed top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-sm transition-shadow duration-300 pt-[env(safe-area-inset-top)] ${scrolled ? 'shadow-sm' : ''
+      className={`fixed top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-sm transition-shadow duration-300 pt-[env(safe-area-inset-top)] border-b border-teal-border ${scrolled ? 'shadow-sm' : ''
         }`}
-      style={{ borderBottom: '0.5px solid #C8E8E3' }}
     >
       <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16 sm:h-20">
@@ -77,8 +76,8 @@ export function Navbar() {
             <Link
               href="/contact"
               className={`px-5 py-2.5 rounded-full font-medium transition-colors ${isActive("/contact")
-                ? 'bg-[#c49b2e] text-near-black'
-                : 'bg-gold text-near-black hover:bg-[#c49b2e]'
+                ? 'bg-darker-gold text-near-black'
+                : 'bg-gold text-near-black hover:bg-darker-gold'
                 }`}
             >
               {"Let's Talk"}
@@ -89,17 +88,17 @@ export function Navbar() {
           <button
             onClick={() => setIsOpen(!isOpen)}
             className="md:hidden p-2 text-near-black"
-            aria-label="Toggle menu"
+            aria-label={isOpen ? "Close menu" : "Open menu"}
+            aria-expanded={isOpen}
           >
-            {isOpen ? <X size={24} /> : <Menu size={24} />}
+            {isOpen ? <X size={24} aria-hidden="true" /> : <Menu size={24} aria-hidden="true" />}
           </button>
         </div>
 
         {/* Mobile Navigation */}
         <div
-          className={`md:hidden overflow-hidden transition-all duration-300 ease-in-out ${isOpen ? 'max-h-80 opacity-100' : 'max-h-0 opacity-0'
+          className={`md:hidden overflow-hidden transition-all duration-300 ease-in-out border-teal-border ${isOpen ? 'max-h-80 opacity-100 border-t' : 'max-h-0 opacity-0'
             }`}
-          style={{ borderTop: isOpen ? '0.5px solid #C8E8E3' : 'none' }}
         >
           <div className="py-4 flex flex-col gap-1">
             {navLinks.map((link) => (
@@ -116,7 +115,7 @@ export function Navbar() {
             ))}
             <Link
               href="/contact"
-              className="bg-gold text-near-black px-5 py-3 rounded-full font-medium hover:bg-[#c49b2e] transition-colors text-center mt-3"
+              className="bg-gold text-near-black px-5 py-3 rounded-full font-medium hover:bg-darker-gold transition-colors text-center mt-3"
             >
               {"Let's Talk"}
             </Link>

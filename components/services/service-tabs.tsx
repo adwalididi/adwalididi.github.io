@@ -3,12 +3,12 @@
 import { useEffect, useState, useRef } from "react"
 
 const tabs = [
-  { id: "gbp", label: "Google Profile", color: "#008573" },
-  { id: "ads", label: "Paid Ads", color: "#107D98" },
-  { id: "creatives", label: "Creatives", color: "#dbad3e" },
-  { id: "social", label: "Social Media", color: "#e86a58" },
-  { id: "influencer", label: "Influencer Marketing", color: "#2c7abb" },
-  { id: "ooh", label: "Outdoor (OOH)", color: "#5c8c6b" },
+  { id: "gbp", label: "Google Profile", color: "var(--teal)" },
+  { id: "ads", label: "Paid Ads", color: "var(--ocean-blue)" },
+  { id: "creatives", label: "Creatives", color: "var(--gold)" },
+  { id: "social", label: "Social Media", color: "var(--coral)" },
+  { id: "influencer", label: "Influencer Marketing", color: "var(--azure)" },
+  { id: "ooh", label: "Outdoor (OOH)", color: "var(--sage)" },
 ]
 
 export function ServiceTabs() {
@@ -78,10 +78,9 @@ export function ServiceTabs() {
 
   return (
     <div
-      className={`service-tabs-sticky-container sticky z-40 bg-white/95 backdrop-blur-sm transition-all duration-300 ${isVisible ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-2 pointer-events-none"
+      className={`service-tabs-sticky-container sticky z-40 bg-white/95 backdrop-blur-sm transition-all duration-300 border-b border-teal-border ${isVisible ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-2 pointer-events-none"
         }`}
       style={{
-        borderBottom: "0.5px solid #C8E8E3",
         top: '64px'
       }}
     >

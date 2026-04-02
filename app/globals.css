@@ -18,6 +18,25 @@
   --teal-border: #C8E8E3;
   --blue-border: #B8D8E8;
   --gold-border: #EDD98A;
+  --bright-gold: #F5CB5C;
+  --darker-gold: #c49b2e;
+  --gold-25: rgba(219, 173, 62, 0.25);
+  --whatsapp-green: #25D366;
+  --coral: #e86a58;
+  --coral-text: #b34232;
+  --azure: #2c7abb;
+  --azure-text: #195484;
+  --sage: #5c8c6b;
+  --sage-text: #3c6348;
+  --hero-overlay: rgba(0, 26, 22, 0.75);
+  --white-90: rgba(255, 255, 255, 0.90);
+  --white-85: rgba(255, 255, 255, 0.85);
+  --white-80: rgba(255, 255, 255, 0.80);
+  --white-70: rgba(255, 255, 255, 0.70);
+  --white-30: rgba(255, 255, 255, 0.30);
+  --white-20: rgba(255, 255, 255, 0.20);
+  --white-15: rgba(255, 255, 255, 0.15);
+  --white-10: rgba(255, 255, 255, 0.10);
 
   --background: #ffffff;
   --foreground: #1a1a1a;
@@ -87,6 +106,25 @@
   --color-teal-border: var(--teal-border);
   --color-blue-border: var(--blue-border);
   --color-gold-border: var(--gold-border);
+  --color-bright-gold: var(--bright-gold);
+  --color-darker-gold: var(--darker-gold);
+  --color-gold-25: var(--gold-25);
+  --color-whatsapp-green: var(--whatsapp-green);
+  --color-coral: var(--coral);
+  --color-coral-text: var(--coral-text);
+  --color-azure: var(--azure);
+  --color-azure-text: var(--azure-text);
+  --color-sage: var(--sage);
+  --color-sage-text: var(--sage-text);
+  --color-hero-overlay: var(--hero-overlay);
+  --color-white-90: var(--white-90);
+  --color-white-85: var(--white-85);
+  --color-white-80: var(--white-80);
+  --color-white-70: var(--white-70);
+  --color-white-30: var(--white-30);
+  --color-white-20: var(--white-20);
+  --color-white-15: var(--white-15);
+  --color-white-10: var(--white-10);
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
@@ -151,23 +189,25 @@ main {
 
 /* Blog content typography */
 .blog-content h2 {
-  font-family: var(--font-syne), 'Syne', system-ui, sans-serif;
+  font-family: var(--font-display);
   font-size: 1.75rem;
   font-weight: 700;
   color: var(--near-black);
   margin-top: 2.5rem;
   margin-bottom: 1rem;
-  line-height: 1.3;
+  line-height: 1.25;
+  letter-spacing: -0.02em;
 }
 
 .blog-content h3 {
-  font-family: var(--font-syne), 'Syne', system-ui, sans-serif;
+  font-family: var(--font-display);
   font-size: 1.25rem;
   font-weight: 700;
   color: var(--near-black);
   margin-top: 2rem;
   margin-bottom: 0.75rem;
-  line-height: 1.4;
+  line-height: 1.35;
+  letter-spacing: -0.02em;
 }
 
 .blog-content p {
@@ -216,6 +256,22 @@ main {
 
 .blog-content li strong {
   color: var(--near-black);
+}
+
+.blog-content blockquote {
+  border-left: 4px solid var(--teal);
+  background-color: var(--teal-tint);
+  padding: 1.5rem 2rem;
+  font-style: italic;
+  border-radius: 0 12px 12px 0;
+  margin: 2rem 0;
+  color: var(--near-black);
+}
+
+.blog-content blockquote p {
+  margin-bottom: 0;
+  color: var(--near-black);
+  font-size: 1.125rem;
 }
 
 .blog-content code {

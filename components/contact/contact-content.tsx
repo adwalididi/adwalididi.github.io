@@ -29,10 +29,9 @@ export function ContactContent() {
     <section ref={sectionRef} className="py-12 sm:py-16 bg-teal-tint">
       <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
         <div 
-          className={`bg-white rounded-3xl p-8 sm:p-12 shadow-sm transition-all duration-700 ${
+          className={`bg-white rounded-3xl p-8 sm:p-12 shadow-sm border border-teal-border transition-all duration-700 ${
             isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
           }`}
-          style={{ border: '0.5px solid #C8E8E3' }}
         >
           <p className="text-lg text-muted-text leading-relaxed mb-8">
             We don&apos;t do contact forms. Because nobody wants to fill out a form and wait 48 hours for a reply.
@@ -51,14 +50,14 @@ export function ContactContent() {
             href="https://wa.me/916261643774?text=Hi!%20I%20have%20some%20questions%20about%20your%20digital%20marketing%20services."
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-3 bg-[#25D366] text-white px-8 py-4 rounded-full font-semibold text-lg hover:bg-[#25D366]/90 transition-all hover:scale-105 shadow-lg w-full sm:w-auto justify-center"
+            className="inline-flex items-center gap-3 bg-whatsapp-green text-white px-8 py-4 rounded-full font-semibold text-lg hover:bg-whatsapp-green/90 transition-all hover:scale-105 shadow-lg w-full sm:w-auto justify-center"
           >
-            <WhatsAppIcon size={20} />
+            <WhatsAppIcon size={20} aria-hidden="true" />
             WhatsApp Karo
           </a>
 
           {/* Additional Contact Info */}
-          <div className="mt-10 pt-8" style={{ borderTop: '0.5px solid #C8E8E3' }}>
+          <div className="mt-10 pt-8 border-t border-teal-border">
             <p className="text-muted-text text-sm font-medium mb-4">Also find us here:</p>
             
             <div className="space-y-4">
@@ -68,7 +67,7 @@ export function ContactContent() {
                 rel="noopener noreferrer"
                 className="flex items-center gap-3 text-muted-text hover:text-teal transition-colors"
               >
-                <Instagram size={22} />
+                <Instagram size={22} aria-hidden="true" />
                 <span>@adwalididi</span>
               </a>
               
@@ -78,7 +77,7 @@ export function ContactContent() {
                 rel="noopener noreferrer"
                 className="flex items-center gap-3 text-muted-text hover:text-teal transition-colors"
               >
-                <Facebook size={22} />
+                <Facebook size={22} aria-hidden="true" />
                 <span>Ad Wali Didi</span>
               </a>
               
@@ -88,7 +87,7 @@ export function ContactContent() {
                 rel="noopener noreferrer"
                 className="flex items-center gap-3 text-muted-text hover:text-teal transition-colors"
               >
-                <Linkedin size={22} />
+                <Linkedin size={22} aria-hidden="true" />
                 <span>Ad Wali Didi</span>
               </a>
               
@@ -96,12 +95,12 @@ export function ContactContent() {
                 href="mailto:adwalididi@gmail.com"
                 className="flex items-center gap-3 text-muted-text hover:text-teal transition-colors"
               >
-                <Mail size={22} />
+                <Mail size={22} aria-hidden="true" />
                 <span>adwalididi@gmail.com</span>
               </a>
 
               <div className="flex items-center gap-3 text-muted-text">
-                <Clock size={22} />
+                <Clock size={22} aria-hidden="true" />
                 <span>Response time: Same day, usually faster</span>
               </div>
             </div>

@@ -1,8 +1,9 @@
 "use client"
 
-import { useEffect, useRef, useState } from "react"
+import { useEffect, useState } from "react"
 import { Check } from "lucide-react"
 import { WhatsAppIcon } from "@/components/ui/whatsapp-icon"
+import { m } from "framer-motion"
 
 interface ServiceDetailProps {
   service: {
@@ -19,47 +20,34 @@ interface ServiceDetailProps {
 }
 
 const colorMap = {
-  saffron: { accent: '#008573', bg: '#00857315', text: '#005C4E' },
-  plum: { accent: '#107D98', bg: '#107D9815', text: '#0A5F74' },
-  charcoal: { accent: '#dbad3e', bg: '#dbad3e15', text: '#9A7A1A' },
-  coral: { accent: '#e86a58', bg: '#e86a5815', text: '#b34232' },
-  azure: { accent: '#2c7abb', bg: '#2c7abb15', text: '#195484' },
-  sage: { accent: '#5c8c6b', bg: '#5c8c6b15', text: '#3c6348' },
+  saffron: { accent: 'var(--teal)', bg: 'color-mix(in srgb, var(--teal), transparent 85%)', text: 'var(--deep-teal)' },
+  plum: { accent: 'var(--ocean-blue)', bg: 'color-mix(in srgb, var(--ocean-blue), transparent 85%)', text: 'var(--color-ocean-blue)' },
+  charcoal: { accent: 'var(--gold)', bg: 'color-mix(in srgb, var(--gold), transparent 85%)', text: 'var(--dark-gold)' },
+  coral: { accent: 'var(--coral)', bg: 'color-mix(in srgb, var(--coral), transparent 85%)', text: 'var(--coral-text)' },
+  azure: { accent: 'var(--azure)', bg: 'color-mix(in srgb, var(--azure), transparent 85%)', text: 'var(--azure-text)' },
+  sage: { accent: 'var(--sage)', bg: 'color-mix(in srgb, var(--sage), transparent 85%)', text: 'var(--sage-text)' },
 }
 
 export function ServiceDetail({ service, index }: ServiceDetailProps) {
-  const [isVisible, setIsVisible] = useState(false)
-  const sectionRef = useRef<HTMLElement>(null)
+  const [isMounted, setIsMounted] = useState(false)
 
   useEffect(() => {
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setIsVisible(true)
-        }
-      },
-      { threshold: 0.1 }
-    )
-
-    if (sectionRef.current) {
-      observer.observe(sectionRef.current)
-    }
-
-    return () => observer.disconnect()
+    setIsMounted(true)
   }, [])
 
   const bgColor = index % 2 === 0 ? "bg-white" : "bg-teal-tint"
   const colors = colorMap[service.color]
 
   return (
-    <section ref={sectionRef} className={`py-16 sm:py-20 lg:py-28 ${bgColor}`} id={service.id}>
+    <section className={`py-16 sm:py-20 lg:py-28 ${bgColor}`} id={service.id}>
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-start">
           {/* Content */}
-          <div 
-            className={`transition-all duration-700 ${
-              isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
-            }`}
+          <m.div 
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: isMounted ? 1 : 0, y: isMounted ? 0 : 20 }}
+            viewport={{ once: true, margin: "-100px" }}
+            transition={{ duration: 0.8 }}
           >
             <div 
               className="inline-block px-4 py-1.5 rounded-full text-sm font-semibold mb-6"
@@ -80,20 +68,22 @@ export function ServiceDetail({ service, index }: ServiceDetailProps) {
               href={`https://wa.me/916261643774?text=${encodeURIComponent(`Hi! I'm interested in your ${service.title} service.`)}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 px-6 py-3 rounded-full font-medium transition-all hover:scale-105 mt-8 bg-gold text-near-black hover:bg-[#c49b2e]"
+              className="inline-flex items-center gap-2 px-6 py-3 rounded-full font-medium transition-all hover:scale-105 mt-8 bg-gold text-near-black hover:bg-darker-gold"
             >
               <WhatsAppIcon size={20} />
               WhatsApp us about {service.title}
             </a>
-          </div>
+          </m.div>
 
           {/* Features */}
-          <div 
-            className={`lg:sticky lg:top-40 self-start transition-all duration-700 delay-200 ${
-              isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
-            }`}
+          <m.div 
+            className="lg:sticky lg:top-40 self-start"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: isMounted ? 1 : 0, y: isMounted ? 0 : 20 }}
+            viewport={{ once: true, margin: "-100px" }}
+            transition={{ duration: 0.8, delay: 0.2 }}
           >
-            <div className="bg-white rounded-2xl p-6 sm:p-8 shadow-sm" style={{ border: '0.5px solid #C8E8E3' }}>
+            <div className="bg-white rounded-2xl p-6 sm:p-8 shadow-sm border border-teal-border">
               <h3 className="font-semibold text-lg text-near-black mb-6">
                 What We Handle
               </h3>
@@ -103,6 +93,7 @@ export function ServiceDetail({ service, index }: ServiceDetailProps) {
                     <div 
                       className="flex-shrink-0 w-5 h-5 rounded-full flex items-center justify-center mt-0.5"
                       style={{ backgroundColor: colors.accent }}
+                      aria-hidden="true"
                     >
                       <Check className="w-3 h-3 text-white" />
                     </div>
@@ -111,7 +102,7 @@ export function ServiceDetail({ service, index }: ServiceDetailProps) {
                 ))}
               </ul>
 
-              <div className="mt-8 pt-6 grid grid-cols-1 sm:grid-cols-2 gap-6" style={{ borderTop: '0.5px solid #C8E8E3' }}>
+              <div className="mt-8 pt-6 grid grid-cols-1 sm:grid-cols-2 gap-6 border-t border-teal-border">
                 <div>
                   <p className="text-sm font-medium text-muted-text mb-1">Pricing</p>
                   <p className="text-near-black font-semibold">{service.pricing}</p>
@@ -122,7 +113,7 @@ export function ServiceDetail({ service, index }: ServiceDetailProps) {
                 </div>
               </div>
             </div>
-          </div>
+          </m.div>
         </div>
       </div>
     </section>

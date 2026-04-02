@@ -43,7 +43,7 @@ export function WhyUs() {
           >
             <h2 className="font-[var(--font-syne)] text-3xl sm:text-4xl lg:text-5xl font-bold text-white leading-tight">
               {"We don't just run your ads."}
-              <span className="block mt-2" style={{ color: '#F5CB5C' }}>
+              <span className="block mt-2 text-bright-gold">
                 We think about your business.
               </span>
             </h2>
@@ -65,7 +65,7 @@ export function WhyUs() {
                   <div className="flex-shrink-0 w-6 h-6 bg-gold rounded-full flex items-center justify-center mt-1">
                     <Check className="w-4 h-4 text-near-black" />
                   </div>
-                  <span className="text-white/90 text-lg sm:text-xl leading-relaxed">
+                  <span className="text-white-90 text-lg sm:text-xl leading-relaxed">
                     {item}
                   </span>
                 </li>

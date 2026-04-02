@@ -19,6 +19,7 @@ export function BlogPostContent({ content }: BlogPostContentProps) {
     let inTable = false
     let tableRows: string[] = []
     let inOrderedList = false
+    let inBlockquote = false
 
     for (let i = 0; i < lines.length; i++) {
       const line = lines[i]
@@ -29,6 +30,7 @@ export function BlogPostContent({ content }: BlogPostContentProps) {
         if (!inTable) {
           if (inList) { html += '</ul>'; inList = false }
           if (inOrderedList) { html += '</ol>'; inOrderedList = false }
+          if (inBlockquote) { html += '</blockquote>'; inBlockquote = false }
           inTable = true
           tableRows = []
         }
@@ -45,6 +47,16 @@ export function BlogPostContent({ content }: BlogPostContentProps) {
       if (trimmed === '') {
         if (inList) { html += '</ul>'; inList = false }
         if (inOrderedList) { html += '</ol>'; inOrderedList = false }
+        if (inBlockquote) { html += '</blockquote>'; inBlockquote = false }
+        continue
+      }
+
+      // Handle blockquotes
+      if (trimmed.startsWith('> ')) {
+        if (inList) { html += '</ul>'; inList = false }
+        if (inOrderedList) { html += '</ol>'; inOrderedList = false }
+        if (!inBlockquote) { html += '<blockquote>'; inBlockquote = true }
+        html += `<p>${formatInlineMarkdown(trimmed.slice(2))}</p>`
         continue
       }
 
@@ -52,12 +64,14 @@ export function BlogPostContent({ content }: BlogPostContentProps) {
       if (trimmed.startsWith('### ')) {
         if (inList) { html += '</ul>'; inList = false }
         if (inOrderedList) { html += '</ol>'; inOrderedList = false }
+        if (inBlockquote) { html += '</blockquote>'; inBlockquote = false }
         html += `<h3>${formatInlineMarkdown(trimmed.slice(4))}</h3>`
         continue
       }
       if (trimmed.startsWith('## ')) {
         if (inList) { html += '</ul>'; inList = false }
         if (inOrderedList) { html += '</ol>'; inOrderedList = false }
+        if (inBlockquote) { html += '</blockquote>'; inBlockquote = false }
         html += `<h2>${formatInlineMarkdown(trimmed.slice(3))}</h2>`
         continue
       }
@@ -65,6 +79,7 @@ export function BlogPostContent({ content }: BlogPostContentProps) {
       // Handle unordered list items
       if (trimmed.startsWith('- ')) {
         if (inOrderedList) { html += '</ol>'; inOrderedList = false }
+        if (inBlockquote) { html += '</blockquote>'; inBlockquote = false }
         if (!inList) { html += '<ul>'; inList = true }
         html += `<li>${formatInlineMarkdown(trimmed.slice(2))}</li>`
         continue
@@ -74,6 +89,7 @@ export function BlogPostContent({ content }: BlogPostContentProps) {
       const orderedMatch = trimmed.match(/^\d+\.\s(.+)/)
       if (orderedMatch) {
         if (inList) { html += '</ul>'; inList = false }
+        if (inBlockquote) { html += '</blockquote>'; inBlockquote = false }
         if (!inOrderedList) { html += '<ol>'; inOrderedList = true }
         html += `<li>${formatInlineMarkdown(orderedMatch[1])}</li>`
         continue
@@ -82,12 +98,14 @@ export function BlogPostContent({ content }: BlogPostContentProps) {
       // Handle regular paragraphs
       if (inList) { html += '</ul>'; inList = false }
       if (inOrderedList) { html += '</ol>'; inOrderedList = false }
+      if (inBlockquote) { html += '</blockquote>'; inBlockquote = false }
       html += `<p>${formatInlineMarkdown(trimmed)}</p>`
     }
 
-    // Close any open lists
+    // Close any open tags
     if (inList) html += '</ul>'
     if (inOrderedList) html += '</ol>'
+    if (inBlockquote) html += '</blockquote>'
     if (inTable) html += renderTable(tableRows)
 
     contentRef.current.innerHTML = html

@@ -71,10 +71,9 @@ export function PortfolioPreview() {
               } ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}
               style={{ 
                 transitionDelay: `${index * 200 + 200}ms`,
-                border: isHighlighted ? 'none' : '0.5px solid #C8E8E3',
               }}
             >
-              <div className="p-6 sm:p-8 lg:p-10">
+              <div className="p-6 sm:p-8 lg:p-10 border-teal-border" style={{ border: isHighlighted ? 'none' : '0.5px solid var(--teal-border)' }}>
                 {study.featured && (
                   <div className={`flex items-center gap-2 mb-4 ${isHighlighted ? 'text-gold' : 'text-teal'}`}>
                     <TrendingUp size={20} />
@@ -93,7 +92,7 @@ export function PortfolioPreview() {
                     <p className={`text-sm font-medium ${isHighlighted ? 'text-white/60' : 'text-muted-text'}`}>
                       Challenge
                     </p>
-                    <p className={isHighlighted ? 'text-white/85' : 'text-muted-text'}>
+                    <p className={isHighlighted ? 'text-white-85' : 'text-muted-text'}>
                       {study.challenge}
                     </p>
                   </div>
@@ -101,7 +100,7 @@ export function PortfolioPreview() {
                     <p className={`text-sm font-medium ${isHighlighted ? 'text-white/60' : 'text-muted-text'}`}>
                       What We Did
                     </p>
-                    <p className={isHighlighted ? 'text-white/85' : 'text-muted-text'}>
+                    <p className={isHighlighted ? 'text-white-85' : 'text-muted-text'}>
                       {study.solution}
                     </p>
                   </div>
@@ -120,9 +119,8 @@ export function PortfolioPreview() {
                     <span
                       key={tagIndex}
                       className={`px-3 py-1 rounded-full text-sm ${
-                        isHighlighted ? 'bg-white/10 text-white/80' : 'bg-teal-tint'
+                        isHighlighted ? 'bg-white-10 text-white-80' : 'bg-teal-tint text-deep-teal'
                       }`}
-                      style={isHighlighted ? undefined : { color: '#005C4E' }}
                     >
                       {tag}
                     </span>

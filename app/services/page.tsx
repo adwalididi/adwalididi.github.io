@@ -7,6 +7,21 @@ import { FullPackage } from "@/components/services/full-package"
 export const metadata: Metadata = {
   title: "Our Services | Google Ads, Meta Ads & GBP Management — Ad Wali Didi",
   description: "Google Business Profile management, Meta Ads, Google Ads and Ad Creatives for Indian small businesses. One agency, three services, zero coordination headache.",
+  alternates: {
+    canonical: '/services/',
+  },
+  openGraph: {
+    title: 'Our Services | Google Ads, Meta Ads & GBP Management — Ad Wali Didi',
+    description: 'Google Business Profile management, Meta Ads, Google Ads and Ad Creatives for Indian small businesses. One agency, three services, zero coordination headache.',
+    url: '/services/',
+    images: [{ url: 'og-services.png', width: 1200, height: 630, alt: 'Our Services — Ad Wali Didi' }],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Our Services | Google Ads, Meta Ads & GBP Management — Ad Wali Didi',
+    description: 'Google Business Profile management, Meta Ads, Google Ads and Ad Creatives for Indian small businesses.',
+    images: ['og-services.png'],
+  },
 }
 
 const services = [
@@ -107,15 +122,84 @@ const services = [
       "Print production coordination",
       "Placement verification and monitoring",
     ],
-    bestFor: "Local businesses wanting high-visibility presence in specific areas — events, high-footfall zones, competitor locations.",
+    bestFor: "Local business wanting high-visibility presence in specific areas — events, high-footfall zones, competitor locations.",
     color: "sage" as const,
     pricing: "Starting from ₹5,000",
   },
 ]
 
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Service",
+      "name": "Google Business Profile Management",
+      "provider": { "@id": "https://adwalididi.com/#organization" },
+      "description": "Complete setup and ongoing optimisation for your Google local listings to increase visibility and calls.",
+      "areaServed": { "@type": "Country", "name": "India" }
+    },
+    {
+      "@type": "Service",
+      "name": "Paid Ads Management (Meta + Google)",
+      "provider": { "@id": "https://adwalididi.com/#organization" },
+      "description": "High-performance advertising campaigns on Google and Meta platforms focused on ROI and enquiry generation.",
+      "areaServed": { "@type": "Country", "name": "India" }
+    },
+    {
+      "@type": "Service",
+      "name": "Ad Creative Design",
+      "provider": { "@id": "https://adwalididi.com/#organization" },
+      "description": "Custom-designed high-converting creative assets for digital advertising campaigns.",
+      "areaServed": { "@type": "Country", "name": "India" }
+    },
+    {
+      "@type": "Service",
+      "name": "Social Media Marketing",
+      "provider": { "@id": "https://adwalididi.com/#organization" },
+      "description": "Monthly content strategy and engagement management to build brand presence on Instagram and Facebook.",
+      "areaServed": { "@type": "Country", "name": "India" }
+    },
+    {
+      "@type": "Service",
+      "name": "Influencer Marketing",
+      "provider": { "@id": "https://adwalididi.com/#organization" },
+      "description": "Identifying and managing trusted local creators to reach hidden audiences and build credibility.",
+      "areaServed": { "@type": "Country", "name": "India" }
+    },
+    {
+      "@type": "Service",
+      "name": "Outdoor Advertising (OOH)",
+      "provider": { "@id": "https://adwalididi.com/#organization" },
+      "description": "Strategic placement of physical media and hoardings in high-footfall areas for local dominance.",
+      "areaServed": { "@type": "Country", "name": "India" }
+    },
+    {
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "Home",
+          "item": "https://adwalididi.com"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "Services",
+          "item": "https://adwalididi.com/services"
+        }
+      ]
+    }
+  ]
+}
+
 export default function ServicesPage() {
   return (
     <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       <ServicesHero />
       <ServiceTabs />
       <div className="divide-y divide-border">

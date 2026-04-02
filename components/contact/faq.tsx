@@ -74,12 +74,11 @@ export function FAQ() {
           {faqs.map((faq, index) => (
             <div
               key={index}
-              className={`bg-white rounded-xl p-6 shadow-sm transition-all duration-700 ${
+              className={`bg-white rounded-xl p-6 shadow-sm border border-teal-border transition-all duration-700 ${
                 isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
               }`}
               style={{ 
                 transitionDelay: `${index * 100 + 200}ms`,
-                border: '0.5px solid #C8E8E3',
               }}
             >
               <h3 className="font-semibold text-near-black mb-2">

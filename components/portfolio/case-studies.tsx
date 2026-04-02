@@ -17,7 +17,7 @@ const caseStudies = [
       { label: "Total Leads Generated", value: "550+", icon: Users },
       { label: "Campaign Duration", value: "6 Months", icon: Calendar },
     ],
-    accentColor: "#008573",
+    accentColor: "var(--teal)",
     images: [
       { src: "/images/jijau-creative-1.png", label: "Ad Creative" },
       { src: "/images/jijau-creative-2.png", label: "Ad Creative" },
@@ -36,11 +36,12 @@ const caseStudies = [
       { label: "MoM Sales Growth", value: "18%", icon: TrendingUp },
       { label: "Brand Awareness Increase", value: "15%", icon: Target },
     ],
-    accentColor: "#107D98",
+    accentColor: "var(--ocean-blue)",
     images: [
-      { src: "/images/cowshala-creative-1.webp" },
-      { src: "/images/cowshala-creative-2.webp" },
-      { src: "/images/cowshala-creative-3.webp" },
+      { src: "/images/cowshala-creative-1.webp", label: "Milk Bottle Ad Creative" },
+      { src: "/images/cowshala-creative-2.webp", label: "Product Display Ad" },
+      { src: "/images/cowshala-creative-3.webp", label: "Store Promotion Visual" },
+      { src: "/images/cowshala-creative-4.png", label: "Ad Creative" },
     ],
   },
   {
@@ -49,17 +50,24 @@ const caseStudies = [
     industry: "Events & Sponsorship",
     services: "Event Marketing, Print Advertising, OOH",
     challenge: "A brand sponsoring major public events needed to maximize their visibility and engage attendees effectively on-ground.",
-    solution: "Represented a key sponsor at two major Pune events — Sakal Tourism Expo and Lokmat Maha Marathon. Managed their entire on-ground presence, stall branding, and marketing collateral.",
-    result: "Successfully managed high-visibility sponsor presence and on-ground engagement at events with thousands of attendees.",
+    solution: "Represented a key sponsor at two Pune events — Sakal Tourism Expo and Lokmat Maha Marathon. Managed their entire on-ground presence, stall branding, and marketing collateral.",
+    result: "Successfully managed high-visibility sponsor presence and on-ground engagement at events with 20,000+ total attendees.",
     metrics: [
-      { label: "Attendees", value: "Thousands", icon: Users },
+      { label: "Total Attendees", value: "20,000+", icon: Users },
       { label: "Sponsorships Managed", value: "2 Major", icon: Calendar },
     ],
-    accentColor: "#dbad3e",
+    accentColor: "var(--gold)",
     images: [
-      { src: "/images/Event-1.webp" },
-      { src: "/images/Event-2.webp" },
-      { src: "/images/Event-3.webp", spanAll: true },
+      { src: "/images/Newspaper-1.webp", label: "Newspaper Coverage" },
+      { src: "/images/Newspaper-2.webp", label: "Newspaper Coverage" },
+      { src: "/images/Event-1.webp", label: "Event Stalls Branding" },
+      { src: "/images/Event-2.webp", label: "On-ground Engagement Activity" },
+      { src: "/images/Event-3.webp", label: "Main Event Branding Area", spanAll: true },
+      { src: "/images/Event-4.webp", label: "Event Presence" },
+      { src: "/images/Event-5.webp", label: "Event Presence" },
+      { src: "/images/Event-6.webp", label: "Event Presence" },
+      { src: "/images/Event-7.webp", label: "Event Presence" },
+      { src: "/images/Event-8.webp", label: "Event Presence" },
     ],
   },
 ]
@@ -92,12 +100,11 @@ export function CaseStudies() {
           {caseStudies.map((caseStudy, index) => (
             <div
               key={index}
-              className={`bg-white rounded-3xl overflow-hidden shadow-sm transition-all duration-700 ${
+              className={`bg-white rounded-3xl overflow-hidden shadow-sm transition-all duration-700 border border-teal-border ${
                 isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
               }`}
               style={{ 
                 transitionDelay: `${index * 150}ms`,
-                border: '0.5px solid #C8E8E3',
               }}
             >
               <div className="p-6 sm:p-8 lg:p-10">
@@ -105,7 +112,7 @@ export function CaseStudies() {
                 <div className="flex flex-wrap items-center gap-3 mb-6">
                   <span 
                     className="px-4 py-1.5 rounded-full text-sm font-semibold"
-                    style={{ backgroundColor: `${caseStudy.accentColor}15`, color: caseStudy.accentColor }}
+                    style={{ backgroundColor: `color-mix(in srgb, ${caseStudy.accentColor}, transparent 85%)`, color: caseStudy.accentColor }}
                   >
                     {caseStudy.label}
                   </span>
@@ -153,18 +160,18 @@ export function CaseStudies() {
                 </div>
 
                 {/* Metrics */}
-                <div className={`mt-8 pt-6 grid grid-cols-2 gap-4 ${
+                <div className={`mt-8 pt-6 grid grid-cols-2 gap-4 border-t border-teal-border ${
                   caseStudy.metrics.length > 2 ? 'sm:grid-cols-3' : 'sm:grid-cols-2 max-w-md'
-                }`} style={{ borderTop: '0.5px solid #C8E8E3' }}>
+                }`}>
                   {caseStudy.metrics.map((metric, metricIndex) => {
                     const IconComponent = metric.icon
                     return (
                       <div key={metricIndex} className="flex items-center gap-3">
                         <div 
                           className="flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center"
-                          style={{ backgroundColor: `${caseStudy.accentColor}15` }}
+                          style={{ backgroundColor: `color-mix(in srgb, ${caseStudy.accentColor}, transparent 85%)` }}
                         >
-                          <IconComponent className="w-5 h-5" style={{ color: caseStudy.accentColor }} />
+                          <IconComponent className="w-5 h-5" style={{ color: caseStudy.accentColor }} aria-hidden="true" />
                         </div>
                         <div>
                           <p 

@@ -1,36 +1,25 @@
 "use client"
 
-import { useEffect, useRef, useState } from "react"
+import { useEffect, useState } from "react"
 import Image from "next/image"
+import { m } from "framer-motion"
 
 export function OurStory() {
-  const [isVisible, setIsVisible] = useState(false)
-  const sectionRef = useRef<HTMLElement>(null)
+  const [isMounted, setIsMounted] = useState(false)
 
   useEffect(() => {
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setIsVisible(true)
-        }
-      },
-      { threshold: 0.1 }
-    )
-
-    if (sectionRef.current) {
-      observer.observe(sectionRef.current)
-    }
-
-    return () => observer.disconnect()
+    setIsMounted(true)
   }, [])
 
   return (
-    <section ref={sectionRef} className="py-16 sm:py-20 bg-white">
+    <section className="py-16 sm:py-20 bg-white">
       <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div 
-          className={`space-y-6 text-lg text-muted-text leading-relaxed transition-all duration-700 ${
-            isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
-          }`}
+        <m.div 
+          className="space-y-6 text-lg text-muted-text leading-relaxed"
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: isMounted ? 1 : 0, y: isMounted ? 0 : 20 }}
+          viewport={{ once: true, margin: "-100px" }}
+          transition={{ duration: 0.8 }}
         >
           <p>
             Most marketing agencies talk a big game. Fancy decks, complicated dashboards, words like &quot;synergy&quot; and &quot;omnichannel&quot; — and then you ask them if the ads are working and they send you a PDF full of graphs that don&apos;t answer the question.
@@ -44,16 +33,22 @@ export function OurStory() {
             Ad Wali Didi started because small Indian businesses deserve better. Not because they can&apos;t afford big agencies — but because big agencies don&apos;t care enough about businesses their size. Your dental clinic, your travel agency, your salon — these are real businesses built by real people who work incredibly hard. You deserve marketing that actually brings in customers.
           </p>
           
-          <div className="relative w-full aspect-video md:aspect-[21/9] my-10 rounded-2xl overflow-hidden shadow-lg border border-teal-border">
+          <m.div 
+            className="relative w-full aspect-video md:aspect-[21/9] my-10 rounded-2xl overflow-hidden shadow-lg border border-teal-border"
+            initial={{ opacity: 0, scale: 0.98 }}
+            whileInView={{ opacity: isMounted ? 1 : 0, scale: isMounted ? 1 : 0.98 }}
+            viewport={{ once: true }}
+            transition={{ duration: 1 }}
+          >
             <Image
               src="/images/about_team.png"
               alt="Digital Marketing Team Collaboration"
               fill
               className="object-cover"
             />
-          </div>
+          </m.div>
           
-          <div className="bg-teal-tint rounded-2xl p-6 sm:p-8 my-8" style={{ border: '0.5px solid #C8E8E3' }}>
+          <div className="bg-teal-tint rounded-2xl p-6 sm:p-8 my-8 border border-teal-border">
             <p className="text-near-black">
               Our first proper project was a <span className="font-semibold">travel startup with zero online presence</span>. No Google profile. No ads. No creatives. Nothing. We built everything from scratch, and within the first month they had <span className="font-semibold text-teal">over 150 enquiries</span> coming in.
             </p>
@@ -68,15 +63,18 @@ export function OurStory() {
           </p>
 
           {/* New Section: The People Behind It */}
-          <div className="mt-16 pt-16 border-t" style={{ borderColor: '#C8E8E3' }}>
+          <div className="mt-16 pt-16 border-t border-teal-border">
             <h2 className="font-[var(--font-syne)] text-3xl sm:text-4xl font-bold text-near-black mb-10">
               The People Behind It
             </h2>
             
             <div className="space-y-8">
-              <div 
-                className="relative w-full aspect-[1150/686] rounded-2xl overflow-hidden shadow-md"
-                style={{ border: '0.5px solid #C8E8E3' }}
+              <m.div 
+                className="relative w-full aspect-[1150/686] rounded-2xl overflow-hidden shadow-md border border-teal-border"
+                initial={{ opacity: 0, scale: 0.98 }}
+                whileInView={{ opacity: isMounted ? 1 : 0, scale: isMounted ? 1 : 0.98 }}
+                viewport={{ once: true }}
+                transition={{ duration: 1 }}
               >
                 <Image 
                   src="/images/About-us.webp" 
@@ -84,7 +82,7 @@ export function OurStory() {
                   fill 
                   className="object-cover" 
                 />
-              </div>
+              </m.div>
 
               <div className="space-y-4">
                 <p className="text-lg text-muted-text leading-relaxed">
@@ -96,7 +94,7 @@ export function OurStory() {
               </div>
             </div>
           </div>
-        </div>
+        </m.div>
       </div>
     </section>
   )

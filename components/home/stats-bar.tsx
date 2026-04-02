@@ -1,78 +1,62 @@
 "use client"
 
-import { useEffect, useRef, useState } from "react"
+import { m } from "framer-motion"
 
 const stats = [
   {
     number: "150+",
     text: "Enquiries generated for a travel startup in their very first month",
-    bg: "#F2FAF8",
-    border: "#C8E8E3",
-    numberColor: "#008573",
+    bg: "var(--teal-tint)",
+    border: "var(--teal-border)",
+    numberColor: "var(--teal)",
   },
   {
     number: "700+",
     text: "Leads generated across client campaigns",
-    bg: "#EEF6FA",
-    border: "#B8D8E8",
-    numberColor: "#107D98",
+    bg: "var(--blue-tint)",
+    border: "var(--blue-border)",
+    numberColor: "var(--ocean-blue)",
   },
   {
     number: "1.7M+",
     text: "Organic views generated through strategic influencer campaigns",
-    bg: "#FDF7E8",
-    border: "#EDD98A",
-    numberColor: "#9A7A1A",
+    bg: "var(--gold-tint)",
+    border: "var(--gold-border)",
+    numberColor: "var(--dark-gold)",
   },
 ]
 
 export function StatsBar() {
-  const [isVisible, setIsVisible] = useState(false)
-  const sectionRef = useRef<HTMLElement>(null)
-
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setIsVisible(true)
-        }
-      },
-      { threshold: 0.2 }
-    )
-
-    if (sectionRef.current) {
-      observer.observe(sectionRef.current)
-    }
-
-    return () => observer.disconnect()
-  }, [])
-
   return (
-    <section ref={sectionRef} className="bg-white py-12 sm:py-16 lg:py-20 overflow-hidden">
+    <section className="bg-white py-12 sm:py-16 lg:py-20 overflow-hidden">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-12">
           {stats.map((stat, index) => (
-            <div
+            <m.div
               key={index}
-              className={`text-center md:text-left rounded-2xl p-6 sm:p-8 transition-all duration-700 ${
-                isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
-              }`}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-100px" }}
+              transition={{ duration: 0.6, delay: index * 0.15 }}
+              className="text-center md:text-left rounded-2xl p-6 sm:p-8"
               style={{ 
-                transitionDelay: `${index * 150}ms`,
                 backgroundColor: stat.bg,
                 border: `0.5px solid ${stat.border}`,
               }}
             >
-              <div 
+              <m.div 
                 className="font-[var(--font-syne)] text-4xl sm:text-5xl lg:text-6xl font-bold"
+                initial={{ scale: 0.9 }}
+                whileInView={{ scale: 1 }}
+                transition={{ duration: 0.5, delay: index * 0.15 + 0.2 }}
                 style={{ color: stat.numberColor }}
               >
                 {stat.number}
-              </div>
+              </m.div>
               <p className="mt-3 text-muted-text text-base sm:text-lg">
                 {stat.text}
               </p>
-            </div>
+            </m.div>
           ))}
         </div>
       </div>

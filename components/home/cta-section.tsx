@@ -35,7 +35,7 @@ export function CTASection() {
           <h2 className="font-[var(--font-syne)] text-3xl sm:text-4xl lg:text-5xl font-bold text-white">
             Zyada enquiries chahiye?
           </h2>
-          <p className="mt-4 text-white/70 text-lg max-w-2xl mx-auto">
+          <p className="mt-4 text-white-70 text-lg max-w-2xl mx-auto">
             No lengthy proposals. No confusing jargon. Just a conversation about your business and what we can do.
           </p>
           
@@ -43,7 +43,7 @@ export function CTASection() {
             href="https://wa.me/916261643774?text=Hi!%20I'm%20interested%20in%20your%20digital%20marketing%20services.%20Let's%20talk!"
             target="_blank"
             rel="noopener noreferrer"
-            className={`inline-flex items-center gap-2 bg-gold text-near-black px-8 py-4 rounded-full font-medium text-lg hover:bg-[#c49b2e] transition-all hover:scale-105 shadow-lg mt-8 ${
+            className={`inline-flex items-center gap-2 bg-gold text-near-black px-8 py-4 rounded-full font-medium text-lg hover:bg-darker-gold transition-all hover:scale-105 shadow-lg mt-8 ${
               isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
             }`}
             style={{ transitionDelay: '200ms' }}

@@ -38,6 +38,8 @@ That's exactly what your customers do.
 
 Your Google Business Profile (GBP) is often the **first and only** impression a potential customer gets of your business. If it's incomplete, has bad photos, no reviews, or wrong information — they'll scroll to the next result and call your competitor instead.
 
+> "Your Google Business Profile is the digital front door to your local business. If it's locked or looks neglected, customers simply won't enter."
+
 And the worst part? Most Indian small business owners don't even know their GBP profile exists, or they set it up once three years ago and forgot about it.
 
 ## Step 1: Claim or Create Your Google Business Profile

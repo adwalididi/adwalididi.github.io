@@ -9,21 +9,21 @@ const steps = [
     icon: Search,
     title: "We Audit",
     description: "We look at your complete digital presence — from Google & ads to social media and content — then tell you what's missing.",
-    accentColor: "#008573",
+    accentColor: "var(--teal)",
   },
   {
     number: "02",
     icon: Rocket,
     title: "We Build",
     description: "We set up your entire marketing ecosystem — profiles, ads, content, and strategy — all in one shot, no coordination needed.",
-    accentColor: "#107D98",
+    accentColor: "var(--ocean-blue)",
   },
   {
     number: "03",
     icon: TrendingUp,
     title: "You Grow",
     description: "Enquiries start coming in. We optimise, report, and keep improving — you focus on running your business.",
-    accentColor: "#dbad3e",
+    accentColor: "var(--gold)",
   },
 ]
 
@@ -82,7 +82,7 @@ export function OurProcess() {
                   className="w-[72px] h-[72px] rounded-full flex items-center justify-center bg-white border-2"
                   style={{ borderColor: step.accentColor }}
                 >
-                  <step.icon className="w-7 h-7" style={{ color: step.accentColor }} />
+                  <step.icon className="w-7 h-7" style={{ color: step.accentColor }} aria-hidden="true" />
                 </div>
               </div>
 
