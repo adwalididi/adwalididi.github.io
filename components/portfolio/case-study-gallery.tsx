@@ -88,7 +88,7 @@ export function CaseStudyGallery({ images }: CaseStudyGalleryProps) {
   if (visibleImages.length === 0) return null
 
   return (
-    <div className="mt-4 mb-2 relative group-container">
+    <div className="mt-4 mb-2 relative group">
       <div className="relative">
         <div 
           ref={scrollRef}
@@ -127,6 +127,7 @@ export function CaseStudyGallery({ images }: CaseStudyGalleryProps) {
                     alt={image.label || "Case study visual"}
                     className="h-full w-auto object-contain transition-all duration-500 group-hover:scale-105 opacity-100 pointer-events-none"
                     onError={() => handleImageError(index)}
+                    onLoad={checkScroll}
                     loading="lazy"
                     draggable="false"
                   />
@@ -140,25 +141,21 @@ export function CaseStudyGallery({ images }: CaseStudyGalleryProps) {
         </div>
 
         {/* Navigation Arrows - Desktop Only */}
-        {canScrollLeft && (
-          <button
-            onClick={() => scroll('left')}
-            className="hidden sm:flex absolute left-0 top-1/2 -translate-y-1/2 -ml-4 z-10 w-10 h-10 items-center justify-center rounded-full bg-white shadow-lg border border-teal-border/20 text-near-black hover:bg-teal-tint transition-all duration-300 animate-in fade-in zoom-in"
-            aria-label="Previous images"
-          >
-            <ChevronLeft className="w-6 h-6" />
-          </button>
-        )}
+        <button
+          onClick={() => scroll('left')}
+          className={`hidden sm:flex absolute left-0 top-1/2 -translate-y-1/2 -ml-4 z-10 w-10 h-10 items-center justify-center rounded-full bg-teal text-white shadow-lg transition-all duration-300 hover:bg-deep-teal hover:scale-105 ${canScrollLeft ? 'opacity-0 group-hover:opacity-100' : 'opacity-0 pointer-events-none'}`}
+          aria-label="Previous images"
+        >
+          <ChevronLeft className="w-6 h-6" />
+        </button>
         
-        {canScrollRight && (
-          <button
-            onClick={() => scroll('right')}
-            className="hidden sm:flex absolute right-0 top-1/2 -translate-y-1/2 -mr-4 z-10 w-10 h-10 items-center justify-center rounded-full bg-white shadow-lg border border-teal-border/20 text-near-black hover:bg-teal-tint transition-all duration-300 animate-in fade-in zoom-in"
-            aria-label="Next images"
-          >
-            <ChevronRight className="w-6 h-6" />
-          </button>
-        )}
+        <button
+          onClick={() => scroll('right')}
+          className={`hidden sm:flex absolute right-0 top-1/2 -translate-y-1/2 -mr-4 z-10 w-10 h-10 items-center justify-center rounded-full bg-teal text-white shadow-lg transition-all duration-300 hover:bg-deep-teal hover:scale-105 ${canScrollRight ? 'opacity-0 group-hover:opacity-100' : 'opacity-0 pointer-events-none'}`}
+          aria-label="Next images"
+        >
+          <ChevronRight className="w-6 h-6" />
+        </button>
       </div>
 
       {/* Lightbox */}

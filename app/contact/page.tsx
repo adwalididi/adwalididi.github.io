@@ -13,13 +13,13 @@ export const metadata: Metadata = {
     title: 'Contact Ad Wali Didi | WhatsApp Us for a Free Audit',
     description: 'Get a free audit of your Google presence and ad activity. WhatsApp Ad Wali Didi directly — we respond same day.',
     url: '/contact/',
-    images: [{ url: 'og-contact.png', width: 1200, height: 630, alt: 'Contact Ad Wali Didi' }],
+    images: [{ url: 'og-contact.webp', width: 1200, height: 630, alt: 'Contact Ad Wali Didi' }],
   },
   twitter: {
     card: 'summary_large_image',
     title: 'Contact Ad Wali Didi | WhatsApp Us for a Free Audit',
     description: 'Get a free audit of your Google presence and ad activity.',
-    images: ['og-contact.png'],
+    images: ['og-contact.webp'],
   },
 }
 

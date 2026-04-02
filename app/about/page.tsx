@@ -14,13 +14,13 @@ export const metadata: Metadata = {
     title: 'About Us | Ad Wali Didi — Indian Digital Marketing Agency',
     description: 'Ad Wali Didi started to help Indian small businesses become visible online. Our story, our approach, and why we do this.',
     url: '/about/',
-    images: [{ url: 'og-about.png', width: 1200, height: 630, alt: 'About Ad Wali Didi' }],
+    images: [{ url: 'og-about.webp', width: 1200, height: 630, alt: 'About Ad Wali Didi' }],
   },
   twitter: {
     card: 'summary_large_image',
     title: 'About Us | Ad Wali Didi — Indian Digital Marketing Agency',
     description: 'Ad Wali Didi started to help Indian small businesses become visible online. Our story, our approach, and why we do this.',
-    images: ['og-about.png'],
+    images: ['og-about.webp'],
   },
 }
 

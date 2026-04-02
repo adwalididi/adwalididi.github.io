@@ -43,10 +43,9 @@ export function CTASection() {
             href="https://wa.me/916261643774?text=Hi!%20I'm%20interested%20in%20your%20digital%20marketing%20services.%20Let's%20talk!"
             target="_blank"
             rel="noopener noreferrer"
-            className={`inline-flex items-center gap-2 bg-gold text-near-black px-8 py-4 rounded-full font-medium text-lg hover:bg-darker-gold transition-all hover:scale-105 shadow-lg mt-8 ${
+            className={`inline-flex items-center gap-2 bg-gold text-near-black px-8 py-4 rounded-full font-medium text-lg hover:bg-darker-gold transition-all hover:scale-105 shadow-lg mt-8 delay-200 ${
               isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
             }`}
-            style={{ transitionDelay: '200ms' }}
           >
             <WhatsAppIcon size={20} />
             {"WhatsApp Karo — Get a Free Audit"}

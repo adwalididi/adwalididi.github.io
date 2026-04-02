@@ -15,13 +15,13 @@ export const metadata: Metadata = {
     title: 'Our Work & Results | Ad Wali Didi',
     description: 'Real results for real businesses. 150+ enquiries for a travel startup, 550 leads for a construction business. See our case studies.',
     url: '/portfolio/',
-    images: [{ url: 'og-portfolio.png', width: 1200, height: 630, alt: 'Our Work — Ad Wali Didi' }],
+    images: [{ url: 'og-portfolio.webp', width: 1200, height: 630, alt: 'Our Work — Ad Wali Didi' }],
   },
   twitter: {
     card: 'summary_large_image',
     title: 'Our Work & Results | Ad Wali Didi',
     description: 'Real results for real businesses. 150+ enquiries for a travel startup, 550 leads for a construction business.',
-    images: ['og-portfolio.png'],
+    images: ['og-portfolio.webp'],
   },
 }
 
