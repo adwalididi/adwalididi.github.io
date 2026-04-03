@@ -1,7 +1,7 @@
 "use client"
 
 import { useEffect, useRef, useState } from "react"
-import { Users, Calendar, Palette, Store, TrendingUp, Target } from "lucide-react"
+import { Users, Calendar, TrendingUp, Target } from "lucide-react"
 import { CaseStudyGallery } from "./case-study-gallery"
 
 const caseStudies = [
@@ -122,7 +122,7 @@ export function CaseStudies() {
                 </div>
 
                 {/* Client & Service */}
-                <h3 className="font-[var(--font-syne)] text-2xl sm:text-3xl font-bold text-near-black mb-2">
+                <h3 className="font-[var(--font-space-grotesk)] text-2xl sm:text-3xl font-bold text-near-black mb-2">
                   {caseStudy.client}
                 </h3>
                 <p className="font-medium mb-6" style={{ color: caseStudy.accentColor }}>

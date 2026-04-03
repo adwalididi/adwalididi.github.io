@@ -74,7 +74,7 @@ export function ServicesOverview() {
                 <service.icon className="w-7 h-7" style={{ color: service.accentColor }} aria-hidden="true" />
               </div>
               <h3 
-                className="font-[var(--font-syne)] text-xl sm:text-2xl font-bold"
+                className="font-[var(--font-space-grotesk)] text-xl sm:text-2xl font-bold"
                 style={{ color: service.titleColor }}
               >
                 {service.tagline}

@@ -57,7 +57,7 @@ export function WhatMakesUsDifferent() {
               <div className="w-14 h-14 bg-teal-tint rounded-xl flex items-center justify-center mb-6">
                 <item.icon className="w-7 h-7 text-teal" aria-hidden="true" />
               </div>
-              <h3 className="font-[var(--font-syne)] text-xl font-bold text-near-black mb-3">
+              <h3 className="font-[var(--font-space-grotesk)] text-xl font-bold text-near-black mb-3">
                 {item.title}
               </h3>
               <p className="text-muted-text leading-relaxed">

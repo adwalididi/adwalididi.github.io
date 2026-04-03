@@ -83,7 +83,7 @@ export function PortfolioPreview() {
                   </div>
                 )}
                 
-                <h3 className={`font-[var(--font-syne)] text-xl sm:text-2xl font-bold ${isHighlighted ? 'text-white' : 'text-near-black'}`}>
+                <h3 className={`font-[var(--font-space-grotesk)] text-xl sm:text-2xl font-bold ${isHighlighted ? 'text-white' : 'text-near-black'}`}>
                   {study.client}
                 </h3>
 

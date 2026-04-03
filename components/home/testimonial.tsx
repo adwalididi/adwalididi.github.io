@@ -74,15 +74,19 @@ export function Testimonial() {
   }
 
   return (
-    <section ref={sectionRef} className="py-16 sm:py-20 lg:py-28 bg-teal-tint overflow-hidden">
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+    <section ref={sectionRef} className="py-16 sm:py-20 lg:py-28 bg-teal-tint overflow-hidden relative">
+      {/* Decorative background blobs to enhance the glassmorphism effect */}
+      <div className="absolute top-1/2 left-0 md:left-1/4 w-72 h-72 bg-teal/40 rounded-full blur-3xl mix-blend-multiply -translate-y-1/2" />
+      <div className="absolute top-1/2 right-0 md:right-1/4 w-72 h-72 bg-ocean-blue/30 rounded-full blur-3xl mix-blend-multiply -translate-y-1/2" />
+      
+      <div className="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         <div 
-          className={`text-center transition-all duration-700 ${
+          className={`text-center p-8 sm:p-12 md:p-16 rounded-3xl bg-white/60 backdrop-blur-xl border border-white/60 shadow-2xl transition-all duration-700 ${
             isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
           }`}
         >
-          <div className="inline-flex items-center justify-center w-16 h-16 bg-teal/10 rounded-full mb-8">
-            <Quote className="w-8 h-8 text-teal" />
+          <div className="inline-flex items-center justify-center w-16 h-16 bg-teal/10 rounded-full mb-8 shadow-sm">
+            <Quote className="w-8 h-8 text-teal" aria-hidden="true" />
           </div>
           
           {/* Carousel */}

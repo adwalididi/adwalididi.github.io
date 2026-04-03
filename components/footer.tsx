@@ -8,14 +8,14 @@ export function Footer() {
   return (
     <footer className="bg-deep-teal text-white py-12 sm:py-16">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Logo at top */}
-        <Link href="/" className="block mb-6">
+        {/* Logo */}
+        <Link href="/" className="block mb-8">
           <Image
             src="/logo-light.webp"
             alt="Ad Wali Didi Digital Marketing Agency"
-            width={160}
-            height={44}
-            className="h-14 sm:h-[78px] w-auto"
+            width={320}
+            height={88}
+            className="h-20 sm:h-[100px] lg:h-[120px] w-auto"
           />
         </Link>
         

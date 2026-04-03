@@ -122,13 +122,14 @@ export function CaseStudyGallery({ images }: CaseStudyGalleryProps) {
                     }
                   }}
                 >
-                  <img
+                  <Image
                     src={image.src}
                     alt={image.label || "Case study visual"}
+                    width={800}
+                    height={600}
                     className="h-full w-auto object-contain transition-all duration-500 group-hover:scale-105 opacity-100 pointer-events-none"
                     onError={() => handleImageError(index)}
                     onLoad={checkScroll}
-                    loading="lazy"
                     draggable="false"
                   />
                   <div className="absolute inset-0 bg-near-black/0 group-hover:bg-near-black/5 transition-colors duration-300 flex items-center justify-center opacity-0 group-hover:opacity-100 pointer-events-none">

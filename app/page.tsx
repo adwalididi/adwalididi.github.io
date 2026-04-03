@@ -1,4 +1,3 @@
-import Link from "next/link"
 import dynamic from "next/dynamic"
 import { HeroSection } from "@/components/home/hero-section"
 import { StatsBar } from "@/components/home/stats-bar"

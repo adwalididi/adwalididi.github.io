@@ -107,7 +107,7 @@ export function BlogContent() {
       </section>
 
       {/* Blog CTA */}
-      <section className="py-16 sm:py-20 bg-deep-teal">
+      <section className="py-16 sm:py-20 bg-teal-tint">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <m.div
             initial={{ opacity: 0, y: 20 }}
@@ -115,23 +115,23 @@ export function BlogContent() {
             viewport={{ once: true, margin: "-100px" }}
             transition={{ duration: 0.8 }}
           >
-            <h2 className="font-[var(--font-syne)] text-2xl sm:text-3xl lg:text-4xl font-bold text-white">
+            <h2 className="font-[var(--font-syne)] text-2xl sm:text-3xl lg:text-4xl font-bold text-near-black">
               Want these strategies applied to your business?
             </h2>
-            <p className="mt-4 text-white-70 text-lg max-w-2xl mx-auto">
+            <p className="mt-4 text-muted-text text-lg max-w-2xl mx-auto">
               Reading about it is one thing. Having someone do it for you is another.
             </p>
             <m.a
               href="https://wa.me/916261643774?text=Hi!%20I%20read%20your%20blog%20and%20I'd%20like%20to%20discuss%20marketing%20for%20my%20business."
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 bg-gold text-near-black px-8 py-4 rounded-full font-medium text-lg hover:bg-darker-gold transition-all hover:scale-105 shadow-lg mt-8"
+              className="inline-flex items-center gap-2 bg-teal text-white px-8 py-4 rounded-xl font-medium text-lg hover:opacity-90 transition-all hover:scale-105 shadow-lg mt-8"
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: isMounted ? 1 : 0, y: isMounted ? 0 : 20 }}
               viewport={{ once: true }}
               transition={{ duration: 0.8, delay: 0.2 }}
             >
-              <WhatsAppIcon size={20} />
+              <WhatsAppIcon className="w-6 h-6 sm:w-5 sm:h-5 shrink-0" />
               WhatsApp Us — Let&apos;s Talk
             </m.a>
           </m.div>

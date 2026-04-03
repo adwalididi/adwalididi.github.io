@@ -68,14 +68,14 @@ export function HeroSection() {
               href="https://wa.me/916261643774?text=Hi!%20I%20want%20to%20get%20more%20enquiries%20for%20my%20business.%20Can%20we%20talk%3F"
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 bg-gold text-near-black px-8 py-4 rounded-full font-medium text-lg hover:bg-darker-gold transition-all hover:scale-105 shadow-xl"
+              className="inline-flex items-center gap-2 bg-teal text-white px-8 py-4 rounded-xl font-medium text-lg hover:opacity-90 transition-all hover:scale-105 shadow-xl"
             >
-              <WhatsAppIcon size={20} aria-hidden="true" />
+              <WhatsAppIcon className="w-6 h-6 sm:w-5 sm:h-5 shrink-0" aria-hidden="true" />
               WhatsApp Us Now
             </a>
             <Link
               href="/portfolio"
-              className="inline-flex items-center gap-2 px-8 py-4 rounded-full font-semibold text-lg text-white transition-all hover:scale-105 bg-white-10 hover:bg-white-20 backdrop-blur-sm shadow-xl border border-white-30"
+              className="inline-flex items-center gap-2 px-8 py-4 rounded-xl font-semibold text-lg text-white transition-all hover:scale-105 bg-white-10 hover:bg-white-20 backdrop-blur-sm shadow-xl border border-white-30"
             >
               See Our Work
               <ArrowRight size={20} aria-hidden="true" />

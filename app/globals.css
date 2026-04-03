@@ -135,10 +135,11 @@
   * {
     @apply border-border outline-ring/50;
   }
+
   html[data-scroll-behavior="smooth"] {
     scroll-behavior: smooth;
   }
-  
+
   body {
     @apply bg-background text-foreground;
     position: relative;
@@ -152,9 +153,11 @@
   0% {
     box-shadow: 0 0 0 0 rgba(37, 211, 102, 0.5);
   }
+
   70% {
     box-shadow: 0 0 0 14px rgba(37, 211, 102, 0);
   }
+
   100% {
     box-shadow: 0 0 0 0 rgba(37, 211, 102, 0);
   }
@@ -173,6 +176,7 @@ main {
   from {
     opacity: 0;
   }
+
   to {
     opacity: 1;
   }
@@ -182,6 +186,7 @@ main {
 .card-hover-lift {
   transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
+
 .card-hover-lift:hover {
   transform: translateY(-4px);
   box-shadow: 0 12px 32px rgba(0, 133, 115, 0.10);

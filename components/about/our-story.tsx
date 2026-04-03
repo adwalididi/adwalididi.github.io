@@ -48,8 +48,9 @@ export function OurStory() {
             />
           </m.div>
           
-          <div className="bg-teal-tint rounded-2xl p-6 sm:p-8 my-8 border border-teal-border">
-            <p className="text-near-black">
+          <div className="relative overflow-hidden bg-teal/10 backdrop-blur-xl rounded-2xl p-6 sm:p-8 my-8 border border-teal/20 shadow-md">
+            <div className="absolute inset-0 bg-gradient-to-br from-white/60 to-transparent mix-blend-overlay pointer-events-none" />
+            <p className="relative z-10 text-near-black font-medium text-lg leading-relaxed">
               Our first proper project was a <span className="font-semibold">travel startup with zero online presence</span>. No Google profile. No ads. No creatives. Nothing. We built everything from scratch, and within the first month they had <span className="font-semibold text-teal">over 150 enquiries</span> coming in.
             </p>
           </div>

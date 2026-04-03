@@ -64,11 +64,9 @@ export function OurProcess() {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 lg:gap-12 relative">
-          {/* Connector line (desktop only) */}
-          <div className="hidden md:block absolute top-16 left-[16.67%] right-[16.67%] h-[2px] bg-teal-border z-0" />
-
-          {steps.map((step, index) => (
+        <div className="relative">          
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 lg:gap-12">
+            {steps.map((step, index) => (
             <div
               key={index}
               className={`relative z-10 text-center transition-all duration-700 ${
@@ -79,8 +77,11 @@ export function OurProcess() {
               {/* Number circle */}
               <div className="flex justify-center mb-6">
                 <div 
-                  className="w-[72px] h-[72px] rounded-full flex items-center justify-center bg-white border-2"
-                  style={{ borderColor: step.accentColor }}
+                  className="relative z-10 w-[72px] h-[72px] rounded-full flex items-center justify-center backdrop-blur-md border-2 shadow-md"
+                  style={{ 
+                    backgroundColor: `color-mix(in srgb, ${step.accentColor}, transparent 85%)`,
+                    borderColor: `color-mix(in srgb, ${step.accentColor}, transparent 40%)` 
+                  }}
                 >
                   <step.icon className="w-7 h-7" style={{ color: step.accentColor }} aria-hidden="true" />
                 </div>
@@ -95,7 +96,7 @@ export function OurProcess() {
               </p>
 
               {/* Title */}
-              <h3 className="font-[var(--font-syne)] text-xl sm:text-2xl font-bold text-near-black mb-3">
+              <h3 className="font-[var(--font-space-grotesk)] text-xl sm:text-2xl font-bold text-near-black mb-3">
                 {step.title}
               </h3>
 
@@ -105,6 +106,7 @@ export function OurProcess() {
               </p>
             </div>
           ))}
+          </div>
         </div>
       </div>
     </section>

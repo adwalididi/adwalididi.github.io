@@ -38,10 +38,10 @@ export function StatsBar() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "-100px" }}
               transition={{ duration: 0.6, delay: index * 0.15 }}
-              className="text-center md:text-left rounded-2xl p-6 sm:p-8"
+              className="text-center md:text-left rounded-2xl p-6 sm:p-8 backdrop-blur-md shadow-sm"
               style={{ 
-                backgroundColor: stat.bg,
-                border: `0.5px solid ${stat.border}`,
+                backgroundColor: `color-mix(in srgb, ${stat.bg}, transparent 30%)`,
+                border: `1px solid color-mix(in srgb, ${stat.border}, transparent 20%)`,
               }}
             >
               <m.div 

@@ -39,7 +39,7 @@ export function Navbar() {
 
   return (
     <header
-      className={`fixed top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-sm transition-shadow duration-300 pt-[env(safe-area-inset-top)] border-b border-teal-border ${scrolled ? 'shadow-sm' : ''
+      className={`fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-md transition-shadow duration-300 pt-[env(safe-area-inset-top)] border-b border-teal-border ${scrolled ? 'shadow-sm' : ''
         }`}
     >
       <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -75,9 +75,9 @@ export function Navbar() {
             ))}
             <Link
               href="/contact"
-              className={`px-5 py-2.5 rounded-full font-medium transition-colors ${isActive("/contact")
-                ? 'bg-darker-gold text-near-black'
-                : 'bg-gold text-near-black hover:bg-darker-gold'
+              className={`px-5 py-2.5 rounded-xl font-medium transition-colors ${isActive("/contact")
+                ? 'bg-teal/90 text-white'
+                : 'bg-teal text-white hover:opacity-90'
                 }`}
             >
               {"Let's Talk"}
@@ -115,7 +115,7 @@ export function Navbar() {
             ))}
             <Link
               href="/contact"
-              className="bg-gold text-near-black px-5 py-3 rounded-full font-medium hover:bg-darker-gold transition-colors text-center mt-3"
+              className="bg-teal text-white px-5 py-3 rounded-xl font-medium hover:opacity-90 transition-colors text-center mt-3"
             >
               {"Let's Talk"}
             </Link>

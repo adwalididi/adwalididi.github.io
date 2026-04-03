@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useState, useRef } from "react"
+import { useEffect, useState } from "react"
 
 const tabs = [
   { id: "gbp", label: "Google Profile", color: "var(--teal)" },
@@ -15,7 +15,6 @@ export function ServiceTabs() {
   const [activeId, setActiveId] = useState("")
   const [isVisible, setIsVisible] = useState(false)
   const [mounted, setMounted] = useState(false)
-  const observers = useRef<IntersectionObserver[]>([])
 
   useEffect(() => {
     setMounted(true)
