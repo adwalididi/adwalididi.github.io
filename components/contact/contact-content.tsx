@@ -50,10 +50,12 @@ export function ContactContent() {
             href="https://wa.me/916261643774?text=Hi!%20I%20have%20some%20questions%20about%20your%20digital%20marketing%20services."
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-3 bg-whatsapp-green text-white px-8 py-4 rounded-xl font-semibold text-lg hover:bg-whatsapp-green/90 transition-all hover:scale-105 shadow-lg w-full sm:w-auto justify-center"
+            className="inline-flex items-center gap-3 bg-whatsapp-green text-white px-8 py-4 rounded-xl font-semibold text-lg hover:bg-whatsapp-green/90 transition-all hover:scale-105 shadow-lg w-full sm:w-auto justify-center group"
           >
-            <WhatsAppIcon className="w-6 h-6 sm:w-5 sm:h-5 shrink-0" aria-hidden="true" />
-            WhatsApp Karo
+            <div className="group-hover:animate-ring-subtle">
+              <WhatsAppIcon className="w-6 h-6 sm:w-5 sm:h-5 shrink-0" aria-hidden="true" />
+            </div>
+            <span>WhatsApp Karo</span>
           </a>
 
           {/* Additional Contact Info */}

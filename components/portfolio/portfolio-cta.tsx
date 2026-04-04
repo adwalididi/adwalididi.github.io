@@ -49,12 +49,14 @@ export function PortfolioCTA() {
             href="https://wa.me/916261643774?text=Hi!%20I%20saw%20your%20portfolio%20and%20I'm%20interested%20in%20getting%20a%20Free%20Audit%20for%20my%20business."
             target="_blank"
             rel="noopener noreferrer"
-            className={`inline-flex items-center gap-2 bg-teal text-white px-8 py-4 rounded-xl font-medium text-lg hover:opacity-90 transition-all hover:scale-105 shadow-lg mt-8 delay-200 ${
+            className={`inline-flex items-center gap-2 bg-teal text-white px-8 py-4 rounded-xl font-medium text-lg hover:bg-deep-teal transition-all hover:scale-105 shadow-lg mt-8 delay-200 group ${
               isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
             }`}
           >
-            <WhatsAppIcon className="w-6 h-6 sm:w-5 sm:h-5 shrink-0" />
-            WhatsApp for a Free Audit
+            <div className="group-hover:animate-ring-subtle">
+              <WhatsAppIcon className="w-6 h-6 sm:w-5 sm:h-5 shrink-0" />
+            </div>
+            <span>WhatsApp for a Free Audit</span>
           </a>
         </div>
       </div>

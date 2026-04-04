@@ -68,10 +68,12 @@ export function ServiceDetail({ service, index }: ServiceDetailProps) {
               href={`https://wa.me/916261643774?text=${encodeURIComponent(`Hi! I'm interested in your ${service.title} service.`)}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 px-6 py-3 rounded-xl font-medium transition-all hover:scale-105 mt-8 bg-teal text-white hover:opacity-90"
+              className="inline-flex items-center gap-2 bg-teal text-white px-6 py-3 rounded-xl font-medium transition-all hover:scale-105 hover:bg-deep-teal shadow-lg mt-8 group"
             >
-              <WhatsAppIcon className="w-6 h-6 sm:w-5 sm:h-5 shrink-0" />
-              WhatsApp us about {service.title}
+              <div className="group-hover:animate-ring-subtle">
+                <WhatsAppIcon className="w-6 h-6 sm:w-5 sm:h-5 shrink-0" />
+              </div>
+              <span>WhatsApp us about {service.title}</span>
             </a>
           </m.div>
 

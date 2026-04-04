@@ -127,13 +127,13 @@ export function CaseStudyGallery({ images }: CaseStudyGalleryProps) {
                     alt={image.label || "Case study visual"}
                     width={800}
                     height={600}
-                    className="h-full w-auto object-contain transition-all duration-500 group-hover:scale-105 opacity-100 pointer-events-none"
+                    className="h-full w-auto object-contain transition-all duration-700 group-hover:scale-105 opacity-100 pointer-events-none"
                     onError={() => handleImageError(index)}
                     onLoad={checkScroll}
                     draggable="false"
                   />
-                  <div className="absolute inset-0 bg-near-black/0 group-hover:bg-near-black/5 transition-colors duration-300 flex items-center justify-center opacity-0 group-hover:opacity-100 pointer-events-none">
-                    <ZoomIn className="w-5 h-5 text-white transition-opacity duration-300" aria-hidden="true" />
+                  <div className="absolute inset-0 bg-near-black/0 group-hover:bg-near-black/30 transition-colors duration-500 flex items-center justify-center opacity-0 group-hover:opacity-100 pointer-events-none">
+                    <ZoomIn className="w-6 h-6 text-white transition-opacity duration-500" aria-hidden="true" />
                   </div>
                 </div>
               </div>
