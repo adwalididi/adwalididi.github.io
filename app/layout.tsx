@@ -1,12 +1,13 @@
 import type { Metadata, Viewport } from 'next'
 import { Inter, Syne, Space_Grotesk } from 'next/font/google'
-import Script from 'next/script'
+import { GoogleTagManager } from '@next/third-parties/google'
 import './globals.css'
 import { Navbar } from '@/components/navbar'
 import { Footer } from '@/components/footer'
 import { WhatsAppButton } from '@/components/whatsapp-button'
 import { ScrollToTop } from '@/components/scroll-to-top'
 import { AnimationProvider } from '@/components/animation-provider'
+import { CookieConsent } from '@/components/cookie-consent'
 
 const inter = Inter({
   subsets: ['latin'],
@@ -100,37 +101,54 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${inter.variable} ${syne.variable} ${spaceGrotesk.variable}`} data-scroll-behavior="smooth" suppressHydrationWarning>
       <head>
-        <Script src="https://www.googletagmanager.com/gtag/js?id=G-57N60F5L40" strategy="afterInteractive" />
-        <Script id="google-analytics" strategy="afterInteractive">
-          {`
-            window.dataLayer = window.dataLayer || [];
-            function gtag(){dataLayer.push(arguments);}
-            gtag('js', new Date());
+        <script
+          id="gtm-consent-default"
+          dangerouslySetInnerHTML={{
+            __html: `
+              window.dataLayer = window.dataLayer || [];
+              function gtag(){dataLayer.push(arguments);}
+              
+              var consentState = {
+                'ad_storage': 'denied',
+                'ad_user_data': 'denied',
+                'ad_personalization': 'denied',
+                'analytics_storage': 'denied',
+                'wait_for_update': 500
+              };
 
-            gtag('config', 'G-57N60F5L40');
-          `}
-        </Script>
-        <Script id="microsoft-clarity" strategy="afterInteractive">
-          {`
-            (function(c,l,a,r,i,t,y){
-                c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
-                t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
-                y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
-            })(window, document, "clarity", "script", "w4dj594vj3");
-          `}
-        </Script>
+              try {
+                var stored = localStorage.getItem('cookie_consent');
+                if (stored) {
+                  var parsed = JSON.parse(stored);
+                  if (parsed.analytics_storage) {
+                    consentState.analytics_storage = parsed.analytics_storage;
+                  }
+                  if (parsed.ad_storage) {
+                    consentState.ad_storage = parsed.ad_storage;
+                    consentState.ad_user_data = parsed.ad_storage;
+                    consentState.ad_personalization = parsed.ad_storage;
+                  }
+                }
+              } catch (e) {}
+
+              gtag('consent', 'default', consentState);
+            `,
+          }}
+        />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
       </head>
       <body className="font-sans antialiased bg-white text-near-black">
+        <GoogleTagManager gtmId="GTM-KKXR4DTX" />
         <AnimationProvider>
           <Navbar />
           <main>{children}</main>
           <Footer />
           <WhatsAppButton />
           <ScrollToTop />
+          <CookieConsent />
         </AnimationProvider>
       </body>
     </html>

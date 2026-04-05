@@ -108,6 +108,16 @@ export function Footer() {
                   Blog
                 </Link>
               </li>
+              <li>
+                <Link href="/privacy-policy" className="text-white-70 hover:text-white transition-colors">
+                  Privacy Policy
+                </Link>
+              </li>
+              <li>
+                <Link href="/terms-of-use" className="text-white-70 hover:text-white transition-colors">
+                  Terms of Use
+                </Link>
+              </li>
             </ul>
           </div>
 
