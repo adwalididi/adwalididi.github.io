@@ -8,10 +8,10 @@ import { Menu, X } from "lucide-react"
 
 const navLinks = [
   { href: "/", label: "Home" },
-  { href: "/services", label: "Services" },
-  { href: "/portfolio", label: "Our Work" },
-  { href: "/about", label: "About" },
-  { href: "/blog", label: "Blog" },
+  { href: "/services/", label: "Services" },
+  { href: "/portfolio/", label: "Our Work" },
+  { href: "/about/", label: "About" },
+  { href: "/blog/", label: "Blog" },
 ]
 
 export function Navbar() {
@@ -74,8 +74,8 @@ export function Navbar() {
               </Link>
             ))}
             <Link
-              href="/contact"
-              className={`px-5 py-2.5 rounded-xl font-medium transition-colors ${isActive("/contact")
+              href="/contact/"
+              className={`px-5 py-2.5 rounded-xl font-medium transition-colors ${isActive("/contact/")
                 ? 'bg-teal/90 text-white'
                 : 'bg-teal text-white hover:opacity-90'
                 }`}
@@ -84,10 +84,10 @@ export function Navbar() {
             </Link>
           </div>
 
-          {/* Mobile Menu Button */}
+          {/* Mobile Menu Button — hidden on mobile (bottom nav handles navigation on small screens) */}
           <button
             onClick={() => setIsOpen(!isOpen)}
-            className="md:hidden p-2 text-near-black"
+            className="hidden p-2 text-near-black"
             aria-label={isOpen ? "Close menu" : "Open menu"}
             aria-expanded={isOpen}
           >
@@ -95,32 +95,7 @@ export function Navbar() {
           </button>
         </div>
 
-        {/* Mobile Navigation */}
-        <div
-          className={`md:hidden overflow-hidden transition-all duration-300 ease-in-out border-teal-border ${isOpen ? 'max-h-80 opacity-100 border-t' : 'max-h-0 opacity-0'
-            }`}
-        >
-          <div className="py-4 flex flex-col gap-1">
-            {navLinks.map((link) => (
-              <Link
-                key={link.href}
-                href={link.href}
-                className={`font-medium py-2.5 px-3 rounded-lg transition-colors ${isActive(link.href)
-                  ? 'text-teal bg-teal-tint'
-                  : 'text-muted-text hover:text-teal hover:bg-teal-tint/50'
-                  }`}
-              >
-                {link.label}
-              </Link>
-            ))}
-            <Link
-              href="/contact"
-              className="bg-teal text-white px-5 py-3 rounded-xl font-medium hover:opacity-90 transition-colors text-center mt-3"
-            >
-              {"Let's Talk"}
-            </Link>
-          </div>
-        </div>
+        {/* Mobile Navigation dropdown — hidden since bottom nav handles mobile navigation */}
       </nav>
     </header>
   )

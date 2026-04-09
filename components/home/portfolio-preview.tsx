@@ -138,7 +138,7 @@ export function PortfolioPreview() {
           }`}
         >
           <Link
-            href="/portfolio"
+            href="/portfolio/"
             className="inline-flex items-center gap-2 text-teal font-semibold hover:text-deep-teal hover:gap-4 transition-all"
           >
             View All Case Studies

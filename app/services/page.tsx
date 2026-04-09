@@ -3,6 +3,8 @@ import { ServicesHero } from "@/components/services/services-hero"
 import { ServiceTabs } from "@/components/services/service-tabs"
 import { ServiceDetail } from "@/components/services/service-detail"
 import { FullPackage } from "@/components/services/full-package"
+import { LeadFormWrapper } from "@/components/home/lead-form-wrapper"
+import { FloatingCTA } from "@/components/ui/floating-cta"
 
 export const metadata: Metadata = {
   title: "Our Services | Google Ads, Meta Ads & GBP Management — Ad Wali Didi",
@@ -211,7 +213,9 @@ export default function ServicesPage() {
           />
         ))}
       </div>
+      <LeadFormWrapper />
       <FullPackage />
+      <FloatingCTA />
     </>
   )
 }

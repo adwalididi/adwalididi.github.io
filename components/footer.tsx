@@ -84,37 +84,37 @@ export function Footer() {
             <h4 className="font-semibold text-lg mb-4 text-white">Quick Links</h4>
             <ul className="space-y-3">
               <li>
-                <Link href="/services" className="text-white-70 hover:text-white transition-colors">
+                <Link href="/services/" className="text-white-70 hover:text-white transition-colors">
                   Services
                 </Link>
               </li>
               <li>
-                <Link href="/portfolio" className="text-white-70 hover:text-white transition-colors">
+                <Link href="/portfolio/" className="text-white-70 hover:text-white transition-colors">
                   Our Work
                 </Link>
               </li>
               <li>
-                <Link href="/about" className="text-white-70 hover:text-white transition-colors">
+                <Link href="/about/" className="text-white-70 hover:text-white transition-colors">
                   About Us
                 </Link>
               </li>
               <li>
-                <Link href="/contact" className="text-white-70 hover:text-white transition-colors">
+                <Link href="/contact/" className="text-white-70 hover:text-white transition-colors">
                   Contact
                 </Link>
               </li>
               <li>
-                <Link href="/blog" className="text-white-70 hover:text-white transition-colors">
+                <Link href="/blog/" className="text-white-70 hover:text-white transition-colors">
                   Blog
                 </Link>
               </li>
               <li>
-                <Link href="/privacy-policy" className="text-white-70 hover:text-white transition-colors">
+                <Link href="/privacy-policy/" className="text-white-70 hover:text-white transition-colors">
                   Privacy Policy
                 </Link>
               </li>
               <li>
-                <Link href="/terms-of-use" className="text-white-70 hover:text-white transition-colors">
+                <Link href="/terms-of-use/" className="text-white-70 hover:text-white transition-colors">
                   Terms of Use
                 </Link>
               </li>

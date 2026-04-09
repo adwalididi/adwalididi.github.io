@@ -35,11 +35,13 @@ export const setConsent = async (state: ConsentState, action: string = 'update')
   localStorage.setItem('cookie_consent', JSON.stringify(state));
   
   // Update Google Consent Mode V2
-  const w = window as any;
+  const w = window as Window & { dataLayer?: unknown[] };
   w.dataLayer = w.dataLayer || [];
   
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   function gtagHelper(_type: string, _action: string, _payload: object) {
-    w.dataLayer.push(arguments);
+    // GTM requires arguments object — named params are intentionally unused
+    w.dataLayer?.push(arguments);
   }
   
   // Map over to V2 parameters alongside the base ones

@@ -74,7 +74,7 @@ export function HeroSection() {
               WhatsApp Us Now
             </a>
             <Link
-              href="/portfolio"
+              href="/portfolio/"
               className="inline-flex items-center gap-2 px-8 py-4 rounded-xl font-semibold text-lg text-white transition-all hover:scale-105 bg-white-10 hover:bg-white-20 backdrop-blur-sm shadow-xl border border-white-30"
             >
               See Our Work

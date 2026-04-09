@@ -8,6 +8,7 @@ import { WhatsAppButton } from '@/components/whatsapp-button'
 import { ScrollToTop } from '@/components/scroll-to-top'
 import { AnimationProvider } from '@/components/animation-provider'
 import { CookieConsent } from '@/components/cookie-consent'
+import { MobileBottomNav } from '@/components/mobile-bottom-nav'
 
 const inter = Inter({
   subsets: ['latin'],
@@ -144,11 +145,21 @@ export default function RootLayout({
         <GoogleTagManager gtmId="GTM-KKXR4DTX" />
         <AnimationProvider>
           <Navbar />
-          <main>{children}</main>
-          <Footer />
+          {/*
+            pb-16 md:pb-0 — reserves 64px (h-16) at the bottom on mobile so the
+            sticky MobileBottomNav never obscures page content or the footer.
+            Resets to zero on md+ where the bottom nav is hidden.
+          */}
+          <div className="pb-16 md:pb-0">
+            <main>{children}</main>
+            <Footer />
+          </div>
+          {/* Fixed floating elements — positioned above content */}
           <WhatsAppButton />
           <ScrollToTop />
           <CookieConsent />
+          {/* Sticky bottom nav — mobile only (md:hidden inside component) */}
+          <MobileBottomNav />
         </AnimationProvider>
       </body>
     </html>
