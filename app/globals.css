@@ -68,9 +68,11 @@
 .dark,
 [data-theme='dark'],
 html.dark {
-  --background: #020817; /* Deepest Indigo/Slate */
+  --background: #020817;
+  /* Deepest Indigo/Slate */
   --foreground: #f8fafc;
-  --card: #0f172a;      /* Rich Slate Card */
+  --card: #0f172a;
+  /* Rich Slate Card */
   --card-foreground: #f8fafc;
   --popover: #0f172a;
   --popover-foreground: #f8fafc;
@@ -87,7 +89,7 @@ html.dark {
   --border: #1e293b;
   --input: #1e293b;
   --ring: #008573;
-  
+
   --near-black: #f8fafc;
   --muted-text: #94a3b8;
   --teal-tint: #002b25;
@@ -178,20 +180,27 @@ html.dark {
     overflow-x: hidden;
   }
 
-  h1, h2 {
+  h1,
+  h2 {
     font-family: var(--font-display);
   }
 
-  h3, h4, h5, h6 {
+  h3,
+  h4,
+  h5,
+  h6 {
     font-family: var(--font-space-grotesk);
   }
 }
 
 /* Premium floating and subtle ring animations */
 @keyframes float-subtle {
-  0%, 100% {
+
+  0%,
+  100% {
     transform: translateY(0);
   }
+
   50% {
     transform: translateY(-5px);
   }
@@ -202,10 +211,27 @@ html.dark {
 }
 
 @keyframes ring-subtle {
-  0%, 100% { transform: rotate(0deg); }
-  2%, 6%, 10% { transform: rotate(-8deg); }
-  4%, 8%, 12% { transform: rotate(8deg); }
-  14% { transform: rotate(0deg); }
+
+  0%,
+  100% {
+    transform: rotate(0deg);
+  }
+
+  2%,
+  6%,
+  10% {
+    transform: rotate(-8deg);
+  }
+
+  4%,
+  8%,
+  12% {
+    transform: rotate(8deg);
+  }
+
+  14% {
+    transform: rotate(0deg);
+  }
 }
 
 .animate-ring-subtle {
