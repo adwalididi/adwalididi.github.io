@@ -9,6 +9,7 @@ import { ScrollToTop } from '@/components/scroll-to-top'
 import { AnimationProvider } from '@/components/animation-provider'
 import { CookieConsent } from '@/components/cookie-consent'
 import { MobileBottomNav } from '@/components/mobile-bottom-nav'
+import { ThemeProvider } from '@/components/theme-provider'
 
 const inter = Inter({
   subsets: ['latin'],
@@ -141,26 +142,18 @@ export default function RootLayout({
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
       </head>
-      <body className="font-sans antialiased bg-white text-near-black">
+      <body className="font-sans antialiased">
         <GoogleTagManager gtmId="GTM-KKXR4DTX" />
-        <AnimationProvider>
-          <Navbar />
-          {/*
-            pb-16 md:pb-0 — reserves 64px (h-16) at the bottom on mobile so the
-            sticky MobileBottomNav never obscures page content or the footer.
-            Resets to zero on md+ where the bottom nav is hidden.
-          */}
-          <div className="pb-16 md:pb-0">
-            <main>{children}</main>
-            <Footer />
-          </div>
-          {/* Fixed floating elements — positioned above content */}
-          <WhatsAppButton />
-          <ScrollToTop />
-          <CookieConsent />
-          {/* Sticky bottom nav — mobile only (md:hidden inside component) */}
-          <MobileBottomNav />
-        </AnimationProvider>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="light"
+          enableSystem
+          disableTransitionOnChange
+        >
+          <AnimationProvider>
+            {children}
+          </AnimationProvider>
+        </ThemeProvider>
       </body>
     </html>
   )

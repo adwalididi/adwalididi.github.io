@@ -65,6 +65,37 @@
   --radius: 0.5rem;
 }
 
+.dark,
+[data-theme='dark'],
+html.dark {
+  --background: #020817; /* Deepest Indigo/Slate */
+  --foreground: #f8fafc;
+  --card: #0f172a;      /* Rich Slate Card */
+  --card-foreground: #f8fafc;
+  --popover: #0f172a;
+  --popover-foreground: #f8fafc;
+  --primary: #008573;
+  --primary-foreground: #f8fafc;
+  --secondary: #1e293b;
+  --secondary-foreground: #f8fafc;
+  --muted: #1e293b;
+  --muted-foreground: #94a3b8;
+  --accent: #dbad3e;
+  --accent-foreground: #f8fafc;
+  --destructive: #ef4444;
+  --destructive-foreground: #f8fafc;
+  --border: #1e293b;
+  --input: #1e293b;
+  --ring: #008573;
+  
+  --near-black: #f8fafc;
+  --muted-text: #94a3b8;
+  --teal-tint: #002b25;
+  --blue-tint: #0b1120;
+  --teal-border: #004d44;
+  --blue-border: #1e293b;
+}
+
 @theme inline {
   --font-sans: var(--font-inter), 'Inter', system-ui, sans-serif;
   --font-display: var(--font-syne), 'Syne', system-ui, sans-serif;

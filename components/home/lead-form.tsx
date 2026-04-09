@@ -46,6 +46,17 @@ const trustSignals = [
   { icon: Zap,    label: "Same-Day Reply" },
 ]
 
+const budgetOptions = [
+  "Below ₹10,000",
+  "₹10,000 - ₹25,000",
+  "₹25,000 - ₹50,000",
+  "₹50,000 - ₹1,00,000",
+  "₹1,00,000 - ₹2,50,000",
+  "₹2,50,000 - ₹5,00,000",
+  "Above ₹5,00,000",
+  "Not sure yet/Other"
+]
+
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
 async function getIpHash(): Promise<string | null> {
@@ -75,9 +86,13 @@ function fireLeadPixelEvent(businessType: string) {
 export function LeadForm() {
   const [name,             setName]             = useState("")
   const [whatsapp,         setWhatsapp]         = useState("")
+  const [email,            setEmail]            = useState("")
+  const [businessName,     setBusinessName]     = useState("")
   const [businessType,     setBusinessType]     = useState(businessTypes[0])
+  const [budget,           setBudget]           = useState(budgetOptions[0])
   const [selectedServices, setSelectedServices] = useState<string[]>([])
   const [isDropdownOpen,   setIsDropdownOpen]   = useState(false)
+  const [isBudgetOpen,     setIsBudgetOpen]     = useState(false)
   const [honeypot,         setHoneypot]         = useState("")
 
   const [utmParams, setUtmParams] = useState({
@@ -86,6 +101,7 @@ export function LeadForm() {
 
   const [nameError,     setNameError]     = useState("")
   const [whatsappError, setWhatsappError] = useState("")
+  const [emailError,    setEmailError]    = useState("")
   const [servicesError, setServicesError] = useState("")
   const [submitError,   setSubmitError]   = useState("")
   const [isSubmitting,  setIsSubmitting]  = useState(false)
@@ -105,8 +121,10 @@ export function LeadForm() {
     })
 
     const handleClick = (e: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node))
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
         setIsDropdownOpen(false)
+        setIsBudgetOpen(false)
+      }
     }
     document.addEventListener("mousedown", handleClick)
     return () => document.removeEventListener("mousedown", handleClick)
@@ -150,6 +168,11 @@ export function LeadForm() {
       valid = false
     } else { setWhatsappError("") }
 
+    if (email.trim() && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) {
+      setEmailError("Invalid email format")
+      valid = false
+    } else { setEmailError("") }
+
     if (selectedServices.length === 0) {
       setServicesError("Pick at least one service")
       valid = false
@@ -170,7 +193,10 @@ export function LeadForm() {
       const { error } = await supabase.from("leads").insert({
         name:          name.trim(),
         whatsapp:      whatsapp.trim(),
+        email:         email.trim() || null,
+        business_name: businessName.trim() || null,
         business_type: businessType,
+        budget:        budget,
         services:      selectedServices,
         ip_hash:       ipHash,
         source_page:   "homepage",
@@ -364,6 +390,45 @@ export function LeadForm() {
                       </div>
                     </div>
 
+                    {/* ── Row 1.5: Business Name + Email ── */}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                      {/* Business Name */}
+                      <div className="space-y-1.5">
+                        <label htmlFor="lead-business" className="block text-[10px] font-extrabold uppercase tracking-[0.22em] text-teal">
+                          Business Name
+                        </label>
+                        <input
+                          id="lead-business"
+                          type="text"
+                          placeholder="e.g. My Agency"
+                          value={businessName}
+                          onChange={e => setBusinessName(e.target.value)}
+                          className="w-full px-4 py-3.5 rounded-xl border border-teal-border bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-teal/20 text-sm transition-all placeholder:text-slate-300 focus:border-teal"
+                        />
+                      </div>
+
+                      {/* Email */}
+                      <div className="space-y-1.5">
+                        <label htmlFor="lead-email" className="block text-[10px] font-extrabold uppercase tracking-[0.22em] text-teal">
+                          Email Address
+                        </label>
+                        <input
+                          id="lead-email"
+                          type="email"
+                          placeholder="hello@example.com"
+                          autoComplete="email"
+                          value={email}
+                          onChange={e => { setEmail(e.target.value); setEmailError("") }}
+                          className={`w-full px-4 py-3.5 rounded-xl border bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-teal/20 text-sm transition-all placeholder:text-slate-300 ${
+                            emailError ? "border-red-400 focus:ring-red-200" : "border-teal-border focus:border-teal"
+                          }`}
+                        />
+                        {emailError && (
+                          <p className="text-red-500 text-[11px] font-medium mt-1">{emailError}</p>
+                        )}
+                      </div>
+                    </div>
+
                     {/* ── Row 2: Business Type ── */}
                     <div className="space-y-1.5 relative" ref={dropdownRef}>
                       <label className="block text-[10px] font-extrabold uppercase tracking-[0.22em] text-teal">
@@ -404,6 +469,53 @@ export function LeadForm() {
                                 }`}
                               >
                                 {t}
+                              </div>
+                            ))}
+                          </m.div>
+                        )}
+                      </AnimatePresence>
+                    </div>
+
+                    {/* ── Row 2.5: Budget ── */}
+                    <div className="space-y-1.5 relative">
+                      <label className="block text-[10px] font-extrabold uppercase tracking-[0.22em] text-teal">
+                        Monthly Ads Budget
+                      </label>
+                      <button
+                        type="button"
+                        onClick={() => setIsBudgetOpen(!isBudgetOpen)}
+                        aria-expanded={isBudgetOpen}
+                        className="w-full px-4 py-3.5 rounded-xl border border-teal-border bg-slate-50 hover:bg-white flex items-center justify-between transition-all text-left cursor-pointer focus:outline-none focus:ring-2 focus:ring-teal/20 focus:border-teal"
+                      >
+                        <span className="text-sm font-semibold text-near-black truncate mr-2">
+                          {budget}
+                        </span>
+                        <ChevronDown
+                          size={18}
+                          className={`text-teal shrink-0 transition-transform duration-200 ${isBudgetOpen ? "rotate-180" : ""}`}
+                        />
+                      </button>
+
+                      <AnimatePresence>
+                        {isBudgetOpen && (
+                          <m.div
+                            initial={{ opacity: 0, y: 8, scale: 0.98 }}
+                            animate={{ opacity: 1, y: 0, scale: 1 }}
+                            exit={{ opacity: 0, y: 8, scale: 0.98 }}
+                            transition={{ duration: 0.15 }}
+                            className="absolute z-[100] left-0 right-0 mt-1.5 bg-white border border-teal-border rounded-2xl shadow-xl max-h-[260px] overflow-y-auto custom-scrollbar p-1.5"
+                          >
+                            {budgetOptions.map(b => (
+                              <div
+                                key={b}
+                                role="option"
+                                aria-selected={budget === b}
+                                onClick={() => { setBudget(b); setIsBudgetOpen(false) }}
+                                className={`px-4 py-2.5 hover:bg-teal-tint rounded-xl cursor-pointer text-sm font-medium transition-colors ${
+                                  budget === b ? "bg-teal-tint text-teal font-semibold" : "text-near-black"
+                                }`}
+                              >
+                                {b}
                               </div>
                             ))}
                           </m.div>
