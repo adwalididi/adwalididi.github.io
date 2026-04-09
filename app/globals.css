@@ -238,6 +238,29 @@ html.dark {
   animation: ring-subtle 5s ease-in-out infinite;
 }
 
+/* Navbar glassmorphism — backdrop-filter on ::before to fix Chrome compositing bleed.
+   Chrome bleeds backdrop-filter at the top viewport edge when applied directly to a
+   fixed/composited element. Moving it to a pseudo-element with clip-path:inset(0)
+   strictly contains the blur sampling area and eliminates the white bleed artifact. */
+.navbar-glass {
+  position: fixed;
+  background: transparent;
+}
+
+.navbar-glass::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  /* clip-path strictly clips the blur to this element's bounds — Chrome fix */
+  clip-path: inset(0 0 0 0);
+  z-index: -1;
+  /* Pointer events on parent handle interactivity */
+  pointer-events: none;
+}
+
 /* Page transition */
 main {
   animation: page-fade-in 0.35s ease-out;

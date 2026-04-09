@@ -58,7 +58,9 @@ export default async function AdminLeads({
   async function handleLogout(formData: FormData) {
     'use server';
     const secret = formData.get('secret');
-    (await cookies()).delete('admin_session');
+    // Must specify the same path the cookie was set with, otherwise a different
+    // cookie (at path '/') is targeted and the session cookie survives.
+    (await cookies()).delete({ name: 'admin_session', path: '/admin/leads/' });
     redirect(`/admin/leads/?secret=${secret}`);
   }
 
@@ -112,7 +114,7 @@ export default async function AdminLeads({
               type="text" 
               name="id" 
               required 
-              autoComplete="username"
+              autoComplete="off"
               className="bg-background border border-border rounded-xl p-4 text-foreground focus:outline-none focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all placeholder:text-muted-foreground/30 text-base" 
               placeholder="Enter User ID"
             />
@@ -124,7 +126,7 @@ export default async function AdminLeads({
               type="password" 
               name="password" 
               required 
-              autoComplete="current-password"
+              autoComplete="new-password"
               className="bg-background border border-border rounded-xl p-4 text-foreground focus:outline-none focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all placeholder:text-muted-foreground/30 text-base" 
               placeholder="Enter Password"
             />

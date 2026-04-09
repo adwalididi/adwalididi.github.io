@@ -39,7 +39,7 @@ export function Navbar() {
 
   return (
     <header
-      className={`fixed -top-px left-0 right-0 z-50 bg-white/80 backdrop-blur-md transition-shadow duration-300 pt-[calc(env(safe-area-inset-top)+1px)] border-b border-teal-border overflow-hidden ${scrolled ? 'shadow-sm' : ''
+      className={`navbar-glass fixed top-0 left-0 right-0 z-50 transition-shadow duration-300 pt-[env(safe-area-inset-top)] border-b border-teal-border ${scrolled ? 'shadow-sm' : ''
         }`}
     >
       <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
