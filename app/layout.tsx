@@ -74,7 +74,7 @@ const jsonLd = {
   "contactPoint": {
     "@type": "ContactPoint",
     "telephone": "+91-6261643774",
-    "email": "adwalididi@gmail.com",
+    "email": "hello@adwalididi.com",
     "contactType": "customer service",
     "availableLanguage": ["English", "Hindi"]
   },
@@ -144,16 +144,9 @@ export default function RootLayout({
       </head>
       <body className="font-sans antialiased">
         <GoogleTagManager gtmId="GTM-KKXR4DTX" />
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="light"
-          enableSystem
-          disableTransitionOnChange
-        >
-          <AnimationProvider>
-            {children}
-          </AnimationProvider>
-        </ThemeProvider>
+        <AnimationProvider>
+          {children}
+        </AnimationProvider>
       </body>
     </html>
   )

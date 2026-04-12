@@ -3,6 +3,7 @@ import { redirect } from 'next/navigation';
 import { cookies } from 'next/headers';
 import LeadsTableClient from '@/components/admin/leads-table-client';
 import { AdminLogo } from '@/components/admin/admin-logo';
+import { AdminThemeProvider } from '@/components/admin/admin-theme-provider';
 
 export const runtime = 'edge';
 
@@ -81,7 +82,8 @@ export default async function AdminLeads({
   // 4. RENDER LOGIN FORM (If not logged in)
   if (!isLoggedIn) {
     return (
-      <div className="p-6 sm:p-8 bg-background min-h-screen text-foreground flex flex-col items-center justify-center font-sans tracking-tight">
+      <AdminThemeProvider>
+        <div className="p-6 sm:p-8 bg-background min-h-screen text-foreground flex flex-col items-center justify-center font-sans tracking-tight">
         <div className="w-full max-w-md mb-8 flex justify-between items-center">
             <a href="/" className="text-xs font-bold text-primary hover:text-primary/80 flex items-center gap-2 transition-all">
                 <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="m15 18-6-6 6-6"/></svg>
@@ -137,6 +139,7 @@ export default async function AdminLeads({
           </button>
         </form>
       </div>
+      </AdminThemeProvider>
     );
   }
 
@@ -149,8 +152,9 @@ export default async function AdminLeads({
   const { data: leads } = await supabase.from('leads').select('*').order('created_at', { ascending: false });
 
   return (
-    <div className="p-4 sm:p-8 bg-background h-screen text-foreground font-sans overflow-hidden">
-      <div className="max-w-7xl mx-auto h-full flex flex-col">
+    <AdminThemeProvider>
+      <div className="p-4 sm:p-8 bg-background h-screen text-foreground font-sans overflow-hidden">
+        <div className="max-w-7xl mx-auto h-full flex flex-col">
         <div className="flex sm:flex-row flex-col gap-6 sm:items-center justify-between mb-4 pb-2 border-b border-border/50 break-words">
           <div className="flex items-center gap-5">
              <a href="/" className="p-3 rounded-xl bg-card border border-border hover:bg-muted transition-all text-primary" title="Back to Home">
@@ -188,5 +192,6 @@ export default async function AdminLeads({
         </div>
       </div>
     </div>
+    </AdminThemeProvider>
   );
 }

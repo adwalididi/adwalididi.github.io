@@ -164,6 +164,16 @@ html.dark {
   --radius-xl: calc(var(--radius) + 4px);
 }
 
+/* Force smooth transition globally but ONLY during theme toggle to prevent hover/event lagging */
+.theme-switching,
+.theme-switching *,
+.theme-switching *::before,
+.theme-switching *::after {
+  transition-property: background-color, border-color, color, fill, stroke, box-shadow !important;
+  transition-duration: 300ms !important;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
 @layer base {
   * {
     @apply border-border outline-ring/50;

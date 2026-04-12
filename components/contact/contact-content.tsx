@@ -94,11 +94,11 @@ export function ContactContent() {
               </a>
               
               <a
-                href="mailto:adwalididi@gmail.com"
+                href="mailto:hello@adwalididi.com"
                 className="flex items-center gap-3 text-muted-text hover:text-teal transition-colors"
               >
                 <Mail size={22} aria-hidden="true" />
-                <span>adwalididi@gmail.com</span>
+                <span>hello@adwalididi.com</span>
               </a>
 
               <div className="flex items-center gap-3 text-muted-text">

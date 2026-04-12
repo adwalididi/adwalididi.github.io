@@ -35,7 +35,7 @@ const jsonLd = {
         "@type": "Organization",
         "name": "Ad Wali Didi",
         "telephone": "+91-6261643774",
-        "email": "adwalididi@gmail.com"
+        "email": "hello@adwalididi.com"
       }
     },
     {

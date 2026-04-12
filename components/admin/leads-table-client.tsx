@@ -20,7 +20,7 @@ import {
   Rows
 } from 'lucide-react';
 import { m, AnimatePresence } from 'framer-motion';
-import { useTheme } from 'next-themes';
+import { useAdminTheme } from '@/components/admin/admin-theme-provider';
 
 interface Lead {
   id: string;
@@ -66,10 +66,9 @@ export default function LeadsTableClient({
   leads: Lead[],
   onStatusUpdate: (id: string, status: string) => Promise<void>
 }) {
-  const { theme, setTheme, resolvedTheme } = useTheme();
-  const [mounted, setMounted] = useState(false);
+  const { theme, toggleTheme, mounted } = useAdminTheme();
 
-  useEffect(() => setMounted(true), []);
+
 
   const [leads, setLeads] = useState<Lead[]>(initialLeads);
   const [search, setSearch] = useState('');
@@ -227,11 +226,11 @@ export default function LeadsTableClient({
 
           {/* Theme Toggle */}
           <button
-            onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+            onClick={toggleTheme}
             className="p-2 rounded-xl bg-card border border-border hover:bg-muted transition-all text-primary shadow-sm hover:scale-105 active:scale-95 shrink-0"
             title="Toggle Dark Mode"
           >
-            {mounted && (resolvedTheme === 'dark' ? <Sun size={16} /> : <Moon size={16} />)}
+            {mounted && (theme === 'dark' ? <Sun size={16} /> : <Moon size={16} />)}
           </button>
         </div>
       </div>

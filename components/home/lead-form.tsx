@@ -212,6 +212,20 @@ export function LeadForm() {
       setIsSuccess(true)
       localStorage.removeItem("awd_lead_draft")
       fireLeadPixelEvent(businessType)
+
+      // Fire-and-forget welcome email
+      if (email.trim()) {
+        fetch('/api/send-welcome/', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            name: name.trim(),
+            email: email.trim(),
+            businessType,
+            services: selectedServices.map(id => servicesOptions.find(o => o.id === id)?.label).filter(Boolean),
+          }),
+        }).catch(() => {}) // Silent fail — Supabase insert already succeeded
+      }
     } catch {
       setSubmitError("Something went wrong. WhatsApp us directly: +91-6261643774")
     } finally {

@@ -104,7 +104,7 @@ export default function TermsOfUsePage() {
             <div className="bg-neutral-50 p-6 rounded-xl border border-neutral-100 not-italic">
               <strong className="block text-near-black mb-2">AD wali Didi</strong>
               <p>Location: Chalisgaon, Maharashtra, India</p>
-              <p>Email: <a href="mailto:adwalididi@gmail.com" className="text-teal-600 hover:underline">adwalididi@gmail.com</a></p>
+              <p>Email: <a href="mailto:hello@adwalididi.com" className="text-teal-600 hover:underline">hello@adwalididi.com</a></p>
               <p>Phone: <a href="tel:+917558617172" className="text-teal-600 hover:underline">+91 7558617172</a></p>
             </div>
           </section>

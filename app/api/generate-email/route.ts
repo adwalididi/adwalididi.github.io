@@ -1,0 +1,87 @@
+import { generateContent } from '@/lib/gemini';
+import { createClient } from '@supabase/supabase-js';
+import { cookies } from 'next/headers';
+
+export const runtime = 'edge';
+
+export async function POST(request: Request) {
+  try {
+    const session = (await cookies()).get('admin_session_outreach');
+    if (!session || session.value !== 'active') {
+      return Response.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    const { businessName, ownerName, industry, targetService, email } = await request.json();
+
+    if (!businessName || !industry || !targetService) {
+      return Response.json({ error: 'Missing required fields' }, { status: 400 });
+    }
+
+    const prompt = `You are a professional digital marketing copywriter for Adwalididi, an Indian digital marketing agency.
+
+Write an ultra-short cold email for this business:
+- Business name: ${businessName}
+- Owner name: ${ownerName || 'business owner'}
+- Industry: ${industry}
+- Service to pitch: ${targetService}
+
+Rules:
+- Extremely concise (under 75 words)
+- Do NOT mention physical locations or states
+- One specific pain point for the ${industry} industry
+- CTA: reply or book a free strategy call at https://adwalididi.com/#free-audit
+- Sign off as Shivani from Adwalididi
+- Casual, punchy, not salesy
+
+IMPORTANT: Respond ONLY in this exact format with no extra text before or after:
+SUBJECT: [write subject line here]
+BODY:
+[write email body here]`;
+
+    const raw = (await generateContent(prompt)).trim();
+
+    const subjectMatch = raw.match(/^SUBJECT:\s*(.+)/im);
+    const bodyMatch = raw.match(/^BODY:\s*([\s\S]+)/im);
+
+    if (!subjectMatch || !bodyMatch) {
+      console.error('Gemini response did not match expected format:', raw);
+      return Response.json({ error: 'Unexpected AI response format. Please try again.' }, { status: 500 });
+    }
+
+    const subject = subjectMatch[1].trim();
+    const body = bodyMatch[1].trim();
+
+    // Log to Supabase outreach_log
+    let outreachLogId: string | null = null;
+    try {
+      const supabase = createClient(
+        process.env.NEXT_PUBLIC_SUPABASE_URL!,
+        process.env.SUPABASE_SERVICE_ROLE_KEY!
+      );
+      const { data } = await supabase
+        .from('outreach_log')
+        .insert({
+          channel: 'email',
+          recipient_email: email || null,
+          business_name: businessName,
+          owner_name: ownerName || null,
+          industry,
+          target_service: targetService,
+          subject,
+          message_body: body,
+          status: 'generated',
+          provider: 'brevo',
+        })
+        .select('id')
+        .single();
+      outreachLogId = data?.id || null;
+    } catch (e) {
+      console.error('Supabase log error (non-fatal):', e);
+    }
+
+    return Response.json({ subject, body, outreachLogId });
+  } catch (e) {
+    console.error('Generate email error:', e);
+    return Response.json({ error: String(e) }, { status: 500 });
+  }
+}

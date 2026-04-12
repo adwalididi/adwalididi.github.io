@@ -16,6 +16,7 @@ export function Footer() {
             width={320}
             height={88}
             className="h-20 sm:h-[100px] lg:h-[120px] w-auto"
+            style={{ width: 'auto' }}
           />
         </Link>
         
@@ -28,11 +29,11 @@ export function Footer() {
             </p>
             <div className="flex flex-wrap items-center gap-x-6 gap-y-2 mt-4">
               <a
-                href="mailto:adwalididi@gmail.com"
+                href="mailto:hello@adwalididi.com"
                 className="inline-flex items-center gap-2 text-white-70 hover:text-white transition-colors"
               >
                 <Mail size={16} />
-                <span>adwalididi@gmail.com</span>
+                <span>hello@adwalididi.com</span>
               </a>
               <a
                 href="https://wa.me/916261643774?text=Hi!%20I'd%20like%20a%20free%20audit%20of%20my%20business."
