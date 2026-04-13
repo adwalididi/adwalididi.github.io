@@ -1,5 +1,6 @@
 import { Metadata } from "next"
 import { BlogContent } from "@/components/blog/blog-content"
+import { getAllBlogPosts } from "@/lib/blog-data"
 
 export const metadata: Metadata = {
   title: "Blog | Digital Marketing Tips for Indian Businesses — Ad Wali Didi",
@@ -56,13 +57,14 @@ const jsonLd = {
 }
 
 export default function BlogPage() {
+  const posts = getAllBlogPosts()
   return (
     <>
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
-      <BlogContent />
+      <BlogContent posts={posts} />
     </>
   )
 }

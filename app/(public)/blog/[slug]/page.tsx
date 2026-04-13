@@ -2,10 +2,10 @@ import { Metadata } from "next"
 import { notFound } from "next/navigation"
 import Link from "next/link"
 import Image from "next/image"
-import { blogPosts, getBlogPost, getAllBlogSlugs } from "@/lib/blog-data"
+import { getBlogPost, getAllBlogSlugs, getAllBlogPosts } from "@/lib/blog-data"
 import { ArrowLeft, Calendar, Clock } from "lucide-react"
 import { WhatsAppIcon } from "@/components/ui/whatsapp-icon"
-import { BlogPostContent } from "./blog-post-content"
+import { MDXRemote } from "next-mdx-remote/rsc"
 
 interface BlogPostPageProps {
   params: Promise<{ slug: string }>
@@ -50,7 +50,8 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
   if (!post) notFound()
 
   // Get related posts (same category, different slug)
-  const relatedPosts = blogPosts
+  const allPosts = getAllBlogPosts()
+  const relatedPosts = allPosts
     .filter((p) => p.slug !== post.slug)
     .slice(0, 2)
 
@@ -169,7 +170,9 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
             />
           </div>
 
-          <BlogPostContent content={post.content} />
+          <div className="prose prose-lg max-w-none">
+            <MDXRemote source={post.content} />
+          </div>
 
           {/* CTA After Article */}
           <div

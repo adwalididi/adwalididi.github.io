@@ -3,12 +3,12 @@
 import { useEffect, useState } from "react"
 import Link from "next/link"
 import Image from "next/image"
-import { blogPosts } from "@/lib/blog-data"
+import { BlogPost } from "@/lib/blog-data"
 import { ArrowRight, Calendar, Clock } from "lucide-react"
 import { m } from "framer-motion"
 import { WhatsAppIcon } from "@/components/ui/whatsapp-icon"
 
-export function BlogContent() {
+export function BlogContent({ posts }: { posts: BlogPost[] }) {
   const [isMounted, setIsMounted] = useState(false)
 
   useEffect(() => {
@@ -44,7 +44,7 @@ export function BlogContent() {
       <section className="py-16 sm:py-20 bg-white">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
-            {blogPosts.map((post, index) => (
+            {posts.map((post, index) => (
               <m.div
                 key={post.slug}
                 initial={{ opacity: 0, y: 20 }}
