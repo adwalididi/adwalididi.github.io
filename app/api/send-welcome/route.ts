@@ -3,9 +3,9 @@ import { getWelcomeEmailHtml } from '@/lib/email-templates/welcome-email';
 
 export const runtime = 'edge';
 
-const resend = new Resend(process.env.RESEND_API_KEY!);
-
 export async function POST(request: Request) {
+  const resend = new Resend(process.env.RESEND_API_KEY || 're_dummy_build_key');
+  
   try {
     // Origin check — prevent external abuse of this unauthenticated endpoint
     const origin = request.headers.get('origin') || request.headers.get('referer') || '';
