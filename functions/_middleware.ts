@@ -1,14 +1,33 @@
-// @ts-nocheck
-// Type annotation removed to prevent Next.js build errors for missing Cloudflare types
+interface HtmlRewriterElement {
+  setAttribute(name: string, value: string): void;
+}
+
+interface HtmlRewriterHandler {
+  element(element: HtmlRewriterElement): void;
+}
+
+interface HtmlRewriterInstance {
+  on(selector: string, handler: HtmlRewriterHandler): HtmlRewriterInstance;
+  transform(response: Response): Response;
+}
+
+interface MiddlewareContext {
+  next(): Promise<Response>;
+}
+
+declare const HTMLRewriter: {
+  new (): HtmlRewriterInstance;
+};
+
 class NonceInjector {
   constructor(private nonce: string) {}
 
-  element(element: any) {
+  element(element: HtmlRewriterElement) {
     element.setAttribute('nonce', this.nonce);
   }
 }
 
-export const onRequest = async (context: any) => {
+export const onRequest = async (context: MiddlewareContext) => {
   // Pass the request to the Next.js assets/renderer first
   const response = await context.next();
 
@@ -25,13 +44,17 @@ export const onRequest = async (context: any) => {
   // Note: style-src retains 'unsafe-inline' to allow Framer Motion direct style injection
   const csp = `
     default-src 'self';
-    script-src 'self' 'unsafe-eval' 'nonce-${nonce}' 'strict-dynamic' https://www.googletagmanager.com https://www.google-analytics.com https://challenges.cloudflare.com;
+    script-src 'self' 'nonce-${nonce}' 'strict-dynamic' https://www.googletagmanager.com https://www.google-analytics.com https://challenges.cloudflare.com;
     style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
     img-src 'self' data: https: blob: https://www.googletagmanager.com;
     font-src 'self' data: https://fonts.gstatic.com;
     connect-src 'self' https: wss: https://www.google-analytics.com;
     frame-src 'self' https://challenges.cloudflare.com;
     frame-ancestors 'none';
+    object-src 'none';
+    base-uri 'self';
+    form-action 'self';
+    upgrade-insecure-requests;
   `.replace(/\s{2,}/g, ' ').trim();
 
   // Clone the response to modify it

@@ -136,8 +136,8 @@ export function LeadForm() {
       const saved = localStorage.getItem("awd_lead_draft")
       if (saved) {
         const { savedName, savedWhatsapp } = JSON.parse(saved)
-        if (savedName && !name) setName(savedName)
-        if (savedWhatsapp && !whatsapp) setWhatsapp(savedWhatsapp)
+        if (savedName) setName(prev => prev || savedName)
+        if (savedWhatsapp) setWhatsapp(prev => prev || savedWhatsapp)
       }
     } catch {}
   }, []) // Empty deps so it only runs once on mount

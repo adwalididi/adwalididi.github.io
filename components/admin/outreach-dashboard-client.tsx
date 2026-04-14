@@ -74,6 +74,56 @@ function newLead(partial: Partial<Lead> & Pick<Lead, 'businessName'>): Lead {
   };
 }
 
+function normalizeCsvHeader(header: string): string {
+  return header.trim().toLowerCase().replace(/['"]/g, '');
+}
+
+function parseCsv(text: string): string[][] {
+  const rows: string[][] = [];
+  let row: string[] = [];
+  let value = '';
+  let inQuotes = false;
+
+  for (let i = 0; i < text.length; i += 1) {
+    const char = text[i];
+    const nextChar = text[i + 1];
+
+    if (char === '"') {
+      if (inQuotes && nextChar === '"') {
+        value += '"';
+        i += 1;
+      } else {
+        inQuotes = !inQuotes;
+      }
+      continue;
+    }
+
+    if (char === ',' && !inQuotes) {
+      row.push(value.trim());
+      value = '';
+      continue;
+    }
+
+    if ((char === '\n' || char === '\r') && !inQuotes) {
+      if (char === '\r' && nextChar === '\n') i += 1;
+      row.push(value.trim());
+      if (row.some((cell) => cell.length > 0)) rows.push(row);
+      row = [];
+      value = '';
+      continue;
+    }
+
+    value += char;
+  }
+
+  if (value.length > 0 || row.length > 0) {
+    row.push(value.trim());
+    if (row.some((cell) => cell.length > 0)) rows.push(row);
+  }
+
+  return rows;
+}
+
 // ─── Component ────────────────────────────────────────────────────────────────
 
 export default function OutreachDashboardClient({ sentTodayInitial }: { sentTodayInitial: number }) {
@@ -168,12 +218,12 @@ export default function OutreachDashboardClient({ sentTodayInitial }: { sentToda
     const reader = new FileReader();
     reader.onload = (evt) => {
       const text = evt.target?.result as string;
-      const lines = text.split('\n').filter(l => l.trim());
-      if (lines.length < 2) return;
-      const headers = lines[0].split(',').map(h => h.trim().toLowerCase().replace(/['"]/g, ''));
+      const rows = parseCsv(text);
+      if (rows.length < 2) return;
+      const headers = rows[0].map(normalizeCsvHeader);
       const imported: Lead[] = [];
-      for (let i = 1; i < lines.length; i++) {
-        const vals = lines[i].split(',').map(v => v.trim().replace(/['"]/g, ''));
+      for (let i = 1; i < rows.length; i++) {
+        const vals = rows[i].map((v) => v.replace(/['"]/g, '').trim());
         const r: Record<string, string> = {};
         headers.forEach((h, idx) => { r[h] = vals[idx] || ''; });
         const biz = r.business_name || r.businessname || r.business || '';

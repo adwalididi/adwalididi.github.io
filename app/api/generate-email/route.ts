@@ -1,21 +1,35 @@
 import { generateContent } from '@/lib/gemini';
 import { createClient } from '@supabase/supabase-js';
 import { cookies } from 'next/headers';
+import { generateEmailSchema } from '@/lib/validators';
+import { checkRateLimit } from '@/lib/rate-limit';
+import { isAllowedRequestOrigin } from '@/lib/request-origin';
 
 export const runtime = 'edge';
 
 export async function POST(request: Request) {
   try {
+    if (!isAllowedRequestOrigin(request)) {
+      return Response.json({ error: 'Forbidden' }, { status: 403 });
+    }
     const session = (await cookies()).get('admin_session_outreach');
     if (!session || session.value !== 'active') {
       return Response.json({ error: 'Unauthorized' }, { status: 401 });
     }
-
-    const { businessName, ownerName, industry, targetService, email } = await request.json();
-
-    if (!businessName || !industry || !targetService) {
-      return Response.json({ error: 'Missing required fields' }, { status: 400 });
+    const limit = checkRateLimit(request, 'generate-email', 20, 60_000);
+    if (!limit.ok) {
+      return Response.json(
+        { error: `Rate limit exceeded. Try again in ${limit.retryAfterSeconds || 60}s.` },
+        { status: 429 }
+      );
     }
+
+    const parsed = generateEmailSchema.safeParse(await request.json());
+    if (!parsed.success) {
+      return Response.json({ error: 'Invalid request payload' }, { status: 400 });
+    }
+
+    const { businessName, ownerName, industry, targetService, email } = parsed.data;
 
     const prompt = `You are a professional digital marketing copywriter for Adwalididi, an Indian digital marketing agency.
 
@@ -82,6 +96,6 @@ BODY:
     return Response.json({ subject, body, outreachLogId });
   } catch (e) {
     console.error('Generate email error:', e);
-    return Response.json({ error: String(e) }, { status: 500 });
+    return Response.json({ error: 'Failed to generate email content' }, { status: 500 });
   }
 }
