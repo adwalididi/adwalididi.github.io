@@ -208,6 +208,10 @@ export default async function AdminLeads({
             <div className="px-4 py-2 bg-primary/10 border border-primary/20 rounded-lg hidden sm:block">
               <span className="text-xs font-black text-primary uppercase tracking-widest">Leads: {leads?.length || 0}</span>
             </div>
+            <Link href="/admin/outreach/" className="text-xs font-bold bg-card hover:bg-muted text-foreground px-5 py-2.5 rounded-lg transition-all border border-border flex items-center gap-2">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 12h16"/><path d="m12 4 8 8-8 8"/><path d="M4 4v16"/></svg>
+              Outreach Console
+            </Link>
             <form action={handleLogout}>
               <button type="submit" className="text-xs font-bold bg-card hover:bg-destructive/10 text-foreground px-5 py-2.5 rounded-lg transition-all border border-border flex items-center justify-center gap-2 group hover:border-destructive/30 hover:text-destructive cursor-pointer">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="opacity-70 group-hover:opacity-100 transition-opacity"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>

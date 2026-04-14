@@ -2,6 +2,7 @@ import { generateContent } from '@/lib/gemini';
 import { createClient } from '@supabase/supabase-js';
 import { cookies } from 'next/headers';
 import { generateEmailSchema } from '@/lib/validators';
+import { checkRateLimit } from '@/lib/rate-limit';
 
 export const runtime = 'edge';
 
@@ -10,6 +11,13 @@ export async function POST(request: Request) {
     const session = (await cookies()).get('admin_session_outreach');
     if (!session || session.value !== 'active') {
       return Response.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+    const limit = checkRateLimit(request, 'generate-email', 20, 60_000);
+    if (!limit.ok) {
+      return Response.json(
+        { error: `Rate limit exceeded. Try again in ${limit.retryAfterSeconds || 60}s.` },
+        { status: 429 }
+      );
     }
 
     const parsed = generateEmailSchema.safeParse(await request.json());

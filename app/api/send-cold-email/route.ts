@@ -3,6 +3,7 @@ import { cookies } from 'next/headers';
 import { sendBrevoEmail } from '@/lib/brevo';
 import { wrapColdEmailHtml } from '@/lib/email-templates/cold-email-wrapper';
 import { sendColdEmailSchema } from '@/lib/validators';
+import { checkRateLimit } from '@/lib/rate-limit';
 
 export const runtime = 'edge';
 
@@ -11,6 +12,13 @@ export async function POST(request: Request) {
     const session = (await cookies()).get('admin_session_outreach');
     if (!session || session.value !== 'active') {
       return Response.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+    const limit = checkRateLimit(request, 'send-cold-email', 10, 60_000);
+    if (!limit.ok) {
+      return Response.json(
+        { error: `Rate limit exceeded. Try again in ${limit.retryAfterSeconds || 60}s.` },
+        { status: 429 }
+      );
     }
 
     const parsed = sendColdEmailSchema.safeParse(await request.json());
