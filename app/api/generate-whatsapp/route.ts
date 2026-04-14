@@ -79,6 +79,6 @@ Rules:
     return Response.json({ message, waLink, formattedPhone: `+91 ${cleanPhone}` });
   } catch (e) {
     console.error('Generate WhatsApp error:', e);
-    return Response.json({ error: String(e) }, { status: 500 });
+    return Response.json({ error: 'Failed to generate WhatsApp content' }, { status: 500 });
   }
 }

@@ -52,6 +52,6 @@ export async function POST(request: Request) {
     return Response.json({ success: true, messageId: result.messageId });
   } catch (e) {
     console.error('Send cold email error:', e);
-    return Response.json({ success: false, error: String(e) }, { status: 500 });
+    return Response.json({ success: false, error: 'Failed to send cold email' }, { status: 500 });
   }
 }

@@ -40,7 +40,7 @@ export async function GET() {
     return Response.json({ leads: mapped, total: mapped.length });
   } catch (e) {
     console.error('Get CRM leads error:', e);
-    return Response.json({ error: String(e) }, { status: 500 });
+    return Response.json({ error: 'Failed to fetch CRM leads' }, { status: 500 });
   }
 }
 

@@ -57,12 +57,12 @@ export async function POST(request: Request) {
 
     if (error) {
       console.error('Resend error:', error);
-      return Response.json({ success: false, error: error.message }, { status: 500 });
+      return Response.json({ success: false, error: 'Failed to send welcome email' }, { status: 500 });
     }
 
     return Response.json({ success: true, id: data?.id });
   } catch (e) {
     console.error('Welcome email error:', e);
-    return Response.json({ success: false, error: String(e) }, { status: 500 });
+    return Response.json({ success: false, error: 'Failed to process welcome email request' }, { status: 500 });
   }
 }

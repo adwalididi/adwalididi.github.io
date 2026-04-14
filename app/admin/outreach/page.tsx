@@ -10,28 +10,57 @@ export const runtime = 'edge';
 export default async function AdminOutreach({
   searchParams
 }: {
-  searchParams: Promise<{ secret?: string; error?: string }>
+  searchParams: Promise<{ error?: string }>
 }) {
   const params = await searchParams;
   const cookieStore = await cookies();
 
-  // 1. URL SECURITY CHECK (First Layer)
-  const providedSecret = params.secret?.trim();
-  const actualSecret = process.env.ADMIN_PASSWORD?.trim();
+  // 1. SECRET GATE CHECK (First Layer)
   const isGateOpen = cookieStore.get('admin_gate')?.value === 'active';
 
-  if (!isGateOpen && providedSecret && actualSecret && providedSecret === actualSecret) {
-    cookieStore.set('admin_gate', 'active', {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax',
-      path: '/admin/',
-    });
-    redirect('/admin/outreach/');
-  }
+  if (!isGateOpen) {
+    return (
+      <AdminThemeProvider>
+        <div className="p-6 sm:p-8 bg-background min-h-screen text-foreground flex flex-col items-center justify-center font-sans tracking-tight">
+          <div className="w-full max-w-md mb-8 flex justify-between items-center">
+            <Link href="/" className="text-xs font-bold text-primary hover:text-primary/80 flex items-center gap-2 transition-all">
+              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+              Back to Home
+            </Link>
+          </div>
 
-  if (!isGateOpen && (!providedSecret || providedSecret !== actualSecret)) {
-    redirect('/');
+          <form method="post" action="/admin/open-gate/" className="bg-card p-8 rounded-[2rem] border border-border w-full max-w-md flex flex-col gap-6 shadow-xl shadow-teal-900/5">
+            <input type="hidden" name="target" value="outreach" />
+            <div className="text-center mb-2">
+              <h1 className="text-3xl font-bold text-foreground tracking-tight">Outreach <span className="text-primary">Gateway</span></h1>
+              <p className="text-muted-foreground text-sm mt-1 font-medium">Enter the access secret to continue</p>
+            </div>
+
+            {params.error === 'gate' && (
+              <div className="bg-destructive/10 border border-destructive/20 text-destructive text-sm p-3 rounded-xl text-center font-bold">
+                Invalid access secret.
+              </div>
+            )}
+
+            <div className="flex flex-col gap-2">
+              <label className="text-primary text-[11px] font-black uppercase tracking-widest ml-1">Access Secret</label>
+              <input
+                type="password"
+                name="secret"
+                required
+                autoComplete="off"
+                className="bg-background border border-border rounded-xl p-4 text-foreground focus:outline-none focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all placeholder:text-muted-foreground/30 text-base"
+                placeholder="Enter Access Secret"
+              />
+            </div>
+
+            <button type="submit" className="mt-2 bg-primary hover:bg-primary/90 text-white font-bold py-4 rounded-xl transition-all shadow-lg shadow-primary/10 active:scale-[0.98] cursor-pointer text-base">
+              Continue
+            </button>
+          </form>
+        </div>
+      </AdminThemeProvider>
+    );
   }
 
   // 2. CHECK SESSION COOKIE (Second Layer)
