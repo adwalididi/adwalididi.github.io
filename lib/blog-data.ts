@@ -53,7 +53,7 @@ export function getBlogPost(slug: string): BlogPost | undefined {
       keywords: data.keywords || [],
       content,
     }
-  } catch (err) {
+  } catch {
     return undefined
   }
 }

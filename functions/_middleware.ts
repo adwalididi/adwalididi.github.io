@@ -1,14 +1,33 @@
-// @ts-nocheck
-// Type annotation removed to prevent Next.js build errors for missing Cloudflare types
+interface HtmlRewriterElement {
+  setAttribute(name: string, value: string): void;
+}
+
+interface HtmlRewriterHandler {
+  element(element: HtmlRewriterElement): void;
+}
+
+interface HtmlRewriterInstance {
+  on(selector: string, handler: HtmlRewriterHandler): HtmlRewriterInstance;
+  transform(response: Response): Response;
+}
+
+interface MiddlewareContext {
+  next(): Promise<Response>;
+}
+
+declare const HTMLRewriter: {
+  new (): HtmlRewriterInstance;
+};
+
 class NonceInjector {
   constructor(private nonce: string) {}
 
-  element(element: any) {
+  element(element: HtmlRewriterElement) {
     element.setAttribute('nonce', this.nonce);
   }
 }
 
-export const onRequest = async (context: any) => {
+export const onRequest = async (context: MiddlewareContext) => {
   // Pass the request to the Next.js assets/renderer first
   const response = await context.next();
 

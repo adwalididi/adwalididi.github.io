@@ -1,6 +1,7 @@
 import { generateContent } from '@/lib/gemini';
 import { createClient } from '@supabase/supabase-js';
 import { cookies } from 'next/headers';
+import { generateWhatsAppSchema } from '@/lib/validators';
 
 export const runtime = 'edge';
 
@@ -11,11 +12,12 @@ export async function POST(request: Request) {
       return Response.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const { phone, name, businessName, industry, targetService } = await request.json();
-
-    if (!businessName || !industry || !targetService) {
-      return Response.json({ error: 'Missing required fields' }, { status: 400 });
+    const parsed = generateWhatsAppSchema.safeParse(await request.json());
+    if (!parsed.success) {
+      return Response.json({ error: 'Invalid request payload' }, { status: 400 });
     }
+
+    const { phone, name, businessName, industry, targetService } = parsed.data;
 
     // Validate phone — must be exactly 10 digits
     const cleanPhone = (phone || '').replace(/\D/g, '');

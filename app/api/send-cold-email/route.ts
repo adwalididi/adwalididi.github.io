@@ -2,6 +2,7 @@ import { createClient } from '@supabase/supabase-js';
 import { cookies } from 'next/headers';
 import { sendBrevoEmail } from '@/lib/brevo';
 import { wrapColdEmailHtml } from '@/lib/email-templates/cold-email-wrapper';
+import { sendColdEmailSchema } from '@/lib/validators';
 
 export const runtime = 'edge';
 
@@ -12,11 +13,12 @@ export async function POST(request: Request) {
       return Response.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const { to, toName, subject, body, outreachLogId } = await request.json();
-
-    if (!to || !subject || !body) {
-      return Response.json({ error: 'Missing required fields' }, { status: 400 });
+    const parsed = sendColdEmailSchema.safeParse(await request.json());
+    if (!parsed.success) {
+      return Response.json({ error: 'Invalid request payload' }, { status: 400 });
     }
+
+    const { to, toName, subject, body, outreachLogId } = parsed.data;
 
     const htmlContent = wrapColdEmailHtml(body);
 

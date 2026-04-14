@@ -1,5 +1,6 @@
 import { createClient } from '@supabase/supabase-js';
 import { redirect } from 'next/navigation';
+import Link from 'next/link';
 import { cookies } from 'next/headers';
 import LeadsTableClient from '@/components/admin/leads-table-client';
 import { AdminLogo } from '@/components/admin/admin-logo';
@@ -13,17 +14,28 @@ export default async function AdminLeads({
   searchParams: Promise<{ secret?: string, error?: string }> 
 }) {
   const params = await searchParams;
+  const cookieStore = await cookies();
   
-  // 1. URL SECURITY CHECK (First Layer) - Optimized for mobile/trailing-slash robustness
+  // 1. URL SECURITY CHECK (First Layer)
   const providedSecret = params.secret?.trim();
   const actualSecret = process.env.ADMIN_PASSWORD?.trim();
+  const isGateOpen = cookieStore.get('admin_gate')?.value === 'active';
 
-  if (!providedSecret || providedSecret !== actualSecret) {
+  if (!isGateOpen && providedSecret && actualSecret && providedSecret === actualSecret) {
+    cookieStore.set('admin_gate', 'active', {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      path: '/admin/',
+    });
+    redirect('/admin/leads/');
+  }
+
+  if (!isGateOpen && (!providedSecret || providedSecret !== actualSecret)) {
     redirect('/'); 
   }
 
   // 2. CHECK SESSION COOKIE (Second Layer)
-  const cookieStore = await cookies();
   const session = cookieStore.get('admin_session');
   // Since you said you log in manually every time, we set a session cookie.
   const isLoggedIn = session && session.value === 'active';
@@ -33,11 +45,10 @@ export default async function AdminLeads({
     'use server';
     const id = formData.get('id');
     const password = formData.get('password');
-    const secret = formData.get('secret');
 
     // Make sure variables exist
     if (!process.env.ADMIN_USER_ID || !process.env.ADMIN_USER_PASSWORD) {
-      redirect(`/admin/leads?secret=${secret}&error=server`);
+      redirect('/admin/leads/?error=server');
     }
 
     if (id === process.env.ADMIN_USER_ID && password === process.env.ADMIN_USER_PASSWORD) {
@@ -48,21 +59,19 @@ export default async function AdminLeads({
         sameSite: 'lax', // Use 'lax' for better cross-context (IP/mobile) reliability
         path: '/admin/leads/' // Match canonical trailing slash path
       });
-      // Redirect to clear any error query params - Ensure trailing slash is present
-      redirect(`/admin/leads/?secret=${secret}`); 
+      redirect('/admin/leads/'); 
     } else {
       // Login Failed
-      redirect(`/admin/leads?secret=${secret}&error=1`);
+      redirect('/admin/leads/?error=1');
     }
   }
 
-  async function handleLogout(formData: FormData) {
+  async function handleLogout() {
     'use server';
-    const secret = formData.get('secret');
     // Must specify the same path the cookie was set with, otherwise a different
     // cookie (at path '/') is targeted and the session cookie survives.
     (await cookies()).delete({ name: 'admin_session', path: '/admin/leads/' });
-    redirect(`/admin/leads/?secret=${secret}`);
+    redirect('/admin/leads/');
   }
 
   async function updateLeadStatus(leadId: string, newStatus: string) {
@@ -85,10 +94,10 @@ export default async function AdminLeads({
       <AdminThemeProvider>
         <div className="p-6 sm:p-8 bg-background min-h-screen text-foreground flex flex-col items-center justify-center font-sans tracking-tight">
         <div className="w-full max-w-md mb-8 flex justify-between items-center">
-            <a href="/" className="text-xs font-bold text-primary hover:text-primary/80 flex items-center gap-2 transition-all">
+            <Link href="/" className="text-xs font-bold text-primary hover:text-primary/80 flex items-center gap-2 transition-all">
                 <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="m15 18-6-6 6-6"/></svg>
                 Back to Home
-            </a>
+            </Link>
         </div>
         
         <form action={handleLogin} className="bg-card p-8 rounded-[2rem] border border-border w-full max-w-md flex flex-col gap-6 shadow-xl shadow-teal-900/5">
@@ -107,9 +116,6 @@ export default async function AdminLeads({
               Server auth variables missing.
             </div>
           )}
-
-          <input type="hidden" name="secret" value={params.secret} />
-          
           <div className="flex flex-col gap-2">
             <label className="text-primary text-[11px] font-black uppercase tracking-widest ml-1">User ID</label>
             <input 
@@ -157,9 +163,9 @@ export default async function AdminLeads({
         <div className="max-w-7xl mx-auto h-full flex flex-col">
         <div className="flex sm:flex-row flex-col gap-6 sm:items-center justify-between mb-4 pb-2 border-b border-border/50 break-words">
           <div className="flex items-center gap-5">
-             <a href="/" className="p-3 rounded-xl bg-card border border-border hover:bg-muted transition-all text-primary" title="Back to Home">
+             <Link href="/" className="p-3 rounded-xl bg-card border border-border hover:bg-muted transition-all text-primary" title="Back to Home">
                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="m15 18-6-6 6-6"/></svg>
-             </a>
+             </Link>
               <div className="flex items-center gap-4">
                 <AdminLogo />
                 <div className="h-10 w-px bg-border/50 hidden sm:block" />
@@ -174,7 +180,6 @@ export default async function AdminLeads({
               <span className="text-xs font-black text-primary uppercase tracking-widest">Leads: {leads?.length || 0}</span>
             </div>
             <form action={handleLogout}>
-              <input type="hidden" name="secret" value={params.secret} />
               <button type="submit" className="text-xs font-bold bg-card hover:bg-destructive/10 text-foreground px-5 py-2.5 rounded-lg transition-all border border-border flex items-center justify-center gap-2 group hover:border-destructive/30 hover:text-destructive cursor-pointer">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="opacity-70 group-hover:opacity-100 transition-opacity"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
                 Logout

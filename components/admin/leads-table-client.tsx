@@ -7,12 +7,9 @@ import {
   X, 
   MessageSquare, 
   Info, 
-  ExternalLink,
   ChevronDown,
-  Calendar,
   Layers,
   Phone,
-  Tag,
   Share2,
   Sun,
   Moon,
@@ -75,8 +72,8 @@ export default function LeadsTableClient({
   const [industryFilter, setIndustryFilter] = useState('All');
   const [serviceFilter, setServiceFilter] = useState('All');
   const [statusFilter, setStatusFilter] = useState('All');
-  const [sortBy, setSortBy] = useState<'date' | 'status'>('date');
-  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
+  const [sortBy] = useState<'date' | 'status'>('date');
+  const [sortOrder] = useState<'asc' | 'desc'>('desc');
   const [selectedLead, setSelectedLead] = useState<Lead | null>(null);
   const [density, setDensity] = useState<'compact' | 'comfortable'>('compact');
 
@@ -98,11 +95,6 @@ export default function LeadsTableClient({
     const set = new Set(leads.map(l => l.business_type).filter(Boolean));
     return ['All', ...Array.from(set)];
   }, [leads]);
-
-  // Extract unique services for filter dropdown
-  const availableServices = useMemo(() => {
-    return ['All', ...Object.keys(serviceLabels)];
-  }, []);
 
   // Filtered & Sorted Logic
   const filteredLeads = useMemo(() => {

@@ -2,14 +2,7 @@ import type { Metadata, Viewport } from 'next'
 import { Inter, Syne, Space_Grotesk } from 'next/font/google'
 import { GoogleTagManager } from '@next/third-parties/google'
 import './globals.css'
-import { Navbar } from '@/components/navbar'
-import { Footer } from '@/components/footer'
-import { WhatsAppButton } from '@/components/whatsapp-button'
-import { ScrollToTop } from '@/components/scroll-to-top'
 import { AnimationProvider } from '@/components/animation-provider'
-import { CookieConsent } from '@/components/cookie-consent'
-import { MobileBottomNav } from '@/components/mobile-bottom-nav'
-import { ThemeProvider } from '@/components/theme-provider'
 
 const inter = Inter({
   subsets: ['latin'],
