@@ -44,13 +44,17 @@ export const onRequest = async (context: MiddlewareContext) => {
   // Note: style-src retains 'unsafe-inline' to allow Framer Motion direct style injection
   const csp = `
     default-src 'self';
-    script-src 'self' 'unsafe-eval' 'nonce-${nonce}' 'strict-dynamic' https://www.googletagmanager.com https://www.google-analytics.com https://challenges.cloudflare.com;
+    script-src 'self' 'nonce-${nonce}' 'strict-dynamic' https://www.googletagmanager.com https://www.google-analytics.com https://challenges.cloudflare.com;
     style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
     img-src 'self' data: https: blob: https://www.googletagmanager.com;
     font-src 'self' data: https://fonts.gstatic.com;
     connect-src 'self' https: wss: https://www.google-analytics.com;
     frame-src 'self' https://challenges.cloudflare.com;
     frame-ancestors 'none';
+    object-src 'none';
+    base-uri 'self';
+    form-action 'self';
+    upgrade-insecure-requests;
   `.replace(/\s{2,}/g, ' ').trim();
 
   // Clone the response to modify it

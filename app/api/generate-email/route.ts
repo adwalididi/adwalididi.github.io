@@ -3,11 +3,15 @@ import { createClient } from '@supabase/supabase-js';
 import { cookies } from 'next/headers';
 import { generateEmailSchema } from '@/lib/validators';
 import { checkRateLimit } from '@/lib/rate-limit';
+import { isAllowedRequestOrigin } from '@/lib/request-origin';
 
 export const runtime = 'edge';
 
 export async function POST(request: Request) {
   try {
+    if (!isAllowedRequestOrigin(request)) {
+      return Response.json({ error: 'Forbidden' }, { status: 403 });
+    }
     const session = (await cookies()).get('admin_session_outreach');
     if (!session || session.value !== 'active') {
       return Response.json({ error: 'Unauthorized' }, { status: 401 });
