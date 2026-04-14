@@ -38,6 +38,10 @@ const nextConfig = {
             value: "default-src 'self'; script-src 'self' 'unsafe-eval' 'unsafe-inline' https://challenges.cloudflare.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: https: blob:; font-src 'self' data: https://fonts.gstatic.com; connect-src 'self' https: wss:; frame-src 'self' https://challenges.cloudflare.com; frame-ancestors 'none';",
           },
           {
+            key: 'Content-Security-Policy-Report-Only',
+            value: "default-src 'self'; script-src 'self' 'unsafe-eval' https://challenges.cloudflare.com; style-src 'self' https://fonts.googleapis.com; img-src 'self' data: https: blob:; font-src 'self' data: https://fonts.gstatic.com; connect-src 'self' https: wss:; frame-src 'self' https://challenges.cloudflare.com; frame-ancestors 'none';",
+          },
+          {
             key: 'Cross-Origin-Opener-Policy',
             value: 'same-origin',
           },
