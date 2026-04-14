@@ -346,8 +346,9 @@ export function LeadForm() {
                   <form onSubmit={handleSubmit} noValidate className="space-y-6">
 
                     {/* Honeypot (hidden) */}
-                    <div className="absolute opacity-0 pointer-events-none h-0 overflow-hidden">
-                      <input tabIndex={-1} value={honeypot} onChange={e => setHoneypot(e.target.value)} />
+                    <div className="absolute opacity-0 pointer-events-none h-0 w-0 overflow-hidden" aria-hidden="true">
+                      <label htmlFor="awd-hp-website">Website URL (Leave empty)</label>
+                      <input id="awd-hp-website" name="awd_hp_website" type="text" autoComplete="new-password" tabIndex={-1} value={honeypot} onChange={e => setHoneypot(e.target.value)} />
                     </div>
 
                     {/* ── Row 1: Name + WhatsApp ── */}
@@ -445,10 +446,11 @@ export function LeadForm() {
 
                     {/* ── Row 2: Business Type ── */}
                     <div className="space-y-1.5 relative" ref={dropdownRef}>
-                      <label className="block text-[10px] font-extrabold uppercase tracking-[0.22em] text-teal">
+                      <label htmlFor="lead-business-type" className="block text-[10px] font-extrabold uppercase tracking-[0.22em] text-teal">
                         Business Type
                       </label>
                       <button
+                        id="lead-business-type"
                         type="button"
                         onClick={() => setIsDropdownOpen(!isDropdownOpen)}
                         aria-expanded={isDropdownOpen}
@@ -492,10 +494,11 @@ export function LeadForm() {
 
                     {/* ── Row 2.5: Budget ── */}
                     <div className="space-y-1.5 relative">
-                      <label className="block text-[10px] font-extrabold uppercase tracking-[0.22em] text-teal">
+                      <label htmlFor="lead-budget" className="block text-[10px] font-extrabold uppercase tracking-[0.22em] text-teal">
                         Monthly Ads Budget
                       </label>
                       <button
+                        id="lead-budget"
                         type="button"
                         onClick={() => setIsBudgetOpen(!isBudgetOpen)}
                         aria-expanded={isBudgetOpen}
