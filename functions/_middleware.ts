@@ -37,6 +37,7 @@ export const onRequest = async (context: any) => {
   // Clone the response to modify it
   const newResponse = new HTMLRewriter()
     .on('script', new NonceInjector(nonce))
+    .on('link[rel="preload"][as="script"]', new NonceInjector(nonce))
     // We intentionally do not nonce <style> tags right now because React/Next.js and Framer Motion heavily rely on inline styles which would be broken if we completely drop unsafe-inline from style-src
     .transform(response);
 
