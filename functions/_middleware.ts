@@ -1,5 +1,4 @@
-import type { PagesFunction } from '@cloudflare/workers-types';
-
+// Type annotation removed to prevent Next.js build errors for missing Cloudflare types
 class NonceInjector {
   constructor(private nonce: string) {}
 
@@ -8,7 +7,7 @@ class NonceInjector {
   }
 }
 
-export const onRequest: PagesFunction = async (context) => {
+export const onRequest = async (context: any) => {
   // Pass the request to the Next.js assets/renderer first
   const response = await context.next();
 
