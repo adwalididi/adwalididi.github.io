@@ -1,4 +1,5 @@
 import { generateContent } from '@/lib/gemini';
+import { sanitizeOutreachEmailBody, sanitizeOutreachPlainText } from '@/lib/sanitize-outreach-text';
 import { createClient } from '@supabase/supabase-js';
 import { cookies } from 'next/headers';
 import { generateEmailSchema } from '@/lib/validators';
@@ -41,6 +42,7 @@ Write an ultra-short cold email for this business:
 
 Rules:
 - Extremely concise (under 75 words)
+- Do NOT use emoji or special symbols — warmth comes from words only
 - Do NOT mention physical locations or states
 - One specific pain point for the ${industry} industry
 - CTA: reply or book a free strategy call at https://adwalididi.com/#free-audit
@@ -62,8 +64,8 @@ BODY:
       return Response.json({ error: 'Unexpected AI response format. Please try again.' }, { status: 500 });
     }
 
-    const subject = subjectMatch[1].trim();
-    const body = bodyMatch[1].trim();
+    const subject = sanitizeOutreachPlainText(subjectMatch[1].trim());
+    const body = sanitizeOutreachEmailBody(bodyMatch[1].trim());
 
     // Log to Supabase outreach_log
     let outreachLogId: string | null = null;

@@ -1,6 +1,7 @@
 import { generateContent } from '@/lib/gemini';
 import { createClient } from '@supabase/supabase-js';
 import { cookies } from 'next/headers';
+import { sanitizeOutreachPlainText } from '@/lib/sanitize-outreach-text';
 import { generateWhatsAppSchema } from '@/lib/validators';
 import { checkRateLimit } from '@/lib/rate-limit';
 import { isAllowedRequestOrigin } from '@/lib/request-origin';
@@ -53,7 +54,7 @@ Rules:
 - Keep it under 50 words, casual, friendly
 - Do NOT mention physical locations or states
 - Can use a mix of Hindi and English if natural
-- Use 1-2 emojis max
+- Do NOT use emoji or special symbols — convey warmth with words only
 - Pitch the specific service naturally
 - End with a question to encourage reply
 - Do NOT be formal, do NOT use "Dear Sir/Madam"
@@ -63,7 +64,9 @@ Rules:
 
     const systemPrompt = 'You are Shivani, a friendly digital marketing consultant at Adwalididi agency in India. You write casual WhatsApp messages that feel personal and get replies. Never be formal or spammy.';
 
-    const message = (await generateContent(prompt, systemPrompt)).trim();
+    const message = sanitizeOutreachPlainText(
+      (await generateContent(prompt, systemPrompt)).trim()
+    );
 
     const waLink = `https://wa.me/${waPhone}?text=${encodeURIComponent(message)}`;
 
