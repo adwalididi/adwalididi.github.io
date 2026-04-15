@@ -36,7 +36,7 @@ export async function POST(request: Request) {
 
 Write an ultra-short cold email for this business:
 - Business name: ${businessName}
-- Owner name: ${ownerName || 'business owner'}
+- Owner name: ${ownerName || 'the team'}
 - Industry: ${industry}
 - Service to pitch: ${targetService}
 

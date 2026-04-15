@@ -14,9 +14,18 @@ function getKeys(): string[] {
   return keys;
 }
 
-function isQuotaError(e: unknown): boolean {
+function isRetryableError(e: unknown): boolean {
   const msg = String(e).toLowerCase();
-  return msg.includes('quota') || msg.includes('429') || msg.includes('rate') || msg.includes('exhausted') || msg.includes('resource_exhausted');
+  return (
+    msg.includes('quota') ||
+    msg.includes('429') ||
+    msg.includes('rate') ||
+    msg.includes('exhausted') ||
+    msg.includes('resource_exhausted') ||
+    msg.includes('503') ||
+    msg.includes('unavailable') ||
+    msg.includes('overloaded')
+  );
 }
 
 export async function generateContent(prompt: string, systemPrompt?: string): Promise<string> {
@@ -43,11 +52,13 @@ export async function generateContent(prompt: string, systemPrompt?: string): Pr
       return response.text || '';
     } catch (e) {
       lastError = e;
-      if (isQuotaError(e)) {
-        console.warn(`Gemini key exhausted, trying next key...`);
-        continue; // Try next key
+      if (isRetryableError(e)) {
+        console.warn(`Gemini key ${keyIndex + 1} failed (retryable), trying next key...`);
+        // Short delay to avoid hammering overloaded infrastructure
+        await new Promise((r) => setTimeout(r, 500));
+        continue;
       }
-      throw e; // Non-quota error — don't retry
+      throw e; // Non-retryable error — don't retry
     }
   }
 
