@@ -1,5 +1,4 @@
 import { Resend } from 'resend';
-import { getWelcomeEmailHtml } from '@/lib/email-templates/welcome-email';
 import { welcomeEmailSchema } from '@/lib/validators';
 
 export const runtime = 'edge';
@@ -40,19 +39,32 @@ export async function POST(request: Request) {
       return Response.json({ success: false, error: 'Invalid request payload' }, { status: 400 });
     }
 
-    const { name, email, businessType, services } = parsed.data;
+    const { name, email, businessType, businessName, budget, services } = parsed.data;
 
-    const html = getWelcomeEmailHtml(
-      name || 'there',
-      services || [],
-      businessType || 'Business'
-    );
+    const firstName = name ? name.split(' ')[0] : 'there';
+    const bizNameText = businessName ? businessName : 'your business';
+    const servicesText = services && services.length > 0 ? services.join(' + ') : 'your setup';
+    const bizTypeText = businessType ? businessType.toLowerCase() : 'business';
+    const budgetText = budget ? budget : 'specified';
+
+    const textPayload = `Just confirmed — I've received your audit request for ${bizNameText}.
+
+Here's what you asked us to look at:
+${servicesText}
+
+Given your budget (${budgetText}), I already have a few things in mind. I'll go through your ${bizTypeText} setup and send you the audit on WhatsApp within a few hours.
+
+If you want to connect faster, just reply here or message me directly: wa.me/916261643774
+
+Speak soon,
+Shruti
+Ad Wali Didi`;
 
     const { data, error } = await resend.emails.send({
       from: `Ad Wali Didi <${process.env.RESEND_FROM_EMAIL || 'hello@adwalididi.com'}>`,
       to: [email],
-      subject: `${name ? name.split(' ')[0] + ', y' : 'Y'}our free audit request is confirmed! 🎯`,
-      html,
+      subject: `Hi ${firstName},`,
+      text: textPayload,
     });
 
     if (error) {

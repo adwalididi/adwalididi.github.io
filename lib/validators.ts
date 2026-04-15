@@ -10,6 +10,8 @@ export const welcomeEmailSchema = z.object({
   name: optionalTrimmedString(100),
   email: z.string().trim().email().max(320),
   businessType: optionalTrimmedString(100),
+  businessName: optionalTrimmedString(120),
+  budget: optionalTrimmedString(100),
   services: z.array(z.string().trim().min(1).max(100)).max(10).optional(),
 });
 

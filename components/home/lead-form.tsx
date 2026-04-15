@@ -338,6 +338,8 @@ export function LeadForm() {
             name: name.trim(),
             email: email.trim(),
             businessType,
+            businessName: businessName.trim() || undefined,
+            budget,
             services: selectedServices.map(id => servicesOptions.find(o => o.id === id)?.label).filter(Boolean),
           }),
         }).catch(() => {}) // Silent fail — Supabase insert already succeeded
