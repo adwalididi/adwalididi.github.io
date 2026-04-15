@@ -11,7 +11,7 @@ import { LeadFormWrapper } from "@/components/home/lead-form-wrapper"
 const FaqSection = dynamic(() => import("@/components/home/faq-section").then(mod => mod.FaqSection))
 const Testimonial = dynamic(() => import("@/components/home/testimonial").then(mod => mod.Testimonial))
 const CTASection = dynamic(() => import("@/components/home/cta-section").then(mod => mod.CTASection))
-import { FloatingCTA } from "@/components/ui/floating-cta"
+
 
 // FAQPage schema — enables rich snippets in Google Search results
 const faqJsonLd = {
@@ -102,7 +102,7 @@ export default function HomePage() {
       <FaqSection />
       <Testimonial />
       <CTASection />
-      <FloatingCTA />
+
     </>
   )
 }
