@@ -14,3 +14,16 @@ next.user-config.*
 node_modules
 .next/
 .DS_Store
+
+# TypeScript / tooling caches (local only — do not commit)
+*.tsbuildinfo
+.turbo
+.eslintcache
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+coverage/
+dist/
+.cache/
