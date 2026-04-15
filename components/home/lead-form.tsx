@@ -93,6 +93,8 @@ export function LeadForm() {
   const [selectedServices, setSelectedServices] = useState<string[]>([])
   const [isDropdownOpen,   setIsDropdownOpen]   = useState(false)
   const [isBudgetOpen,     setIsBudgetOpen]     = useState(false)
+  const [activeBusinessIndex, setActiveBusinessIndex] = useState(0)
+  const [activeBudgetIndex, setActiveBudgetIndex] = useState(0)
   const [honeypot,         setHoneypot]         = useState("")
 
   const [utmParams, setUtmParams] = useState({
@@ -107,7 +109,12 @@ export function LeadForm() {
   const [isSubmitting,  setIsSubmitting]  = useState(false)
   const [isSuccess,     setIsSuccess]     = useState(false)
 
-  const dropdownRef = useRef<HTMLDivElement>(null)
+  const businessDropdownRef = useRef<HTMLDivElement>(null)
+  const budgetDropdownRef = useRef<HTMLDivElement>(null)
+  const nameInputRef = useRef<HTMLInputElement>(null)
+  const whatsappInputRef = useRef<HTMLInputElement>(null)
+  const emailInputRef = useRef<HTMLInputElement>(null)
+  const firstServiceButtonRef = useRef<HTMLButtonElement>(null)
 
   useEffect(() => {
     if (typeof window === "undefined") return
@@ -121,7 +128,10 @@ export function LeadForm() {
     })
 
     const handleClick = (e: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
+      const targetNode = e.target as Node
+      const outsideBusiness = !businessDropdownRef.current?.contains(targetNode)
+      const outsideBudget = !budgetDropdownRef.current?.contains(targetNode)
+      if (outsideBusiness && outsideBudget) {
         setIsDropdownOpen(false)
         setIsBudgetOpen(false)
       }
@@ -149,6 +159,108 @@ export function LeadForm() {
     }
   }, [name, whatsapp])
 
+  useEffect(() => {
+    if (isDropdownOpen) setActiveBusinessIndex(Math.max(0, businessTypes.indexOf(businessType)))
+  }, [isDropdownOpen, businessType])
+
+  useEffect(() => {
+    if (isBudgetOpen) setActiveBudgetIndex(Math.max(0, budgetOptions.indexOf(budget)))
+  }, [isBudgetOpen, budget])
+
+  useEffect(() => {
+    if (!isDropdownOpen) return
+    document.getElementById(`business-type-option-${activeBusinessIndex}`)?.scrollIntoView({ block: "nearest" })
+  }, [activeBusinessIndex, isDropdownOpen])
+
+  useEffect(() => {
+    if (!isBudgetOpen) return
+    document.getElementById(`budget-option-${activeBudgetIndex}`)?.scrollIntoView({ block: "nearest" })
+  }, [activeBudgetIndex, isBudgetOpen])
+
+  const selectBusinessType = (nextType: string) => {
+    setBusinessType(nextType)
+    setIsDropdownOpen(false)
+  }
+
+  const selectBudget = (nextBudget: string) => {
+    setBudget(nextBudget)
+    setIsBudgetOpen(false)
+  }
+
+  const handleBusinessButtonKeyDown = (e: React.KeyboardEvent<HTMLButtonElement>) => {
+    if (e.key === "ArrowDown" || e.key === "ArrowUp") {
+      e.preventDefault()
+      if (!isDropdownOpen) {
+        setIsDropdownOpen(true)
+        return
+      }
+      const delta = e.key === "ArrowDown" ? 1 : -1
+      setActiveBusinessIndex((prev) => (prev + delta + businessTypes.length) % businessTypes.length)
+      return
+    }
+    if (e.key === "Enter" || e.key === " ") {
+      e.preventDefault()
+      setIsDropdownOpen((prev) => !prev)
+      return
+    }
+    if (e.key === "Escape") {
+      setIsDropdownOpen(false)
+    }
+  }
+
+  const handleBudgetButtonKeyDown = (e: React.KeyboardEvent<HTMLButtonElement>) => {
+    if (e.key === "ArrowDown" || e.key === "ArrowUp") {
+      e.preventDefault()
+      if (!isBudgetOpen) {
+        setIsBudgetOpen(true)
+        return
+      }
+      const delta = e.key === "ArrowDown" ? 1 : -1
+      setActiveBudgetIndex((prev) => (prev + delta + budgetOptions.length) % budgetOptions.length)
+      return
+    }
+    if (e.key === "Enter" || e.key === " ") {
+      e.preventDefault()
+      setIsBudgetOpen((prev) => !prev)
+      return
+    }
+    if (e.key === "Escape") {
+      setIsBudgetOpen(false)
+    }
+  }
+
+  const handleBusinessListKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
+    if (e.key === "ArrowDown") {
+      e.preventDefault()
+      setActiveBusinessIndex((prev) => (prev + 1) % businessTypes.length)
+    } else if (e.key === "ArrowUp") {
+      e.preventDefault()
+      setActiveBusinessIndex((prev) => (prev - 1 + businessTypes.length) % businessTypes.length)
+    } else if (e.key === "Enter") {
+      e.preventDefault()
+      selectBusinessType(businessTypes[activeBusinessIndex])
+    } else if (e.key === "Escape") {
+      e.preventDefault()
+      setIsDropdownOpen(false)
+    }
+  }
+
+  const handleBudgetListKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
+    if (e.key === "ArrowDown") {
+      e.preventDefault()
+      setActiveBudgetIndex((prev) => (prev + 1) % budgetOptions.length)
+    } else if (e.key === "ArrowUp") {
+      e.preventDefault()
+      setActiveBudgetIndex((prev) => (prev - 1 + budgetOptions.length) % budgetOptions.length)
+    } else if (e.key === "Enter") {
+      e.preventDefault()
+      selectBudget(budgetOptions[activeBudgetIndex])
+    } else if (e.key === "Escape") {
+      e.preventDefault()
+      setIsBudgetOpen(false)
+    }
+  }
+
   const toggleService = (id: string) => {
     setSelectedServices(prev =>
       prev.includes(id) ? prev.filter(s => s !== id) : [...prev, id]
@@ -160,21 +272,25 @@ export function LeadForm() {
     let valid = true
     if (!name.trim()) {
       setNameError("Please enter your name")
+      nameInputRef.current?.focus()
       valid = false
     } else { setNameError("") }
 
     if (!/^[6-9][0-9]{9}$/.test(whatsapp.trim())) {
       setWhatsappError("Enter a valid 10-digit number")
+      if (valid) whatsappInputRef.current?.focus()
       valid = false
     } else { setWhatsappError("") }
 
     if (email.trim() && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) {
       setEmailError("Invalid email format")
+      if (valid) emailInputRef.current?.focus()
       valid = false
     } else { setEmailError("") }
 
     if (selectedServices.length === 0) {
       setServicesError("Pick at least one service")
+      if (valid) firstServiceButtonRef.current?.focus()
       valid = false
     } else { setServicesError("") }
 
@@ -242,7 +358,7 @@ export function LeadForm() {
       <div className="absolute top-0 right-[-8%] w-[500px] h-[500px] bg-teal/5 blur-[100px] rounded-full pointer-events-none" />
       <div className="absolute bottom-0 left-[-5%] w-[350px] h-[350px] bg-teal/5 blur-[80px] rounded-full pointer-events-none" />
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 font-[var(--font-space-grotesk)]">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 font-sans">
 
         {/* ── Outer 2-column: Pitch  |  Form Card ── */}
         <div className="grid grid-cols-1 lg:grid-cols-[1fr_1.1fr] gap-14 lg:gap-20 items-start">
@@ -258,7 +374,7 @@ export function LeadForm() {
               Live: Free Audit Slots Open
             </span>
 
-            <h2 className="font-[var(--font-syne)] text-4xl sm:text-5xl xl:text-[3.25rem] font-bold text-near-black leading-[1.08] mb-6 tracking-tight">
+            <h2 className="font-display text-4xl sm:text-5xl xl:text-[3.25rem] font-bold text-near-black leading-[1.08] mb-6 tracking-tight">
               Get more{" "}
               <span className="text-teal">enquiries</span>,<br />
               not just clicks.
@@ -281,7 +397,7 @@ export function LeadForm() {
                   key={i}
                   className="p-4 rounded-2xl border border-teal-border bg-white/70 hover:bg-white shadow-sm transition-all hover:shadow-md hover:shadow-teal/5 cursor-default"
                 >
-                  <p className="font-[var(--font-syne)] text-2xl font-bold text-teal">{s.n}</p>
+                  <p className="font-display text-2xl font-bold text-teal">{s.n}</p>
                   <p className="text-[10px] font-bold text-muted-text uppercase mt-0.5 tracking-widest">{s.t}</p>
                 </div>
               ))}
@@ -311,7 +427,7 @@ export function LeadForm() {
               {/* Card header strip */}
               <div className="px-8 sm:px-10 pt-8 pb-6 border-b border-teal-border/60">
                 <p className="text-[10px] font-extrabold uppercase tracking-[0.28em] text-teal mb-1">Step 1 of 1</p>
-                <h3 className="font-[var(--font-syne)] text-2xl font-bold text-near-black">
+                <h3 className="font-[var(--font-space-grotesk)] text-2xl font-bold text-near-black">
                   Request your free audit
                 </h3>
                 <p className="text-muted-text text-sm mt-1">Takes 30 seconds · No card required</p>
@@ -325,7 +441,7 @@ export function LeadForm() {
                     <div className="w-20 h-20 bg-teal-tint rounded-full flex items-center justify-center mx-auto mb-5 shadow-inner">
                       <Check className="w-10 h-10 text-teal" />
                     </div>
-                    <h3 className="font-[var(--font-syne)] text-2xl font-bold text-near-black mb-2">
+                    <h3 className="font-[var(--font-space-grotesk)] text-2xl font-bold text-near-black mb-2">
                       You&apos;re all set!
                     </h3>
                     <p className="text-muted-text text-sm mb-8">
@@ -361,6 +477,7 @@ export function LeadForm() {
                         </label>
                         <input
                           id="lead-name"
+                            ref={nameInputRef}
                           type="text"
                           placeholder="e.g. Priya"
                           autoComplete="given-name"
@@ -388,6 +505,7 @@ export function LeadForm() {
                           </span>
                           <input
                             id="lead-whatsapp"
+                            ref={whatsappInputRef}
                             type="tel"
                             placeholder="98765 43210"
                             autoComplete="tel"
@@ -429,6 +547,7 @@ export function LeadForm() {
                         </label>
                         <input
                           id="lead-email"
+                            ref={emailInputRef}
                           type="email"
                           placeholder="hello@example.com"
                           autoComplete="email"
@@ -445,7 +564,7 @@ export function LeadForm() {
                     </div>
 
                     {/* ── Row 2: Business Type ── */}
-                    <div className="space-y-1.5 relative" ref={dropdownRef}>
+                    <div className="space-y-1.5 relative" ref={businessDropdownRef}>
                       <label htmlFor="lead-business-type" className="block text-[10px] font-extrabold uppercase tracking-[0.22em] text-teal">
                         Business Type
                       </label>
@@ -453,6 +572,11 @@ export function LeadForm() {
                         id="lead-business-type"
                         type="button"
                         onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                        onKeyDown={handleBusinessButtonKeyDown}
+                        role="combobox"
+                        aria-controls="business-type-listbox"
+                        aria-activedescendant={isDropdownOpen ? `business-type-option-${activeBusinessIndex}` : undefined}
+                        aria-haspopup="listbox"
                         aria-expanded={isDropdownOpen}
                         className="w-full px-4 py-3.5 rounded-xl border border-teal-border bg-slate-50 hover:bg-white flex items-center justify-between transition-all text-left cursor-pointer focus:outline-none focus:ring-2 focus:ring-teal/20 focus:border-teal"
                       >
@@ -472,20 +596,29 @@ export function LeadForm() {
                             animate={{ opacity: 1, y: 0, scale: 1 }}
                             exit={{ opacity: 0, y: 8, scale: 0.98 }}
                             transition={{ duration: 0.15 }}
+                            id="business-type-listbox"
+                            role="listbox"
+                            tabIndex={-1}
+                            aria-label="Business type options"
+                            onKeyDown={handleBusinessListKeyDown}
                             className="absolute z-[100] left-0 right-0 mt-1.5 bg-white border border-teal-border rounded-2xl shadow-xl max-h-[260px] overflow-y-auto custom-scrollbar p-1.5"
                           >
-                            {businessTypes.map(t => (
-                              <div
+                            {businessTypes.map((t, idx) => (
+                              <button
                                 key={t}
+                                id={`business-type-option-${idx}`}
+                                type="button"
                                 role="option"
+                                tabIndex={idx === activeBusinessIndex ? 0 : -1}
                                 aria-selected={businessType === t}
-                                onClick={() => { setBusinessType(t); setIsDropdownOpen(false) }}
+                                onMouseEnter={() => setActiveBusinessIndex(idx)}
+                                onClick={() => selectBusinessType(t)}
                                 className={`px-4 py-2.5 hover:bg-teal-tint rounded-xl cursor-pointer text-sm font-medium transition-colors ${
                                   businessType === t ? "bg-teal-tint text-teal font-semibold" : "text-near-black"
                                 }`}
                               >
                                 {t}
-                              </div>
+                              </button>
                             ))}
                           </m.div>
                         )}
@@ -493,7 +626,7 @@ export function LeadForm() {
                     </div>
 
                     {/* ── Row 2.5: Budget ── */}
-                    <div className="space-y-1.5 relative">
+                    <div className="space-y-1.5 relative" ref={budgetDropdownRef}>
                       <label htmlFor="lead-budget" className="block text-[10px] font-extrabold uppercase tracking-[0.22em] text-teal">
                         Monthly Ads Budget
                       </label>
@@ -501,6 +634,11 @@ export function LeadForm() {
                         id="lead-budget"
                         type="button"
                         onClick={() => setIsBudgetOpen(!isBudgetOpen)}
+                        onKeyDown={handleBudgetButtonKeyDown}
+                        role="combobox"
+                        aria-controls="budget-listbox"
+                        aria-activedescendant={isBudgetOpen ? `budget-option-${activeBudgetIndex}` : undefined}
+                        aria-haspopup="listbox"
                         aria-expanded={isBudgetOpen}
                         className="w-full px-4 py-3.5 rounded-xl border border-teal-border bg-slate-50 hover:bg-white flex items-center justify-between transition-all text-left cursor-pointer focus:outline-none focus:ring-2 focus:ring-teal/20 focus:border-teal"
                       >
@@ -520,20 +658,29 @@ export function LeadForm() {
                             animate={{ opacity: 1, y: 0, scale: 1 }}
                             exit={{ opacity: 0, y: 8, scale: 0.98 }}
                             transition={{ duration: 0.15 }}
+                            id="budget-listbox"
+                            role="listbox"
+                            tabIndex={-1}
+                            aria-label="Monthly budget options"
+                            onKeyDown={handleBudgetListKeyDown}
                             className="absolute z-[100] left-0 right-0 mt-1.5 bg-white border border-teal-border rounded-2xl shadow-xl max-h-[260px] overflow-y-auto custom-scrollbar p-1.5"
                           >
-                            {budgetOptions.map(b => (
-                              <div
+                            {budgetOptions.map((b, idx) => (
+                              <button
                                 key={b}
+                                id={`budget-option-${idx}`}
+                                type="button"
                                 role="option"
+                                tabIndex={idx === activeBudgetIndex ? 0 : -1}
                                 aria-selected={budget === b}
-                                onClick={() => { setBudget(b); setIsBudgetOpen(false) }}
+                                onMouseEnter={() => setActiveBudgetIndex(idx)}
+                                onClick={() => selectBudget(b)}
                                 className={`px-4 py-2.5 hover:bg-teal-tint rounded-xl cursor-pointer text-sm font-medium transition-colors ${
                                   budget === b ? "bg-teal-tint text-teal font-semibold" : "text-near-black"
                                 }`}
                               >
                                 {b}
-                              </div>
+                              </button>
                             ))}
                           </m.div>
                         )}
@@ -551,6 +698,7 @@ export function LeadForm() {
                           return (
                             <button
                               key={s.id}
+                              ref={s.id === servicesOptions[0].id ? firstServiceButtonRef : undefined}
                               type="button"
                               onClick={() => toggleService(s.id)}
                               className={`px-3 py-2.5 rounded-xl text-[11px] font-bold transition-all border flex items-center gap-2 cursor-pointer focus:outline-none focus:ring-2 focus:ring-teal/20 ${

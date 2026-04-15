@@ -4,7 +4,6 @@ import Link from "next/link"
 import Image from "next/image"
 import { useState, useEffect } from "react"
 import { usePathname } from "next/navigation"
-import { Menu, X } from "lucide-react"
 
 const navLinks = [
   { href: "/", label: "Home" },
@@ -15,7 +14,6 @@ const navLinks = [
 ]
 
 export function Navbar() {
-  const [isOpen, setIsOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
   const pathname = usePathname()
 
@@ -31,11 +29,6 @@ export function Navbar() {
     window.addEventListener("scroll", handleScroll, { passive: true })
     return () => window.removeEventListener("scroll", handleScroll)
   }, [])
-
-  // Close mobile menu on route change
-  useEffect(() => {
-    setIsOpen(false)
-  }, [pathname])
 
   return (
     <header
@@ -84,19 +77,7 @@ export function Navbar() {
               {"Let's Talk"}
             </Link>
           </div>
-
-          {/* Mobile Menu Button — hidden on mobile (bottom nav handles navigation on small screens) */}
-          <button
-            onClick={() => setIsOpen(!isOpen)}
-            className="hidden p-2 text-near-black"
-            aria-label={isOpen ? "Close menu" : "Open menu"}
-            aria-expanded={isOpen}
-          >
-            {isOpen ? <X size={24} aria-hidden="true" /> : <Menu size={24} aria-hidden="true" />}
-          </button>
         </div>
-
-        {/* Mobile Navigation dropdown — hidden since bottom nav handles mobile navigation */}
       </nav>
     </header>
   )

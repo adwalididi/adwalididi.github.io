@@ -4,7 +4,7 @@ import { useState, useRef, useEffect } from 'react';
 import {
   Mail, MessageCircle, Plus, Upload, Sparkles, Send, Copy, ExternalLink,
   Trash2, ChevronDown, Loader2, Check, AlertCircle, X, Users, Pencil,
-  Sun, Moon
+  Sun, Moon, AtSign, Phone, TriangleAlert
 } from 'lucide-react';
 import { useAdminTheme } from '@/components/admin/admin-theme-provider';
 
@@ -169,6 +169,8 @@ export default function OutreachDashboardClient({ sentTodayInitial }: { sentToda
   const [bulkGenerating, setBulkGenerating] = useState(false);
   const [bulkSending, setBulkSending] = useState(false);
   const [importingCRM, setImportingCRM] = useState(false);
+  const [bulkGenerateProgress, setBulkGenerateProgress] = useState({ completed: 0, total: 0 });
+  const [bulkSendProgress, setBulkSendProgress] = useState({ completed: 0, total: 0 });
 
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -354,19 +356,40 @@ export default function OutreachDashboardClient({ sentTodayInitial }: { sentToda
   // ─── Bulk Actions ─────────────────────────────────────────────────
 
   async function bulkGenerate() {
+    const queue = activeTab === 'email'
+      ? leads.filter(l => l.email && l.emailStatus === 'pending')
+      : leads.filter(l => l.phone && l.waStatus === 'pending');
+    setBulkGenerateProgress({ completed: 0, total: queue.length });
     setBulkGenerating(true);
-    if (activeTab === 'email') {
-      for (const lead of leads.filter(l => l.email && l.emailStatus === 'pending')) await generateEmail(lead);
-    } else {
-      for (const lead of leads.filter(l => l.phone && l.waStatus === 'pending')) await generateWhatsApp(lead);
+    try {
+      for (let i = 0; i < queue.length; i += 1) {
+        const lead = queue[i];
+        if (activeTab === 'email') {
+          await generateEmail(lead);
+        } else {
+          await generateWhatsApp(lead);
+        }
+        setBulkGenerateProgress({ completed: i + 1, total: queue.length });
+      }
+    } finally {
+      setBulkGenerating(false);
+      setBulkGenerateProgress({ completed: 0, total: 0 });
     }
-    setBulkGenerating(false);
   }
 
   async function bulkSend() {
+    const queue = leads.filter(l => l.email && l.emailStatus === 'generated');
+    setBulkSendProgress({ completed: 0, total: queue.length });
     setBulkSending(true);
-    for (const lead of leads.filter(l => l.email && l.emailStatus === 'generated')) await sendEmail(lead);
-    setBulkSending(false);
+    try {
+      for (let i = 0; i < queue.length; i += 1) {
+        await sendEmail(queue[i]);
+        setBulkSendProgress({ completed: i + 1, total: queue.length });
+      }
+    } finally {
+      setBulkSending(false);
+      setBulkSendProgress({ completed: 0, total: 0 });
+    }
   }
 
   // ─── Computed ─────────────────────────────────────────────────────
@@ -448,14 +471,18 @@ export default function OutreachDashboardClient({ sentTodayInitial }: { sentToda
           <button onClick={bulkGenerate} disabled={bulkGenerating}
             className="flex items-center gap-2 px-5 py-2.5 bg-blue-600 text-white rounded-xl font-bold text-xs hover:bg-blue-700 disabled:opacity-50 transition-all cursor-pointer">
             {bulkGenerating ? <Loader2 size={14} className="animate-spin" /> : <Sparkles size={14} />}
-            Generate All ({pendingCount})
+            {bulkGenerating
+              ? `Generating ${bulkGenerateProgress.completed}/${bulkGenerateProgress.total || pendingCount}`
+              : `Generate All (${pendingCount})`}
           </button>
         )}
         {activeTab === 'email' && generatedCount > 0 && (
           <button onClick={bulkSend} disabled={bulkSending || sentToday >= 300}
             className="flex items-center gap-2 px-5 py-2.5 bg-emerald-600 text-white rounded-xl font-bold text-xs hover:bg-emerald-700 disabled:opacity-50 transition-all cursor-pointer">
             {bulkSending ? <Loader2 size={14} className="animate-spin" /> : <Send size={14} />}
-            Send All ({generatedCount})
+            {bulkSending
+              ? `Sending ${bulkSendProgress.completed}/${bulkSendProgress.total || generatedCount}`
+              : `Send All (${generatedCount})`}
           </button>
         )}
       </div>
@@ -551,8 +578,16 @@ export default function OutreachDashboardClient({ sentTodayInitial }: { sentToda
                           </div>
                         ) : (
                           <>
-                            {lead.email && <p className="text-xs text-muted-foreground truncate max-w-[180px]">✉ {lead.email}</p>}
-                            {lead.phone && <p className="text-xs text-muted-foreground">📱 91{lead.phone}</p>}
+                            {lead.email && (
+                              <p className="text-xs text-muted-foreground truncate max-w-[180px] inline-flex items-center gap-1.5">
+                                <AtSign size={12} className="shrink-0" /> {lead.email}
+                              </p>
+                            )}
+                            {lead.phone && (
+                              <p className="text-xs text-muted-foreground inline-flex items-center gap-1.5">
+                                <Phone size={12} className="shrink-0" /> 91{lead.phone}
+                              </p>
+                            )}
                           </>
                         )}
                       </td>
@@ -676,8 +711,9 @@ export default function OutreachDashboardClient({ sentTodayInitial }: { sentToda
 
             {/* Modal Header — fixed */}
             <div className="flex items-center justify-between p-6 pb-4 border-b border-border shrink-0">
-              <h3 className="text-base font-bold text-foreground">
-                {activeTab === 'email' ? '📧 Email Preview' : '💬 WhatsApp Preview'}
+              <h3 className="text-base font-bold text-foreground inline-flex items-center gap-2">
+                {activeTab === 'email' ? <Mail size={16} /> : <MessageCircle size={16} />}
+                {activeTab === 'email' ? 'Email Preview' : 'WhatsApp Preview'}
               </h3>
               <button onClick={() => setPreviewLead(null)}
                 className="p-2 rounded-lg hover:bg-muted text-muted-foreground cursor-pointer transition-all">
@@ -718,7 +754,10 @@ export default function OutreachDashboardClient({ sentTodayInitial }: { sentToda
                     {previewLead.generatedMessage}
                   </div>
                   <p className="text-[10px] text-muted-foreground">
-                    ⚠️ "Number doesn&apos;t exist" means the number isn&apos;t registered on WhatsApp — not a URL issue.
+                    <span className="inline-flex items-center gap-1.5">
+                      <TriangleAlert size={12} />
+                      "Number doesn&apos;t exist" means the number isn&apos;t registered on WhatsApp — not a URL issue.
+                    </span>
                   </p>
                 </div>
               )}
