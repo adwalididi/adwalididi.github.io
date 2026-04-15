@@ -44,6 +44,7 @@ interface Lead {
   phone: string;
   businessName: string;
   ownerName: string;
+  city?: string;
   industry: string;
   targetService: string;
   // Email channel
@@ -66,6 +67,7 @@ function newLead(partial: Partial<Lead> & Pick<Lead, 'businessName'>): Lead {
     email: '',
     phone: '',
     ownerName: '',
+    city: '',
     industry: INDUSTRIES[0],
     targetService: SERVICES[0],
     emailStatus: 'pending',
@@ -126,6 +128,31 @@ function parseCsv(text: string): string[][] {
 
 // ─── Component ────────────────────────────────────────────────────────────────
 
+/** Map a Supabase snake_case row → camelCase Lead object */
+function mapDbToLead(row: Record<string, unknown>): Lead {
+  return {
+    id:               row.id               as string,
+    crmId:            (row.crm_id          as string) || undefined,
+    email:            (row.email           as string) || '',
+    phone:            (row.phone           as string) || '',
+    businessName:     row.business_name    as string,
+    ownerName:        (row.owner_name      as string) || '',
+    city:             (row.city            as string) || undefined,
+    industry:         row.industry         as string,
+    targetService:    row.target_service   as string,
+    generatedSubject: (row.generated_subject as string) || undefined,
+    generatedBody:    (row.generated_body  as string) || undefined,
+    generatedMessage: (row.generated_message as string) || undefined,
+    waLink:           (row.wa_link         as string) || undefined,
+    formattedPhone:   (row.formatted_phone as string) || undefined,
+    emailStatus:      (row.email_status    as Lead['emailStatus']) || 'pending',
+    waStatus:         (row.wa_status       as Lead['waStatus'])   || 'pending',
+    emailError:       (row.email_error     as string) || undefined,
+    waError:          (row.wa_error        as string) || undefined,
+    outreachLogId:    (row.outreach_log_id as string) || undefined,
+  };
+}
+
 export default function OutreachDashboardClient({ sentTodayInitial }: { sentTodayInitial: number }) {
   const { theme, toggleTheme, mounted } = useAdminTheme();
   const [activeTab, setActiveTab] = useState<'email' | 'whatsapp'>('email');
@@ -134,28 +161,26 @@ export default function OutreachDashboardClient({ sentTodayInitial }: { sentToda
   const [showForm, setShowForm] = useState(false);
   const [previewLead, setPreviewLead] = useState<Lead | null>(null);
   const [editingId, setEditingId] = useState<string | null>(null);
-  const [hydrated, setHydrated] = useState(false);
+  const [loadingLeads, setLoadingLeads] = useState(true);
 
-  // Load from localStorage on mount
-  useEffect(() => {
+  // Fetch leads from Supabase on mount
+  async function fetchLeads() {
     try {
-      const saved = localStorage.getItem('outreach_leads');
-      if (saved) setLeads(JSON.parse(saved));
-    } catch {}
-    setHydrated(true);
-  }, []);
+      const res = await fetch('/api/outreach-leads/', { credentials: 'include' });
+      const data = await res.json();
+      if (data.leads) setLeads(data.leads.map(mapDbToLead));
+    } catch (e) {
+      console.error('Failed to load leads:', e);
+    } finally {
+      setLoadingLeads(false);
+    }
+  }
 
-  // Save to localStorage on every change
-  useEffect(() => {
-    if (!hydrated) return;
-    try {
-      localStorage.setItem('outreach_leads', JSON.stringify(leads));
-    } catch {}
-  }, [leads, hydrated]);
+  useEffect(() => { fetchLeads(); }, []);
 
   // Form state
   const [form, setForm] = useState({
-    email: '', phone: '', businessName: '', ownerName: '',
+    email: '', phone: '', businessName: '', ownerName: '', city: '',
     industry: INDUSTRIES[0], targetService: SERVICES[0],
   });
 
@@ -176,19 +201,58 @@ export default function OutreachDashboardClient({ sentTodayInitial }: { sentToda
 
   // ─── Lead CRUD ────────────────────────────────────────────────────
 
-  function addLead() {
+  async function addLead() {
     if (!form.businessName.trim()) return;
-    setLeads(prev => [newLead({ ...form, businessName: form.businessName.trim() }), ...prev]);
-    setForm({ email: '', phone: '', businessName: '', ownerName: '', industry: INDUSTRIES[0], targetService: SERVICES[0] });
+    const optimistic = newLead({ ...form, businessName: form.businessName.trim() });
+    // Optimistic: show immediately
+    setLeads(prev => [optimistic, ...prev]);
+    setForm({ email: '', phone: '', businessName: '', ownerName: '', city: '', industry: INDUSTRIES[0], targetService: SERVICES[0] });
     setShowForm(false);
+    try {
+      const res = await fetch('/api/outreach-leads/', {
+        method: 'POST',
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: optimistic.id, ...form, businessName: form.businessName.trim() }),
+      });
+      if (!res.ok) throw new Error('Failed to save');
+    } catch (e) {
+      console.error('Add lead error:', e);
+      // Rollback optimistic update
+      setLeads(prev => prev.filter(l => l.id !== optimistic.id));
+    }
   }
 
-  function removeLead(id: string) {
+  async function removeLead(id: string) {
+    // Optimistic: remove immediately
     setLeads(prev => prev.filter(l => l.id !== id));
+    try {
+      await fetch(`/api/outreach-leads/${id}/`, { method: 'DELETE', credentials: 'include' });
+    } catch (e) {
+      console.error('Delete lead error:', e);
+      // Restore on failure by refreshing
+      fetchLeads();
+    }
   }
 
+  /** In-memory update for real-time edit fields — call persistLead to save. */
   function updateLead(id: string, patch: Partial<Lead>) {
     setLeads(prev => prev.map(l => l.id === id ? { ...l, ...patch } : l));
+  }
+
+  /** Persist a patch to Supabase — used for generated content, status updates, and on edit 'Done'. */
+  async function persistLead(id: string, patch: Partial<Lead>) {
+    updateLead(id, patch); // keep UI in sync
+    try {
+      await fetch(`/api/outreach-leads/${id}/`, {
+        method: 'PATCH',
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(patch),
+      });
+    } catch (e) {
+      console.error('Persist lead error:', e);
+    }
   }
 
   // ─── Import from CRM ──────────────────────────────────────────────
@@ -198,12 +262,11 @@ export default function OutreachDashboardClient({ sentTodayInitial }: { sentToda
     try {
       const res = await fetch('/api/get-crm-leads/', { credentials: 'include' });
       const data = await res.json();
-      if (data.leads) {
-        setLeads(prev => {
-          const existingCrmIds = new Set(prev.map(l => l.crmId).filter(Boolean));
-          const newLeads = data.leads.filter((l: Lead) => !existingCrmIds.has(l.crmId));
-          return [...newLeads, ...prev];
-        });
+      if (data.error) throw new Error(data.error);
+      // Refresh full list — server already upserted, deduplication handled by DB
+      await fetchLeads();
+      if (data.imported === 0) {
+        alert(`No new leads to import (${data.skipped} already imported).`);
       }
     } catch (e) {
       console.error('CRM import failed:', e);
@@ -233,6 +296,7 @@ export default function OutreachDashboardClient({ sentTodayInitial }: { sentToda
         imported.push(newLead({
           businessName: biz,
           ownerName: r.owner_name || r.ownername || r.owner || r.name || '',
+          city: r.city || r.location || '',
           email: r.email || '',
           phone: r.phone || '',
           industry: r.industry || INDUSTRIES[0],
@@ -257,13 +321,14 @@ export default function OutreachDashboardClient({ sentTodayInitial }: { sentToda
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           businessName: lead.businessName, ownerName: lead.ownerName,
+          city: lead.city,
           industry: lead.industry, targetService: lead.targetService,
           email: lead.email,
         }),
       });
       const data = await res.json();
       if (data.subject && data.body) {
-        updateLead(lead.id, {
+        await persistLead(lead.id, {
           generatedSubject: data.subject,
           generatedBody: data.body,
           emailStatus: 'generated',
@@ -271,10 +336,10 @@ export default function OutreachDashboardClient({ sentTodayInitial }: { sentToda
           emailError: undefined,
         });
       } else {
-        updateLead(lead.id, { emailStatus: 'failed', emailError: data.error || 'Generation failed' });
+        await persistLead(lead.id, { emailStatus: 'failed', emailError: data.error || 'Generation failed' });
       }
     } catch {
-      updateLead(lead.id, { emailStatus: 'failed', emailError: 'Request failed' });
+      await persistLead(lead.id, { emailStatus: 'failed', emailError: 'Request failed' });
     } finally {
       setGeneratingEmailId(null);
     }
@@ -292,13 +357,14 @@ export default function OutreachDashboardClient({ sentTodayInitial }: { sentToda
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           phone: lead.phone, name: lead.ownerName,
+          city: lead.city,
           businessName: lead.businessName, industry: lead.industry,
           targetService: lead.targetService,
         }),
       });
       const data = await res.json();
       if (data.message) {
-        updateLead(lead.id, {
+        await persistLead(lead.id, {
           generatedMessage: data.message,
           waLink: data.waLink,
           formattedPhone: data.formattedPhone,
@@ -306,10 +372,10 @@ export default function OutreachDashboardClient({ sentTodayInitial }: { sentToda
           waError: undefined,
         });
       } else {
-        updateLead(lead.id, { waStatus: 'failed', waError: data.error || 'Generation failed' });
+        await persistLead(lead.id, { waStatus: 'failed', waError: data.error || 'Generation failed' });
       }
     } catch {
-      updateLead(lead.id, { waStatus: 'failed', waError: 'Request failed' });
+      await persistLead(lead.id, { waStatus: 'failed', waError: 'Request failed' });
     } finally {
       setGeneratingWaId(null);
     }
@@ -335,10 +401,11 @@ export default function OutreachDashboardClient({ sentTodayInitial }: { sentToda
         }),
       });
       const data = await res.json();
-      updateLead(lead.id, { emailStatus: data.success ? 'sent' : 'failed' });
+      const newStatus = data.success ? 'sent' : 'failed';
+      await persistLead(lead.id, { emailStatus: newStatus });
       if (data.success) setSentToday(p => p + 1);
     } catch {
-      updateLead(lead.id, { emailStatus: 'failed' });
+      await persistLead(lead.id, { emailStatus: 'failed' });
     } finally {
       setSendingId(null);
     }
@@ -404,6 +471,15 @@ export default function OutreachDashboardClient({ sentTodayInitial }: { sentToda
   const generatedCount = activeTab === 'email' ? emailGenerated : waGenerated;
 
   // ─── Render ───────────────────────────────────────────────────────
+
+  if (loadingLeads) {
+    return (
+      <div className="flex items-center justify-center py-20 text-muted-foreground">
+        <Loader2 size={24} className="animate-spin mr-3" />
+        <span className="text-sm font-medium">Loading leads...</span>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-5">
@@ -497,6 +573,7 @@ export default function OutreachDashboardClient({ sentTodayInitial }: { sentToda
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             <FormInput label="Business Name *" value={form.businessName} onChange={v => setForm(p => ({...p, businessName: v}))} placeholder="Sharma's Restaurant" />
             <FormInput label="Owner Name" value={form.ownerName} onChange={v => setForm(p => ({...p, ownerName: v}))} placeholder="Rahul Sharma" />
+            <FormInput label="City (optional)" value={form.city} onChange={v => setForm(p => ({...p, city: v}))} placeholder="Mumbai" />
             <FormInput label="Email (for email outreach)" type="email" value={form.email} onChange={v => setForm(p => ({...p, email: v}))} placeholder="owner@business.com" />
             <FormInput label="Phone (for WhatsApp)" type="tel" value={form.phone} onChange={v => setForm(p => ({...p, phone: v.replace(/\D/g,'').slice(0,10)}))} placeholder="9876543210" />
             <FormSelect label="Industry" value={form.industry} onChange={v => setForm(p => ({...p, industry: v}))} options={INDUSTRIES} />
@@ -553,12 +630,18 @@ export default function OutreachDashboardClient({ sentTodayInitial }: { sentToda
                     <tr key={lead.id} className="border-b border-border/40 hover:bg-muted/40 transition-colors">
                       <td className="px-4 py-3">
                         {isEditing ? (
-                          <input value={lead.businessName} onChange={e => updateLead(lead.id, { businessName: e.target.value })}
-                            className="bg-background border border-primary/30 rounded-lg px-2 py-1 text-sm text-foreground w-full max-w-[150px] focus:outline-none focus:ring-2 focus:ring-primary/20" />
+                          <div className="space-y-1">
+                            <input value={lead.businessName} onChange={e => updateLead(lead.id, { businessName: e.target.value })}
+                              className="bg-background border border-primary/30 rounded-lg px-2 py-1 text-sm text-foreground w-full max-w-[150px] focus:outline-none focus:ring-2 focus:ring-primary/20" />
+                            <input value={lead.city || ''} onChange={e => updateLead(lead.id, { city: e.target.value })} placeholder="City"
+                              className="bg-background border border-primary/30 rounded-lg px-2 py-1 text-xs text-foreground w-full max-w-[150px] focus:outline-none focus:ring-2 focus:ring-primary/20" />
+                          </div>
                         ) : (
                           <p className="font-semibold text-foreground truncate max-w-[150px]">{lead.businessName}</p>
                         )}
-                        <p className="text-[10px] text-muted-foreground">{lead.industry.split(' /')[0]}</p>
+                        <p className="text-[10px] text-muted-foreground">
+                          {lead.industry.split(' /')[0]}{lead.city ? ` • ${lead.city}` : ''}
+                        </p>
                       </td>
                       <td className="px-4 py-3 hidden sm:table-cell">
                         {isEditing ? (
@@ -683,8 +766,25 @@ export default function OutreachDashboardClient({ sentTodayInitial }: { sentToda
                             </>
                           )}
 
-                          <button onClick={() => setEditingId(isEditing ? null : lead.id)}
-                            className={`p-1.5 rounded-lg cursor-pointer transition-all ${isEditing ? 'text-primary bg-primary/10' : 'text-muted-foreground hover:text-primary hover:bg-primary/10'}`} title={isEditing ? 'Done' : 'Edit'}>
+                          <button
+                            onClick={() => {
+                              if (isEditing) {
+                                // Persist field edits when Done is clicked
+                                persistLead(lead.id, {
+                                  businessName: lead.businessName,
+                                  ownerName:    lead.ownerName,
+                                  city:         lead.city,
+                                  email:        lead.email,
+                                  phone:        lead.phone,
+                                  industry:     lead.industry,
+                                  targetService: lead.targetService,
+                                });
+                              }
+                              setEditingId(isEditing ? null : lead.id);
+                            }}
+                            className={`p-1.5 rounded-lg cursor-pointer transition-all ${isEditing ? 'text-primary bg-primary/10' : 'text-muted-foreground hover:text-primary hover:bg-primary/10'}`}
+                            title={isEditing ? 'Done' : 'Edit'}
+                          >
                             {isEditing ? <Check size={14} /> : <Pencil size={14} />}
                           </button>
                           <button onClick={() => removeLead(lead.id)}

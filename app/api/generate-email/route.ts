@@ -30,20 +30,21 @@ export async function POST(request: Request) {
       return Response.json({ error: 'Invalid request payload' }, { status: 400 });
     }
 
-    const { businessName, ownerName, industry, targetService, email } = parsed.data;
+    const { businessName, ownerName, city, industry, targetService, email } = parsed.data;
 
     const prompt = `You are a professional digital marketing copywriter for Adwalididi, an Indian digital marketing agency.
 
 Write an ultra-short cold email for this business:
 - Business name: ${businessName}
 - Owner name: ${ownerName || 'the team'}
+- City: ${city || 'not specified'}
 - Industry: ${industry}
 - Service to pitch: ${targetService}
 
 Rules:
 - Extremely concise (under 75 words)
 - Do NOT use emoji or special symbols — warmth comes from words only
-- Do NOT mention physical locations or states
+- If city is provided, mention it ONCE naturally (e.g., "noticed businesses in Pune like yours..."). If not specified, skip location entirely.
 - One specific pain point for the ${industry} industry
 - CTA: reply or book a free strategy call at https://adwalididi.com/#free-audit
 - Sign off as Shivani from Adwalididi

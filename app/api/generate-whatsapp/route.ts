@@ -30,7 +30,7 @@ export async function POST(request: Request) {
       return Response.json({ error: 'Invalid request payload' }, { status: 400 });
     }
 
-    const { phone, name, businessName, industry, targetService } = parsed.data;
+    const { phone, name, city, businessName, industry, targetService } = parsed.data;
 
     // Validate phone — must be exactly 10 digits
     const cleanPhone = (phone || '').replace(/\D/g, '');
@@ -47,12 +47,13 @@ export async function POST(request: Request) {
 Target details:
 - Person's name: ${name || 'there'}
 - Business name: ${businessName}
+- City: ${city || 'not specified'}
 - Industry: ${industry}
 - Service being pitched: ${targetService}
 
 Rules:
 - Keep it under 50 words, casual, friendly
-- Do NOT mention physical locations or states
+- If city is provided, mention it ONCE naturally (e.g., "your café in Pune"). If not specified, skip location.
 - Can use a mix of Hindi and English if natural
 - Do NOT use emoji or special symbols — convey warmth with words only
 - Pitch the specific service naturally

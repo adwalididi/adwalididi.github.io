@@ -18,6 +18,7 @@ export const welcomeEmailSchema = z.object({
 export const generateEmailSchema = z.object({
   businessName: trimmedString(120),
   ownerName: optionalTrimmedString(100),
+  city: optionalTrimmedString(80),
   industry: trimmedString(120),
   targetService: trimmedString(120),
   email: z.string().trim().email().max(320).optional(),
@@ -26,6 +27,7 @@ export const generateEmailSchema = z.object({
 export const generateWhatsAppSchema = z.object({
   phone: z.string().trim().max(30),
   name: optionalTrimmedString(100),
+  city: optionalTrimmedString(80),
   businessName: trimmedString(120),
   industry: trimmedString(120),
   targetService: trimmedString(120),
