@@ -8,7 +8,7 @@ export async function sendBrevoEmail({
   toName?: string;
   subject: string;
   htmlContent: string;
-}): Promise<{ success: boolean; messageId?: string; error?: string }> {
+}): Promise<{ success: boolean; messageId?: string; error?: string; status?: number }> {
   try {
     const res = await fetch('https://api.brevo.com/v3/smtp/email', {
       method: 'POST',
@@ -30,12 +30,12 @@ export async function sendBrevoEmail({
 
     if (!res.ok) {
       const err = await res.text();
-      return { success: false, error: err };
+      return { success: false, error: err, status: res.status };
     }
 
     const data = await res.json();
-    return { success: true, messageId: data.messageId };
+    return { success: true, messageId: data.messageId, status: res.status };
   } catch (e) {
-    return { success: false, error: String(e) };
+    return { success: false, error: String(e), status: 500 };
   }
 }

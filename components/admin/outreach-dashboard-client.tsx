@@ -57,7 +57,7 @@ interface Lead {
   generatedMessage?: string;
   waLink?: string;
   formattedPhone?: string;
-  waStatus: 'pending' | 'generated' | 'failed';
+  waStatus: 'pending' | 'generated' | 'sent' | 'failed';
   waError?: string;
 }
 
@@ -286,24 +286,50 @@ export default function OutreachDashboardClient({ sentTodayInitial }: { sentToda
       const rows = parseCsv(text);
       if (rows.length < 2) return;
       const headers = rows[0].map(normalizeCsvHeader);
+
+      // Build sets of existing emails & phones for dedup
+      const existingEmails = new Set(leads.map(l => l.email.toLowerCase()).filter(Boolean));
+      const existingPhones = new Set(leads.map(l => l.phone).filter(Boolean));
+
       const imported: Lead[] = [];
+      let skipped = 0;
       for (let i = 1; i < rows.length; i++) {
         const vals = rows[i].map((v) => v.replace(/['"]/g, '').trim());
         const r: Record<string, string> = {};
         headers.forEach((h, idx) => { r[h] = vals[idx] || ''; });
         const biz = r.business_name || r.businessname || r.business || '';
         if (!biz) continue;
+
+        const email = r.email || '';
+        const phone = r.phone || '';
+
+        // Skip if email or phone already exists in current leads
+        const isDuplicate =
+          (email && existingEmails.has(email.toLowerCase())) ||
+          (phone && existingPhones.has(phone));
+        if (isDuplicate) { skipped++; continue; }
+
+        // Add to dedup sets so we also catch within-CSV duplicates
+        if (email) existingEmails.add(email.toLowerCase());
+        if (phone) existingPhones.add(phone);
+
         imported.push(newLead({
           businessName: biz,
           ownerName: r.owner_name || r.ownername || r.owner || r.name || '',
           city: r.city || r.location || '',
-          email: r.email || '',
-          phone: r.phone || '',
+          email,
+          phone,
           industry: r.industry || INDUSTRIES[0],
           targetService: r.target_service || r.targetservice || r.service || SERVICES[0],
         }));
       }
-      setLeads(prev => [...imported, ...prev]);
+
+      if (imported.length > 0) setLeads(prev => [...imported, ...prev]);
+
+      const msg = skipped > 0
+        ? `✅ Imported ${imported.length} lead${imported.length !== 1 ? 's' : ''}. ⚠️ Skipped ${skipped} duplicate${skipped !== 1 ? 's' : ''} (matching email or phone).`
+        : `✅ Imported ${imported.length} lead${imported.length !== 1 ? 's' : ''} — no duplicates found.`;
+      alert(msg);
     };
     reader.readAsText(file);
     e.target.value = '';
@@ -387,28 +413,49 @@ export default function OutreachDashboardClient({ sentTodayInitial }: { sentToda
     if (!lead.email || !lead.generatedSubject || !lead.generatedBody) return;
     if (sentToday >= 300) return;
     setSendingId(lead.id);
-    try {
-      const res = await fetch('/api/send-cold-email/', {
-        method: 'POST',
-        credentials: 'include',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          to: lead.email,
-          toName: lead.ownerName,
-          subject: lead.generatedSubject,
-          body: lead.generatedBody,
-          outreachLogId: lead.outreachLogId || null,
-        }),
-      });
-      const data = await res.json();
-      const newStatus = data.success ? 'sent' : 'failed';
-      await persistLead(lead.id, { emailStatus: newStatus });
-      if (data.success) setSentToday(p => p + 1);
-    } catch {
-      await persistLead(lead.id, { emailStatus: 'failed' });
-    } finally {
-      setSendingId(null);
+
+    let attempts = 0;
+    while (attempts < 3) {
+      try {
+        const res = await fetch('/api/send-cold-email/', {
+          method: 'POST',
+          credentials: 'include',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            to: lead.email,
+            toName: lead.ownerName,
+            subject: lead.generatedSubject,
+            body: lead.generatedBody,
+            outreachLogId: lead.outreachLogId || null,
+          }),
+        });
+        const data = await res.json();
+
+        if (res.status === 429) {
+          attempts++;
+          if (attempts < 3) {
+            // Exponential backoff
+            await new Promise(r => setTimeout(r, Math.pow(2, attempts) * 1000));
+            continue;
+          }
+        }
+
+        const newStatus = data.success ? 'sent' : 'failed';
+        await persistLead(lead.id, { emailStatus: newStatus, emailError: data.error });
+        if (data.success) {
+          setSentToday(p => p + 1);
+        }
+        break;
+      } catch (e) {
+        attempts++;
+        if (attempts >= 3) {
+          await persistLead(lead.id, { emailStatus: 'failed', emailError: String(e) });
+        } else {
+          await new Promise(r => setTimeout(r, Math.pow(2, attempts) * 1000));
+        }
+      }
     }
+    setSendingId(null);
   }
 
   // ─── Copy WA Message ─────────────────────────────────────────────
@@ -452,6 +499,9 @@ export default function OutreachDashboardClient({ sentTodayInitial }: { sentToda
       for (let i = 0; i < queue.length; i += 1) {
         await sendEmail(queue[i]);
         setBulkSendProgress({ completed: i + 1, total: queue.length });
+        if (i < queue.length - 1) {
+          await new Promise(r => setTimeout(r, 600)); // Rate limiting buffer
+        }
       }
     } finally {
       setBulkSending(false);
@@ -466,6 +516,7 @@ export default function OutreachDashboardClient({ sentTodayInitial }: { sentToda
   const emailSent      = leads.filter(l => l.emailStatus === 'sent').length;
   const waPending      = leads.filter(l => l.phone && l.waStatus === 'pending').length;
   const waGenerated    = leads.filter(l => l.phone && l.waStatus === 'generated').length;
+  const waSent         = leads.filter(l => l.phone && l.waStatus === 'sent').length;
 
   const pendingCount   = activeTab === 'email' ? emailPending : waPending;
   const generatedCount = activeTab === 'email' ? emailGenerated : waGenerated;
@@ -518,7 +569,7 @@ export default function OutreachDashboardClient({ sentTodayInitial }: { sentToda
         <StatCard label="Total" value={leads.length} color="text-foreground" />
         <StatCard label="Pending" value={pendingCount} color="text-yellow-600" />
         <StatCard label="Generated" value={generatedCount} color="text-blue-500" />
-        <StatCard label={activeTab === 'email' ? `Sent (${sentToday}/300)` : 'Sent via WA'} value={activeTab === 'email' ? emailSent : waGenerated} color="text-primary" />
+        <StatCard label={activeTab === 'email' ? `Sent (${sentToday}/300)` : 'Sent via WA'} value={activeTab === 'email' ? emailSent : waSent} color="text-primary" />
       </div>
 
       {/* Action Bar */}
@@ -752,7 +803,16 @@ export default function OutreachDashboardClient({ sentTodayInitial }: { sentToda
                                     className="flex items-center gap-1.5 px-3 py-1.5 bg-[#25D366] text-white rounded-lg text-[11px] font-bold hover:bg-[#20bd5a] transition-all">
                                     <ExternalLink size={12} /> Open WA
                                   </a>
+                                  <button onClick={() => persistLead(lead.id, { waStatus: 'sent' })}
+                                    className="flex items-center gap-1.5 px-3 py-1.5 bg-card border border-border text-foreground rounded-lg text-[11px] font-bold hover:bg-muted cursor-pointer transition-all" title="Mark as Sent">
+                                    <Check size={12} /> Mark Sent
+                                  </button>
                                 </>
+                              )}
+                              {lead.waStatus === 'sent' && (
+                                <span className="flex items-center gap-1 px-3 py-1.5 text-[#25D366] text-[11px] font-bold">
+                                  <Check size={12} /> Sent
+                                </span>
                               )}
                               {lead.waStatus === 'failed' && (
                                 <div className="flex flex-col items-end gap-1">

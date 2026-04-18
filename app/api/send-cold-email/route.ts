@@ -17,7 +17,7 @@ export async function POST(request: Request) {
     if (!session || session.value !== 'active') {
       return Response.json({ error: 'Unauthorized' }, { status: 401 });
     }
-    const limit = checkRateLimit(request, 'send-cold-email', 10, 60_000);
+    const limit = checkRateLimit(request, 'send-cold-email', 300, 60_000);
     if (!limit.ok) {
       return Response.json(
         { error: `Rate limit exceeded. Try again in ${limit.retryAfterSeconds || 60}s.` },
@@ -58,7 +58,7 @@ export async function POST(request: Request) {
     }
 
     if (!result.success) {
-      return Response.json({ success: false, error: result.error }, { status: 500 });
+      return Response.json({ success: false, error: result.error, status: result.status }, { status: result.status || 500 });
     }
 
     return Response.json({ success: true, messageId: result.messageId });
