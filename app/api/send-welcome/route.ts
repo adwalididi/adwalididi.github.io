@@ -46,6 +46,7 @@ export async function POST(request: Request) {
     const servicesText = services && services.length > 0 ? services.join(' + ') : 'your setup';
     const bizTypeText = businessType ? businessType.toLowerCase() : 'business';
     const budgetText = budget ? budget : 'specified';
+    const senderName = Math.random() > 0.5 ? 'Shivani' : 'Shubham';
 
     const textPayload = `Just confirmed — I've received your audit request for ${bizNameText}.
 
@@ -57,7 +58,7 @@ Given your budget (${budgetText}), I already have a few things in mind. I'll go 
 If you want to connect faster, just reply here or message me directly: wa.me/916261643774
 
 Speak soon,
-Shruti
+${senderName}
 Ad Wali Didi`;
 
     const { data, error } = await resend.emails.send({
