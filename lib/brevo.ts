@@ -22,6 +22,10 @@ export async function sendBrevoEmail({
           name: 'Adwalididi Growth Team',
           email: process.env.BREVO_FROM_EMAIL!,
         },
+        replyTo: {
+          name: 'Adwalididi Growth Team',
+          email: 'growth@adwalididi.com',
+        },
         to: [{ email: to, name: toName || to }],
         subject,
         htmlContent,
