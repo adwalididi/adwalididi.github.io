@@ -82,7 +82,8 @@ export default async function AdminOutreach({
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production',
         sameSite: 'lax',
-        path: '/' // Must be '/' — API routes at /api/* also check this cookie
+        path: '/', // Must be '/' — API routes at /api/* also check this cookie
+        maxAge: 60 * 60 * 24 // 24 hours expiry
       });
       redirect('/admin/outreach/');
     } else {

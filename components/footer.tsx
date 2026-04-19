@@ -126,12 +126,12 @@ export function Footer() {
           <div className="flex flex-col">
             <h4 className="font-semibold text-lg mb-4 text-white">Services</h4>
             <ul className="space-y-3">
-              <li className="text-white-70">Google Business Profile</li>
-              <li className="text-white-70">Paid Ads (Meta + Google)</li>
-              <li className="text-white-70">Ad Creatives</li>
-              <li className="text-white-70">Social Media Marketing</li>
-              <li className="text-white-70">Influencer Marketing</li>
-              <li className="text-white-70">Outdoor Advertising (OOH)</li>
+              <li><Link href="/services/#gbp" className="text-white-70 hover:text-white transition-colors">Google Business Profile</Link></li>
+              <li><Link href="/services/#ads" className="text-white-70 hover:text-white transition-colors">Paid Ads (Meta + Google)</Link></li>
+              <li><Link href="/services/#creatives" className="text-white-70 hover:text-white transition-colors">Ad Creatives</Link></li>
+              <li><Link href="/services/#social" className="text-white-70 hover:text-white transition-colors">Social Media Marketing</Link></li>
+              <li><Link href="/services/#influencer" className="text-white-70 hover:text-white transition-colors">Influencer Marketing</Link></li>
+              <li><Link href="/services/#ooh" className="text-white-70 hover:text-white transition-colors">Outdoor Advertising (OOH)</Link></li>
             </ul>
             <p className="text-white/50 text-sm mt-auto pt-10 whitespace-nowrap">
               Made with love for Indian businesses

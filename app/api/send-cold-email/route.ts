@@ -1,12 +1,12 @@
 import { createClient } from '@supabase/supabase-js';
 import { cookies } from 'next/headers';
 import { sendBrevoEmail } from '@/lib/brevo';
-import { wrapColdEmailHtml } from '@/lib/email-templates/cold-email-wrapper';
 import { sendColdEmailSchema } from '@/lib/validators';
 import { checkRateLimit } from '@/lib/rate-limit';
 import { isAllowedRequestOrigin } from '@/lib/request-origin';
+import { hasMxRecords } from '@/lib/email-validator';
 
-export const runtime = 'edge';
+export const runtime = 'nodejs';
 
 export async function POST(request: Request) {
   try {
@@ -17,7 +17,7 @@ export async function POST(request: Request) {
     if (!session || session.value !== 'active') {
       return Response.json({ error: 'Unauthorized' }, { status: 401 });
     }
-    const limit = checkRateLimit(request, 'send-cold-email', 300, 60_000);
+    const limit = await checkRateLimit(request, 'send-cold-email');
     if (!limit.ok) {
       return Response.json(
         { error: `Rate limit exceeded. Try again in ${limit.retryAfterSeconds || 60}s.` },
@@ -30,15 +30,24 @@ export async function POST(request: Request) {
       return Response.json({ error: 'Invalid request payload' }, { status: 400 });
     }
 
+    // DNS/MX check — skip sending to domains that cannot receive mail
+    const mxValid = await hasMxRecords(parsed.data.to);
+    if (!mxValid) {
+      return Response.json(
+        { success: false, error: 'Recipient email domain has no mail servers. Skipping to protect sender reputation.' },
+        { status: 422 }
+      );
+    }
+
     const { to, toName, subject, body, outreachLogId } = parsed.data;
 
-    const htmlContent = wrapColdEmailHtml(body);
+    const textContent = `${body}\n\n--\nShivani\nAd Wali Didi`;
 
     const result = await sendBrevoEmail({
       to,
       toName,
       subject,
-      htmlContent,
+      textContent,
     });
 
     // Update outreach_log in Supabase

@@ -2,84 +2,13 @@
 
 import { useState, useEffect, FormEvent, useRef } from "react"
 import { m, AnimatePresence } from "framer-motion"
-import {
-  Check,
-  Loader2,
-  ChevronDown,
-  Rocket,
-  Users,
-  Target,
-  ShieldCheck,
-  Star,
-  Shield,
-  Zap,
-} from "lucide-react"
+import { Loader2, ChevronDown } from "lucide-react"
 import { supabase } from "@/lib/supabase"
 import { WhatsAppIcon } from "@/components/ui/whatsapp-icon"
-
-// ─── Config ───────────────────────────────────────────────────────────────────
-
-const businessTypes = [
-  "Restaurant / Café / Food",
-  "Clinic / Hospital / Wellness",
-  "Travel / Tourism",
-  "Real Estate / Construction",
-  "Gym / Fitness / Sports",
-  "Education / Coaching",
-  "Salon / Beauty",
-  "E-Commerce / Retail",
-  "Events / Entertainment",
-  "Other",
-]
-
-const servicesOptions = [
-  { id: "gbp",        label: "Google Business Profile", icon: Target    },
-  { id: "meta-ads",   label: "Meta Ads",               icon: Rocket    },
-  { id: "google-ads", label: "Google Ads",             icon: Rocket    },
-  { id: "creatives",  label: "Ad Creatives",           icon: ShieldCheck },
-  { id: "social",     label: "Social Media",           icon: Users     },
-]
-
-const trustSignals = [
-  { icon: Star,   label: "5-Star Rated" },
-  { icon: Shield, label: "No Sales Pitch" },
-  { icon: Zap,    label: "Same-Day Reply" },
-]
-
-const budgetOptions = [
-  "Below ₹10,000",
-  "₹10,000 - ₹25,000",
-  "₹25,000 - ₹50,000",
-  "₹50,000 - ₹1,00,000",
-  "₹1,00,000 - ₹2,50,000",
-  "₹2,50,000 - ₹5,00,000",
-  "Above ₹5,00,000",
-  "Not sure yet/Other"
-]
-
-// ─── Helpers ──────────────────────────────────────────────────────────────────
-
-async function getIpHash(): Promise<string | null> {
-  try {
-    const res = await fetch("https://api.ipify.org?format=json")
-    const { ip } = await res.json()
-    const data = new TextEncoder().encode(ip + "awd_lead_salt_9x2k")
-    const hashBuffer = await crypto.subtle.digest("SHA-256", data)
-    return Array.from(new Uint8Array(hashBuffer))
-      .map(b => b.toString(16).padStart(2, "0"))
-      .join("")
-  } catch { return null }
-}
-
-function fireLeadPixelEvent(businessType: string) {
-  try {
-    const consent = JSON.parse(localStorage.getItem("cookie_consent") || "{}")
-    if (consent.ad_storage === "granted" && typeof window !== "undefined") {
-      const fbq = (window as unknown as { fbq: (...args: unknown[]) => void }).fbq
-      if (typeof fbq === "function") fbq("track", "Lead", { content_category: businessType })
-    }
-  } catch {}
-}
+import { businessTypes, servicesOptions, budgetOptions } from "./lead-form-constants"
+import { getIpHash, fireLeadPixelEvent } from "./lead-form-helpers"
+import { LeadFormPitch } from "./lead-form-pitch"
+import { LeadFormSuccess } from "./lead-form-success"
 
 // ─── Component ────────────────────────────────────────────────────────────────
 
@@ -366,57 +295,7 @@ export function LeadForm() {
         <div className="grid grid-cols-1 lg:grid-cols-[1fr_1.1fr] gap-14 lg:gap-20 items-start">
 
           {/* ── Left: Pitch copy ── */}
-          <m.div
-            initial={{ opacity: 0, x: -30 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
-            className="lg:sticky lg:top-28 pt-2"
-          >
-            <span className="inline-block text-teal font-extrabold uppercase tracking-[0.28em] text-[10px] bg-white border border-teal-border px-5 py-2 rounded-full mb-7 shadow-sm">
-              Live: Free Audit Slots Open
-            </span>
-
-            <h2 className="font-display text-4xl sm:text-5xl xl:text-[3.25rem] font-bold text-near-black leading-[1.08] mb-6 tracking-tight">
-              Get more{" "}
-              <span className="text-teal">enquiries</span>,<br />
-              not just clicks.
-            </h2>
-
-            <p className="text-muted-text text-lg leading-relaxed mb-10 max-w-md">
-              Find out why your business isn&apos;t ranking or converting. We audit your
-              Google profile, Meta ads, and creatives — completely free.
-            </p>
-
-            {/* Stats grid */}
-            <div className="grid grid-cols-2 gap-3 mb-10">
-              {[
-                { n: "150+", t: "Month 1 Enquiries" },
-                { n: "700+", t: "Total Leads" },
-                { n: "Free",  t: "No Obligation"    },
-                { n: "24h",   t: "Fast Response"    },
-              ].map((s, i) => (
-                <div
-                  key={i}
-                  className="p-4 rounded-2xl border border-teal-border bg-white/70 hover:bg-white shadow-sm transition-all hover:shadow-md hover:shadow-teal/5 cursor-default"
-                >
-                  <p className="font-display text-2xl font-bold text-teal">{s.n}</p>
-                  <p className="text-[10px] font-bold text-muted-text uppercase mt-0.5 tracking-widest">{s.t}</p>
-                </div>
-              ))}
-            </div>
-
-            {/* Trust signals */}
-            <div className="flex flex-col gap-3">
-              {trustSignals.map(({ icon: Icon, label }) => (
-                <div key={label} className="flex items-center gap-3 text-muted-text text-sm">
-                  <div className="w-7 h-7 rounded-full bg-teal/10 flex items-center justify-center shrink-0">
-                    <Icon size={14} className="text-teal" />
-                  </div>
-                  <span className="font-medium">{label}</span>
-                </div>
-              ))}
-            </div>
-          </m.div>
+          <LeadFormPitch />
 
           {/* ── Right: Form Card ── */}
           <m.div
@@ -439,26 +318,7 @@ export function LeadForm() {
 
                 {isSuccess ? (
                   /* ── Success state ── */
-                  <div className="text-center py-12">
-                    <div className="w-20 h-20 bg-teal-tint rounded-full flex items-center justify-center mx-auto mb-5 shadow-inner">
-                      <Check className="w-10 h-10 text-teal" />
-                    </div>
-                    <h3 className="font-[var(--font-space-grotesk)] text-2xl font-bold text-near-black mb-2">
-                      You&apos;re all set!
-                    </h3>
-                    <p className="text-muted-text text-sm mb-8">
-                      We&apos;ll WhatsApp you within a few hours with your audit.
-                    </p>
-                    <a
-                      href={`https://wa.me/916261643774?text=${encodeURIComponent(`Hi! I'm ${name.trim()} (${businessType}) — looking for an audit for: ${selectedServices.map(id => servicesOptions.find(o => o.id === id)?.label).filter(Boolean).join(" + ")}.`)}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-flex items-center gap-2.5 bg-teal text-white px-8 py-4 rounded-xl font-bold text-base hover:bg-deep-teal transition-all hover:scale-105 shadow-lg"
-                    >
-                      <WhatsAppIcon className="w-5 h-5" />
-                      WhatsApp Didi
-                    </a>
-                  </div>
+                  <LeadFormSuccess name={name} businessType={businessType} selectedServices={selectedServices} />
                 ) : (
                   /* ── Form ── */
                   <form onSubmit={handleSubmit} noValidate className="space-y-6">

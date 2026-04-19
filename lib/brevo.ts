@@ -3,11 +3,13 @@ export async function sendBrevoEmail({
   toName,
   subject,
   htmlContent,
+  textContent,
 }: {
   to: string;
   toName?: string;
   subject: string;
-  htmlContent: string;
+  htmlContent?: string;
+  textContent?: string;
 }): Promise<{ success: boolean; messageId?: string; error?: string; status?: number }> {
   try {
     const res = await fetch('https://api.brevo.com/v3/smtp/email', {
@@ -19,16 +21,17 @@ export async function sendBrevoEmail({
       },
       body: JSON.stringify({
         sender: {
-          name: 'Adwalididi Growth Team',
+          name: 'Ad Wali Didi',
           email: process.env.BREVO_FROM_EMAIL!,
         },
         replyTo: {
-          name: 'Adwalididi Growth Team',
+          name: 'Ad Wali Didi',
           email: 'growth@adwalididi.com',
         },
         to: [{ email: to, name: toName || to }],
         subject,
-        htmlContent,
+        ...(htmlContent ? { htmlContent } : {}),
+        ...(textContent ? { textContent } : {}),
       }),
     });
 

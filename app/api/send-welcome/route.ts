@@ -1,7 +1,9 @@
 import { Resend } from 'resend';
 import { welcomeEmailSchema } from '@/lib/validators';
+import { hasMxRecords } from '@/lib/email-validator';
+import { checkRateLimit } from '@/lib/rate-limit';
 
-export const runtime = 'edge';
+export const runtime = 'nodejs';
 
 function isAllowedRequestOrigin(request: Request): boolean {
   const requestUrl = new URL(request.url);
@@ -34,9 +36,26 @@ export async function POST(request: Request) {
       return Response.json({ error: 'Forbidden' }, { status: 403 });
     }
 
+    const limit = await checkRateLimit(request, 'send-welcome');
+    if (!limit.ok) {
+      return Response.json(
+        { success: false, error: `Rate limit exceeded. Try again in ${limit.retryAfterSeconds || 600}s.` },
+        { status: 429 }
+      );
+    }
+
     const parsed = welcomeEmailSchema.safeParse(await request.json());
     if (!parsed.success) {
       return Response.json({ success: false, error: 'Invalid request payload' }, { status: 400 });
+    }
+
+    // DNS/MX check — reject emails whose domain cannot receive mail
+    const mxValid = await hasMxRecords(parsed.data.email);
+    if (!mxValid) {
+      return Response.json(
+        { success: false, error: 'Email domain does not appear to accept mail. Please check the address.' },
+        { status: 422 }
+      );
     }
 
     const { name, email, businessType, businessName, budget, services } = parsed.data;

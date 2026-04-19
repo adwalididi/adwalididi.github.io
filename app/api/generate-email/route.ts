@@ -17,7 +17,7 @@ export async function POST(request: Request) {
     if (!session || session.value !== 'active') {
       return Response.json({ error: 'Unauthorized' }, { status: 401 });
     }
-    const limit = checkRateLimit(request, 'generate-email', 20, 60_000);
+    const limit = await checkRateLimit(request, 'generate-email');
     if (!limit.ok) {
       return Response.json(
         { error: `Rate limit exceeded. Try again in ${limit.retryAfterSeconds || 60}s.` },

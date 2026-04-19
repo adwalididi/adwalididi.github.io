@@ -1,51 +1,70 @@
-type RateBucket = {
-  count: number;
-  resetAt: number;
+import { Redis } from '@upstash/redis';
+import { Ratelimit } from '@upstash/ratelimit';
+
+// In case environment variables aren't set yet (e.g. during local dev), don't crash at module level.
+const redis = new Redis({
+  url: process.env.UPSTASH_REDIS_REST_URL || 'https://dummy.upstash.io',
+  token: process.env.UPSTASH_REDIS_REST_TOKEN || 'dummy',
+});
+
+// Create limiters per endpoint
+const limiters = {
+  'send-cold-email': new Ratelimit({
+    redis,
+    limiter: Ratelimit.slidingWindow(10, '1 m'),
+    prefix: 'rl:send-cold-email',
+  }),
+  'generate-email': new Ratelimit({
+    redis,
+    limiter: Ratelimit.slidingWindow(15, '1 m'),
+    prefix: 'rl:generate-email',
+  }),
+  'generate-whatsapp': new Ratelimit({
+    redis,
+    limiter: Ratelimit.slidingWindow(15, '1 m'),
+    prefix: 'rl:generate-whatsapp',
+  }),
+  'send-welcome': new Ratelimit({
+    redis,
+    limiter: Ratelimit.slidingWindow(5, '10 m'),
+    prefix: 'rl:send-welcome',
+  }),
 };
 
-const GLOBAL_BUCKET_KEY = '__adwalididi_rate_limit_buckets__';
-
-function getBuckets(): Map<string, RateBucket> {
-  const globalState = globalThis as typeof globalThis & {
-    [GLOBAL_BUCKET_KEY]?: Map<string, RateBucket>;
-  };
-
-  if (!globalState[GLOBAL_BUCKET_KEY]) {
-    globalState[GLOBAL_BUCKET_KEY] = new Map<string, RateBucket>();
-  }
-
-  return globalState[GLOBAL_BUCKET_KEY];
-}
-
 function getClientKey(request: Request): string {
-  const ip =
+  return (
     request.headers.get('cf-connecting-ip') ||
     request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ||
-    'unknown';
-  return ip;
+    'unknown'
+  );
 }
 
-export function checkRateLimit(
+export async function checkRateLimit(
   request: Request,
-  endpointKey: string,
-  limit: number,
-  windowMs: number
-): { ok: boolean; retryAfterSeconds?: number } {
-  const now = Date.now();
-  const key = `${endpointKey}:${getClientKey(request)}`;
-  const buckets = getBuckets();
-  const existing = buckets.get(key);
-
-  if (!existing || now >= existing.resetAt) {
-    buckets.set(key, { count: 1, resetAt: now + windowMs });
+  endpointKey: keyof typeof limiters
+): Promise<{ ok: boolean; retryAfterSeconds?: number }> {
+  // Gracefully handle missing UPSTASH credentials in local development
+  if (!process.env.UPSTASH_REDIS_REST_URL || !process.env.UPSTASH_REDIS_REST_TOKEN) {
+    console.warn('Upstash Redis credentials missing. Rate limiting bypassed.');
     return { ok: true };
   }
 
-  if (existing.count >= limit) {
-    return { ok: false, retryAfterSeconds: Math.ceil((existing.resetAt - now) / 1000) };
-  }
+  const limiter = limiters[endpointKey];
+  if (!limiter) return { ok: true };
 
-  existing.count += 1;
-  buckets.set(key, existing);
-  return { ok: true };
+  const ip = getClientKey(request);
+  try {
+    const { success, reset } = await limiter.limit(ip);
+
+    if (!success) {
+      const retryAfterSeconds = Math.ceil((reset - Date.now()) / 1000);
+      return { ok: false, retryAfterSeconds };
+    }
+
+    return { ok: true };
+  } catch (err) {
+    // Fail open if Redis fails
+    console.error('Rate limiter Redis error:', err);
+    return { ok: true };
+  }
 }

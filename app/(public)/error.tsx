@@ -3,6 +3,7 @@
 import { useEffect } from "react"
 import { m } from "framer-motion"
 import { RefreshCcw } from "lucide-react"
+import { logError } from "@/lib/error-logger"
 
 export default function Error({
   error,
@@ -14,6 +15,7 @@ export default function Error({
   useEffect(() => {
     // Optionally log the error to an error reporting service
     console.error("Application error:", error)
+    logError(error, { digest: error.digest })
   }, [error])
 
   return (

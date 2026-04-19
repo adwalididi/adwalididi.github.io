@@ -27,3 +27,6 @@ pnpm-debug.log*
 coverage/
 dist/
 .cache/
+
+# Local artifacts (changelogs, plans, etc.)
+.local-artifacts/

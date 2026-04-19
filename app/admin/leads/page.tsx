@@ -86,7 +86,8 @@ export default async function AdminLeads({
         httpOnly: true, 
         secure: process.env.NODE_ENV === 'production',
         sameSite: 'lax', // Use 'lax' for better cross-context (IP/mobile) reliability
-        path: '/admin/leads/' // Match canonical trailing slash path
+        path: '/admin/leads/', // Match canonical trailing slash path
+        maxAge: 60 * 60 * 24 // 24 hours expiry
       });
       redirect('/admin/leads/'); 
     } else {

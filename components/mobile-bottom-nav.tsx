@@ -39,6 +39,7 @@ export function MobileBottomNav() {
                   active ? "text-teal" : "text-muted-text"
                 }`}
                 aria-current={active ? "page" : undefined}
+                aria-label={`Navigate to ${item.label}`}
               >
                 {active && (
                   <span
