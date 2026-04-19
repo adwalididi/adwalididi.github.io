@@ -3,7 +3,7 @@ import { welcomeEmailSchema } from '@/lib/validators';
 import { hasMxRecords } from '@/lib/email-validator';
 import { checkRateLimit } from '@/lib/rate-limit';
 
-export const runtime = 'nodejs';
+export const runtime = 'edge';
 
 function isAllowedRequestOrigin(request: Request): boolean {
   const requestUrl = new URL(request.url);
