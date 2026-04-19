@@ -260,7 +260,7 @@ export function LeadForm() {
 
       // Fire-and-forget welcome email
       if (email.trim()) {
-        fetch('/api/send-welcome/', {
+        fetch('/api/send-welcome', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
@@ -271,7 +271,9 @@ export function LeadForm() {
             budget,
             services: selectedServices.map(id => servicesOptions.find(o => o.id === id)?.label).filter(Boolean),
           }),
-        }).catch(() => {}) // Silent fail — Supabase insert already succeeded
+        }).catch((err) => {
+          console.error("Welcome email failed:", err);
+        }) // Silent fail for user — Supabase insert already succeeded
       }
     } catch {
       setSubmitError("Something went wrong. WhatsApp us directly: +91-6261643774")
