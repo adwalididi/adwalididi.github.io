@@ -30,3 +30,6 @@ dist/
 
 # Local artifacts (changelogs, plans, etc.)
 .local-artifacts/
+
+# Digital Brochure & Quotation Exports
+public/export/

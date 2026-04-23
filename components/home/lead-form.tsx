@@ -6,7 +6,7 @@ import { Loader2, ChevronDown } from "lucide-react"
 import { supabase } from "@/lib/supabase"
 import { WhatsAppIcon } from "@/components/ui/whatsapp-icon"
 import { businessTypes, servicesOptions, budgetOptions } from "./lead-form-constants"
-import { getIpHash, fireLeadPixelEvent } from "./lead-form-helpers"
+import { GeoData, getIpHash, getGeoData, fireLeadPixelEvent } from "./lead-form-helpers"
 import { LeadFormPitch } from "./lead-form-pitch"
 import { LeadFormSuccess } from "./lead-form-success"
 
@@ -25,6 +25,7 @@ export function LeadForm() {
   const [activeBusinessIndex, setActiveBusinessIndex] = useState(0)
   const [activeBudgetIndex, setActiveBudgetIndex] = useState(0)
   const [honeypot,         setHoneypot]         = useState("")
+  const [geoData,          setGeoData]          = useState<GeoData>({})
 
   const [utmParams, setUtmParams] = useState({
     source: "", medium: "", campaign: "", content: "", term: "",
@@ -67,6 +68,11 @@ export function LeadForm() {
     }
     document.addEventListener("mousedown", handleClick)
     return () => document.removeEventListener("mousedown", handleClick)
+  }, [])
+
+  // Silently collect geo data on mount (no popup ever shown)
+  useEffect(() => {
+    getGeoData().then(setGeoData).catch(() => {})
   }, [])
 
   // Load partial save
@@ -251,6 +257,16 @@ export function LeadForm() {
         utm_campaign:  utmParams.campaign || null,
         utm_content:   utmParams.content  || null,
         utm_term:      utmParams.term     || null,
+        // Geo — stored silently, no popup ever shown to visitor
+        geo_country:           geoData.country           ?? null,
+        geo_country_code:      geoData.country_code      ?? null,
+        geo_city:              geoData.city              ?? null,
+        geo_region:            geoData.region            ?? null,
+        geo_latitude:          geoData.latitude          ?? null,
+        geo_longitude:         geoData.longitude         ?? null,
+        geo_precise_latitude:  geoData.precise_latitude  ?? null,
+        geo_precise_longitude: geoData.precise_longitude ?? null,
+        geo_permission:        geoData.geo_permission    ?? null,
       })
 
       if (error) throw error
