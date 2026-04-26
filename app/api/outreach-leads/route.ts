@@ -3,6 +3,8 @@ import { cookies } from 'next/headers';
 import { isAllowedRequestOrigin } from '@/lib/request-origin';
 
 export const runtime = 'edge';
+export const dynamic = 'force-dynamic';
+export const fetchCache = 'force-no-store';
 
 function getSupabase() {
   return createClient(
@@ -34,7 +36,7 @@ export async function GET() {
   }
 }
 
-/** POST /api/outreach-leads/ — create one lead (manual or CSV) */
+/** POST /api/outreach-leads/ — create one lead or bulk insert */
 export async function POST(request: Request) {
   if (!isAllowedRequestOrigin(request)) {
     return Response.json({ error: 'Forbidden' }, { status: 403 });
@@ -45,6 +47,32 @@ export async function POST(request: Request) {
   try {
     const body = await request.json();
 
+    // ── Bulk insert (CSV upload) ────────────────────────────────────
+    if (Array.isArray(body.leads)) {
+      const rows = body.leads.map((l: Record<string, string>) => ({
+        id:              l.id           || undefined,
+        crm_id:          l.crmId        || null,
+        business_name:   l.businessName,
+        owner_name:      l.ownerName    || null,
+        city:            l.city         || null,
+        email:           l.email        || null,
+        phone:           l.phone        || null,
+        industry:        l.industry,
+        target_service:  l.targetService,
+        email_status:   'pending',
+        wa_status:      'pending',
+      }));
+
+      const { data, error } = await getSupabase()
+        .from('outreach_leads')
+        .upsert(rows, { onConflict: 'id', ignoreDuplicates: true })
+        .select();
+
+      if (error) throw error;
+      return Response.json({ inserted: data?.length || 0 }, { status: 201 });
+    }
+
+    // ── Single insert (manual add) ──────────────────────────────────
     const row = {
       id:              body.id           || undefined,
       crm_id:          body.crmId        || null,

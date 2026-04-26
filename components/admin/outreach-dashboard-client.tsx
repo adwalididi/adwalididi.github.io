@@ -4,7 +4,7 @@ import { useState, useRef, useEffect } from 'react';
 import {
   Mail, MessageCircle, Plus, Upload, Sparkles, Send, Copy, ExternalLink,
   Trash2, ChevronDown, Loader2, Check, AlertCircle, X, Users, Pencil,
-  Sun, Moon, AtSign, Phone, TriangleAlert
+  Sun, Moon, AtSign, Phone, TriangleAlert, Search, Filter, ArrowUpDown
 } from 'lucide-react';
 import { useAdminTheme } from '@/components/admin/admin-theme-provider';
 
@@ -50,14 +50,14 @@ interface Lead {
   // Email channel
   generatedSubject?: string;
   generatedBody?: string;
-  emailStatus: 'pending' | 'generated' | 'sent' | 'failed';
+  emailStatus: 'pending' | 'generated' | 'sent' | 'delivered' | 'failed';
   outreachLogId?: string; // Supabase outreach_log row ID
   emailError?: string;
   // WhatsApp channel
   generatedMessage?: string;
   waLink?: string;
   formattedPhone?: string;
-  waStatus: 'pending' | 'generated' | 'sent' | 'failed';
+  waStatus: 'pending' | 'generated' | 'sent' | 'delivered' | 'failed';
   waError?: string;
 }
 
@@ -163,10 +163,20 @@ export default function OutreachDashboardClient({ sentTodayInitial }: { sentToda
   const [editingId, setEditingId] = useState<string | null>(null);
   const [loadingLeads, setLoadingLeads] = useState(true);
 
+  // Selection
+  const [selectedLeadIds, setSelectedLeadIds] = useState<Set<string>>(new Set());
+
+  // Search, filter, sort
+  const [searchQuery, setSearchQuery] = useState('');
+  const [statusFilter, setStatusFilter] = useState<'all' | 'pending' | 'generated' | 'sent' | 'delivered' | 'failed'>('all');
+  const [industryFilter, setIndustryFilter] = useState('all');
+  const [sortBy, setSortBy] = useState<'name' | 'status' | 'none'>('none');
+  const [sortDir, setSortDir] = useState<'asc' | 'desc'>('asc');
+
   // Fetch leads from Supabase on mount
   async function fetchLeads() {
     try {
-      const res = await fetch('/api/outreach-leads/', { credentials: 'include' });
+      const res = await fetch(`/api/outreach-leads/?t=${Date.now()}`, { credentials: 'include' });
       const data = await res.json();
       if (data.leads) setLeads(data.leads.map(mapDbToLead));
     } catch (e) {
@@ -198,6 +208,8 @@ export default function OutreachDashboardClient({ sentTodayInitial }: { sentToda
   const [bulkSendProgress, setBulkSendProgress] = useState({ completed: 0, total: 0 });
 
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const abortBulkRef = useRef<boolean>(false);
+  const [isStopping, setIsStopping] = useState(false);
 
   // ─── Lead CRUD ────────────────────────────────────────────────────
 
@@ -324,7 +336,20 @@ export default function OutreachDashboardClient({ sentTodayInitial }: { sentToda
         }));
       }
 
-      if (imported.length > 0) setLeads(prev => [...imported, ...prev]);
+      if (imported.length > 0) {
+        setLeads(prev => [...imported, ...prev]);
+
+        // Persist to Supabase in background
+        fetch('/api/outreach-leads/', {
+          method: 'POST',
+          credentials: 'include',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ leads: imported }),
+        })
+          .then(res => { if (!res.ok) throw new Error('Bulk save failed'); return res.json(); })
+          .then(data => console.log(`✅ Persisted ${data.inserted} CSV leads to Supabase`))
+          .catch(err => console.error('CSV bulk persist error:', err));
+      }
 
       const msg = skipped > 0
         ? `✅ Imported ${imported.length} lead${imported.length !== 1 ? 's' : ''}. ⚠️ Skipped ${skipped} duplicate${skipped !== 1 ? 's' : ''} (matching email or phone).`
@@ -470,13 +495,22 @@ export default function OutreachDashboardClient({ sentTodayInitial }: { sentToda
   // ─── Bulk Actions ─────────────────────────────────────────────────
 
   async function bulkGenerate() {
-    const queue = activeTab === 'email'
+    abortBulkRef.current = false;
+    setIsStopping(false);
+    let queue = activeTab === 'email'
       ? leads.filter(l => l.email && l.emailStatus === 'pending')
       : leads.filter(l => l.phone && l.waStatus === 'pending');
+
+    if (selectedLeadIds.size > 0) {
+      queue = queue.filter(l => selectedLeadIds.has(l.id));
+    }
+    if (queue.length === 0) return;
+
     setBulkGenerateProgress({ completed: 0, total: queue.length });
     setBulkGenerating(true);
     try {
       for (let i = 0; i < queue.length; i += 1) {
+        if (abortBulkRef.current) break;
         const lead = queue[i];
         if (activeTab === 'email') {
           await generateEmail(lead);
@@ -484,28 +518,47 @@ export default function OutreachDashboardClient({ sentTodayInitial }: { sentToda
           await generateWhatsApp(lead);
         }
         setBulkGenerateProgress({ completed: i + 1, total: queue.length });
+        if (i < queue.length - 1) {
+          await new Promise(r => setTimeout(r, 1000)); // Pace Gemini API
+        }
       }
     } finally {
       setBulkGenerating(false);
+      setIsStopping(false);
       setBulkGenerateProgress({ completed: 0, total: 0 });
+      setSelectedLeadIds(new Set()); // Clear selection after processing
     }
   }
 
   async function bulkSend() {
-    const queue = leads.filter(l => l.email && l.emailStatus === 'generated');
+    abortBulkRef.current = false;
+    setIsStopping(false);
+    let queue = leads.filter(l => l.email && l.emailStatus === 'generated');
+    if (selectedLeadIds.size > 0) {
+      queue = queue.filter(l => selectedLeadIds.has(l.id));
+    }
+    if (queue.length === 0) return;
+    
+    if (!window.confirm(`Are you sure you want to send emails to ${queue.length} leads?`)) {
+      return;
+    }
+
     setBulkSendProgress({ completed: 0, total: queue.length });
     setBulkSending(true);
     try {
       for (let i = 0; i < queue.length; i += 1) {
+        if (abortBulkRef.current) break;
         await sendEmail(queue[i]);
         setBulkSendProgress({ completed: i + 1, total: queue.length });
         if (i < queue.length - 1) {
-          await new Promise(r => setTimeout(r, 600)); // Rate limiting buffer
+          await new Promise(r => setTimeout(r, 1200)); // Rate limiting buffer
         }
       }
     } finally {
       setBulkSending(false);
+      setIsStopping(false);
       setBulkSendProgress({ completed: 0, total: 0 });
+      setSelectedLeadIds(new Set()); // Clear selection after processing
     }
   }
 
@@ -520,6 +573,98 @@ export default function OutreachDashboardClient({ sentTodayInitial }: { sentToda
 
   const pendingCount   = activeTab === 'email' ? emailPending : waPending;
   const generatedCount = activeTab === 'email' ? emailGenerated : waGenerated;
+
+  // ─── Filtered + Sorted Leads ──────────────────────────────────────
+
+  const filteredLeads = (() => {
+    let result = [...leads];
+
+    // Search
+    if (searchQuery.trim()) {
+      const q = searchQuery.trim().toLowerCase();
+      result = result.filter(l =>
+        l.businessName.toLowerCase().includes(q) ||
+        l.ownerName.toLowerCase().includes(q) ||
+        l.email.toLowerCase().includes(q) ||
+        l.phone.includes(q) ||
+        (l.city || '').toLowerCase().includes(q)
+      );
+    }
+
+    // Status filter
+    if (statusFilter !== 'all') {
+      result = result.filter(l => {
+        const s = activeTab === 'email' ? l.emailStatus : l.waStatus;
+        return s === statusFilter;
+      });
+    }
+
+    // Industry filter — segment match so CSV values like "Hotel" match "Hotel / Resort"
+    if (industryFilter !== 'all') {
+      const filterParts = industryFilter.toLowerCase().split(/\s*\/\s*/).map(s => s.trim());
+      result = result.filter(l => {
+        const ind = l.industry.toLowerCase().trim();
+        // Exact full match
+        if (ind === industryFilter.toLowerCase()) return true;
+        // Split lead's industry into parts and check if any segment matches
+        const leadParts = ind.split(/\s*\/\s*/).map(s => s.trim());
+        return leadParts.some(lp => filterParts.some(fp => lp === fp));
+      });
+    }
+
+    // Sort
+    if (sortBy === 'name') {
+      result.sort((a, b) => {
+        const cmp = a.businessName.localeCompare(b.businessName);
+        return sortDir === 'asc' ? cmp : -cmp;
+      });
+    } else if (sortBy === 'status') {
+      const order = { pending: 0, generated: 1, sent: 2, delivered: 3, failed: 4 };
+      result.sort((a, b) => {
+        const sa = activeTab === 'email' ? a.emailStatus : a.waStatus;
+        const sb = activeTab === 'email' ? b.emailStatus : b.waStatus;
+        const cmp = (order[sa] ?? 4) - (order[sb] ?? 4);
+        return sortDir === 'asc' ? cmp : -cmp;
+      });
+    }
+
+    return result;
+  })();
+
+  const hasActiveFilters = searchQuery.trim() !== '' || statusFilter !== 'all' || industryFilter !== 'all' || sortBy !== 'none';
+
+  function toggleSelectAll() {
+    if (selectedLeadIds.size === filteredLeads.length && filteredLeads.length > 0) {
+      setSelectedLeadIds(new Set());
+    } else {
+      setSelectedLeadIds(new Set(filteredLeads.map(l => l.id)));
+    }
+  }
+
+  function toggleSelect(id: string) {
+    const newSet = new Set(selectedLeadIds);
+    if (newSet.has(id)) newSet.delete(id);
+    else newSet.add(id);
+    setSelectedLeadIds(newSet);
+  }
+
+  function clearAllFilters() {
+    setSearchQuery('');
+    setStatusFilter('all');
+    setIndustryFilter('all');
+    setSortBy('none');
+    setSortDir('asc');
+  }
+
+  function toggleSort(field: 'name' | 'status') {
+    if (sortBy === field) {
+      if (sortDir === 'asc') setSortDir('desc');
+      else { setSortBy('none'); setSortDir('asc'); }
+    } else {
+      setSortBy(field);
+      setSortDir('asc');
+    }
+  }
 
   // ─── Render ───────────────────────────────────────────────────────
 
@@ -595,21 +740,37 @@ export default function OutreachDashboardClient({ sentTodayInitial }: { sentToda
         </button>
 
         {pendingCount > 0 && (
-          <button onClick={bulkGenerate} disabled={bulkGenerating}
-            className="flex items-center gap-2 px-5 py-2.5 bg-blue-600 text-white rounded-xl font-bold text-xs hover:bg-blue-700 disabled:opacity-50 transition-all cursor-pointer">
-            {bulkGenerating ? <Loader2 size={14} className="animate-spin" /> : <Sparkles size={14} />}
+          <button 
+            onClick={bulkGenerating ? () => { abortBulkRef.current = true; setIsStopping(true); } : bulkGenerate}
+            disabled={bulkGenerating && isStopping}
+            className={`flex items-center gap-2 px-5 py-2.5 rounded-xl font-bold text-xs transition-all cursor-pointer ${
+              bulkGenerating 
+                ? 'bg-red-600 hover:bg-red-700 text-white shadow-lg' 
+                : 'bg-blue-600 hover:bg-blue-700 text-white disabled:opacity-50'
+            }`}>
+            {bulkGenerating && !isStopping ? <X size={14} /> : bulkGenerating && isStopping ? <Loader2 size={14} className="animate-spin" /> : <Sparkles size={14} />}
             {bulkGenerating
-              ? `Generating ${bulkGenerateProgress.completed}/${bulkGenerateProgress.total || pendingCount}`
-              : `Generate All (${pendingCount})`}
+              ? isStopping ? 'Stopping...' : `Stop Generating (${bulkGenerateProgress.completed}/${bulkGenerateProgress.total || pendingCount})`
+              : selectedLeadIds.size > 0 
+                ? `Generate Selected (${selectedLeadIds.size})` 
+                : `Generate All (${pendingCount})`}
           </button>
         )}
         {activeTab === 'email' && generatedCount > 0 && (
-          <button onClick={bulkSend} disabled={bulkSending || sentToday >= 300}
-            className="flex items-center gap-2 px-5 py-2.5 bg-emerald-600 text-white rounded-xl font-bold text-xs hover:bg-emerald-700 disabled:opacity-50 transition-all cursor-pointer">
-            {bulkSending ? <Loader2 size={14} className="animate-spin" /> : <Send size={14} />}
+          <button 
+            onClick={bulkSending ? () => { abortBulkRef.current = true; setIsStopping(true); } : bulkSend}
+            disabled={bulkSending ? isStopping : (sentToday >= 300)}
+            className={`flex items-center gap-2 px-5 py-2.5 rounded-xl font-bold text-xs transition-all cursor-pointer ${
+              bulkSending 
+                ? 'bg-red-600 hover:bg-red-700 text-white shadow-lg' 
+                : 'bg-emerald-600 hover:bg-emerald-700 text-white disabled:opacity-50'
+            }`}>
+            {bulkSending && !isStopping ? <X size={14} /> : bulkSending && isStopping ? <Loader2 size={14} className="animate-spin" /> : <Send size={14} />}
             {bulkSending
-              ? `Sending ${bulkSendProgress.completed}/${bulkSendProgress.total || generatedCount}`
-              : `Send All (${generatedCount})`}
+              ? isStopping ? 'Stopping...' : `Stop Sending (${bulkSendProgress.completed}/${bulkSendProgress.total || generatedCount})`
+              : selectedLeadIds.size > 0
+                ? `Send Selected (${selectedLeadIds.size})`
+                : `Send All (${generatedCount})`}
           </button>
         )}
       </div>
@@ -643,6 +804,116 @@ export default function OutreachDashboardClient({ sentTodayInitial }: { sentToda
         </div>
       )}
 
+      {/* Search / Filter / Sort Bar */}
+      {leads.length > 0 && (
+        <div className="bg-card border border-border rounded-2xl p-4 space-y-3">
+          {/* Row 1: Search + Clear */}
+          <div className="flex items-center gap-3">
+            <div className="relative flex-1">
+              <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={e => setSearchQuery(e.target.value)}
+                placeholder="Search by business, owner, email, phone, city…"
+                className="w-full bg-background border border-border rounded-xl py-2.5 pl-9 pr-3 text-sm text-foreground placeholder:text-muted-foreground/40 focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10 transition-all"
+              />
+            </div>
+            {hasActiveFilters && (
+              <button
+                onClick={clearAllFilters}
+                className="flex items-center gap-1.5 px-4 py-2.5 bg-destructive/10 text-destructive border border-destructive/20 rounded-xl text-xs font-bold hover:bg-destructive/20 cursor-pointer transition-all shrink-0"
+              >
+                <X size={12} /> Clear All
+              </button>
+            )}
+          </div>
+
+          {/* Row 2: Filters + Sort */}
+          <div className="flex flex-wrap items-center gap-2">
+            {/* Status filter */}
+            <div className="flex items-center gap-1.5">
+              <Filter size={12} className="text-muted-foreground shrink-0" />
+              <span className="text-[10px] font-black text-muted-foreground uppercase tracking-widest shrink-0">Status</span>
+              <div className="flex gap-1">
+                {(['all', 'pending', 'generated', 'sent', 'delivered', 'failed'] as const).map(s => (
+                  <button
+                    key={s}
+                    onClick={() => setStatusFilter(s)}
+                    className={`px-3 py-1.5 rounded-lg text-[11px] font-bold transition-all cursor-pointer ${
+                      statusFilter === s
+                        ? 'bg-primary text-white shadow-sm'
+                        : 'bg-muted text-muted-foreground hover:bg-muted/80'
+                    }`}
+                  >
+                    {s === 'all' ? 'All' : s.charAt(0).toUpperCase() + s.slice(1)}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div className="w-px h-6 bg-border hidden sm:block" />
+
+            {/* Industry filter */}
+            <div className="flex items-center gap-1.5">
+              <span className="text-[10px] font-black text-muted-foreground uppercase tracking-widest shrink-0">Industry</span>
+              <div className="relative">
+                <select
+                  value={industryFilter}
+                  onChange={e => setIndustryFilter(e.target.value)}
+                  className={`bg-background border rounded-lg px-3 py-1.5 text-[11px] font-bold appearance-none cursor-pointer pr-7 focus:outline-none focus:ring-2 focus:ring-primary/10 transition-all ${
+                    industryFilter !== 'all'
+                      ? 'border-primary text-primary'
+                      : 'border-border text-muted-foreground'
+                  }`}
+                >
+                  <option value="all">All Industries</option>
+                  {INDUSTRIES.map(ind => (
+                    <option key={ind} value={ind}>{ind.split(' /')[0]}</option>
+                  ))}
+                </select>
+                <ChevronDown size={12} className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none" />
+              </div>
+            </div>
+
+            <div className="w-px h-6 bg-border hidden sm:block" />
+
+            {/* Sort buttons */}
+            <div className="flex items-center gap-1.5">
+              <ArrowUpDown size={12} className="text-muted-foreground shrink-0" />
+              <span className="text-[10px] font-black text-muted-foreground uppercase tracking-widest shrink-0">Sort</span>
+              <button
+                onClick={() => toggleSort('name')}
+                className={`px-3 py-1.5 rounded-lg text-[11px] font-bold transition-all cursor-pointer ${
+                  sortBy === 'name'
+                    ? 'bg-primary text-white shadow-sm'
+                    : 'bg-muted text-muted-foreground hover:bg-muted/80'
+                }`}
+              >
+                Name {sortBy === 'name' ? (sortDir === 'asc' ? '↑' : '↓') : ''}
+              </button>
+              <button
+                onClick={() => toggleSort('status')}
+                className={`px-3 py-1.5 rounded-lg text-[11px] font-bold transition-all cursor-pointer ${
+                  sortBy === 'status'
+                    ? 'bg-primary text-white shadow-sm'
+                    : 'bg-muted text-muted-foreground hover:bg-muted/80'
+                }`}
+              >
+                Status {sortBy === 'status' ? (sortDir === 'asc' ? '↑' : '↓') : ''}
+              </button>
+            </div>
+
+            {/* Result count */}
+            {hasActiveFilters && (
+              <span className="ml-auto text-[11px] font-bold text-muted-foreground">
+                {filteredLeads.length} of {leads.length} leads
+              </span>
+            )}
+          </div>
+        </div>
+      )}
+
       {/* Leads Table */}
       {leads.length === 0 ? (
         <div className="bg-card border border-border rounded-[2rem] p-12 text-center">
@@ -658,6 +929,14 @@ export default function OutreachDashboardClient({ sentTodayInitial }: { sentToda
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b border-border bg-muted/30">
+                  <th className="px-4 py-3 w-10 text-left">
+                    <input
+                      type="checkbox"
+                      checked={filteredLeads.length > 0 && selectedLeadIds.size === filteredLeads.length}
+                      onChange={toggleSelectAll}
+                      className="rounded border-border text-primary focus:ring-primary/20 bg-background cursor-pointer"
+                    />
+                  </th>
                   <th className="text-left px-4 py-3 text-[10px] font-black text-primary uppercase tracking-widest">Business</th>
                   <th className="text-left px-4 py-3 text-[10px] font-black text-primary uppercase tracking-widest hidden sm:table-cell">Owner</th>
                   <th className="text-left px-4 py-3 text-[10px] font-black text-primary uppercase tracking-widest hidden md:table-cell">Contact</th>
@@ -667,7 +946,21 @@ export default function OutreachDashboardClient({ sentTodayInitial }: { sentToda
                 </tr>
               </thead>
               <tbody>
-                {leads.map(lead => {
+                {filteredLeads.length === 0 && leads.length > 0 ? (
+                  <tr>
+                    <td colSpan={7} className="px-4 py-10 text-center">
+                      <div className="flex flex-col items-center gap-2">
+                        <Search size={20} className="text-muted-foreground" />
+                        <p className="text-sm font-semibold text-foreground">No leads match your filters</p>
+                        <p className="text-xs text-muted-foreground">Try adjusting your search or filter criteria</p>
+                        <button onClick={clearAllFilters} className="mt-2 px-4 py-2 bg-primary/10 text-primary rounded-lg text-xs font-bold hover:bg-primary/20 cursor-pointer transition-all">
+                          Clear All Filters
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ) : null}
+                {filteredLeads.map(lead => {
                   const status      = activeTab === 'email' ? lead.emailStatus : lead.waStatus;
                   const hasContact  = activeTab === 'email' ? !!lead.email : !!lead.phone;
                   const isGenEmail  = generatingEmailId === lead.id;
@@ -679,6 +972,14 @@ export default function OutreachDashboardClient({ sentTodayInitial }: { sentToda
 
                   return (
                     <tr key={lead.id} className="border-b border-border/40 hover:bg-muted/40 transition-colors">
+                      <td className="px-4 py-3 w-10">
+                        <input
+                          type="checkbox"
+                          checked={selectedLeadIds.has(lead.id)}
+                          onChange={() => toggleSelect(lead.id)}
+                          className="rounded border-border text-primary focus:ring-primary/20 bg-background cursor-pointer"
+                        />
+                      </td>
                       <td className="px-4 py-3">
                         {isEditing ? (
                           <div className="space-y-1">
@@ -727,10 +1028,20 @@ export default function OutreachDashboardClient({ sentTodayInitial }: { sentToda
                       </td>
                       <td className="px-4 py-3 text-muted-foreground hidden lg:table-cell text-xs truncate max-w-[160px]">{lead.targetService}</td>
                       <td className="px-4 py-3">
-                        {hasContact
-                          ? <StatusBadge status={status} />
-                          : <span className="text-[10px] text-muted-foreground font-medium">No {activeTab === 'email' ? 'email' : 'phone'}</span>
-                        }
+                        {hasContact ? (
+                          <StatusDropdown 
+                            status={status} 
+                            onChange={(newStatus) => {
+                              if (activeTab === 'email') {
+                                persistLead(lead.id, { emailStatus: newStatus as any });
+                              } else {
+                                persistLead(lead.id, { waStatus: newStatus as any });
+                              }
+                            }} 
+                          />
+                        ) : (
+                          <span className="text-[10px] text-muted-foreground font-medium">No {activeTab === 'email' ? 'email' : 'phone'}</span>
+                        )}
                       </td>
                       <td className="px-4 py-3">
                         <div className="flex items-center justify-end gap-1.5 flex-wrap">
@@ -761,17 +1072,22 @@ export default function OutreachDashboardClient({ sentTodayInitial }: { sentToda
                                   </button>
                                 </>
                               )}
-                              {lead.emailStatus === 'sent' && (
+                              {(lead.emailStatus === 'sent' || lead.emailStatus === 'delivered') && (
                                 <span className="flex items-center gap-1 px-3 py-1.5 text-primary text-[11px] font-bold">
-                                  <Check size={12} /> Sent
+                                  <Check size={12} /> {lead.emailStatus === 'delivered' ? 'Delivered' : 'Sent'}
                                 </span>
                               )}
                               {lead.emailStatus === 'failed' && (
                                 <div className="flex flex-col items-end gap-1">
-                                  {lead.emailError && <p className="text-[10px] text-destructive max-w-[200px] text-right">{lead.emailError}</p>}
-                                  <button onClick={() => generateEmail(lead)}
-                                    className="flex items-center gap-1 px-3 py-1.5 bg-destructive/10 text-destructive rounded-lg text-[11px] font-bold hover:bg-destructive/20 cursor-pointer transition-all">
-                                    <AlertCircle size={12} /> Retry
+                                  {!isGenEmail && lead.emailError && <p className="text-[10px] text-destructive max-w-[200px] text-right">{lead.emailError}</p>}
+                                  <button onClick={() => generateEmail(lead)} disabled={isGenEmail}
+                                    className={`flex items-center gap-1 px-3 py-1.5 rounded-lg text-[11px] font-bold cursor-pointer transition-all ${
+                                      isGenEmail
+                                        ? 'bg-blue-500/10 text-blue-600 border border-blue-500/20'
+                                        : 'bg-destructive/10 text-destructive hover:bg-destructive/20'
+                                    }`}>
+                                    {isGenEmail ? <Loader2 size={12} className="animate-spin" /> : <AlertCircle size={12} />}
+                                    {isGenEmail ? 'Retrying…' : 'Retry'}
                                   </button>
                                 </div>
                               )}
@@ -809,17 +1125,22 @@ export default function OutreachDashboardClient({ sentTodayInitial }: { sentToda
                                   </button>
                                 </>
                               )}
-                              {lead.waStatus === 'sent' && (
+                              {(lead.waStatus === 'sent' || lead.waStatus === 'delivered') && (
                                 <span className="flex items-center gap-1 px-3 py-1.5 text-[#25D366] text-[11px] font-bold">
-                                  <Check size={12} /> Sent
+                                  <Check size={12} /> {lead.waStatus === 'delivered' ? 'Delivered' : 'Sent'}
                                 </span>
                               )}
                               {lead.waStatus === 'failed' && (
                                 <div className="flex flex-col items-end gap-1">
-                                  {lead.waError && <p className="text-[10px] text-destructive max-w-[200px] text-right">{lead.waError}</p>}
-                                  <button onClick={() => generateWhatsApp(lead)}
-                                    className="flex items-center gap-1 px-3 py-1.5 bg-destructive/10 text-destructive rounded-lg text-[11px] font-bold hover:bg-destructive/20 cursor-pointer transition-all">
-                                    <AlertCircle size={12} /> Retry
+                                  {!isGenWa && lead.waError && <p className="text-[10px] text-destructive max-w-[200px] text-right">{lead.waError}</p>}
+                                  <button onClick={() => generateWhatsApp(lead)} disabled={isGenWa}
+                                    className={`flex items-center gap-1 px-3 py-1.5 rounded-lg text-[11px] font-bold cursor-pointer transition-all ${
+                                      isGenWa
+                                        ? 'bg-[#25D366]/10 text-[#25D366] border border-[#25D366]/20'
+                                        : 'bg-destructive/10 text-destructive hover:bg-destructive/20'
+                                    }`}>
+                                    {isGenWa ? <Loader2 size={12} className="animate-spin" /> : <AlertCircle size={12} />}
+                                    {isGenWa ? 'Retrying…' : 'Retry'}
                                   </button>
                                 </div>
                               )}
@@ -997,16 +1318,30 @@ function FormSelect({ label, value, onChange, options }: {
   );
 }
 
-function StatusBadge({ status }: { status: string }) {
+function StatusDropdown({ status, onChange }: { status: string; onChange: (newStatus: string) => void }) {
   const styles: Record<string, string> = {
     pending:   'bg-yellow-500/10 text-yellow-600 border-yellow-500/20',
     generated: 'bg-blue-500/10 text-blue-600 border-blue-500/20',
     sent:      'bg-primary/10 text-primary border-primary/20',
+    delivered: 'bg-emerald-500/10 text-emerald-600 border-emerald-500/20',
     failed:    'bg-destructive/10 text-destructive border-destructive/20',
   };
+  const options = ['pending', 'generated', 'sent', 'delivered', 'failed'];
+  
   return (
-    <span className={`inline-flex items-center px-2.5 py-1 rounded-lg text-[10px] font-black uppercase tracking-widest border ${styles[status] || styles.pending}`}>
-      {status}
-    </span>
+    <div className="relative group/status w-fit">
+      <select 
+        value={status}
+        onChange={(e) => onChange(e.target.value)}
+        className={`appearance-none px-2.5 py-1 pr-6 rounded-lg text-[10px] font-black uppercase tracking-widest border cursor-pointer focus:outline-none transition-all ${styles[status] || styles.pending}`}
+      >
+        {options.map(opt => (
+          <option key={opt} value={opt} className="bg-background text-foreground uppercase">
+            {opt}
+          </option>
+        ))}
+      </select>
+      <ChevronDown size={12} className="absolute right-1.5 top-1/2 -translate-y-1/2 opacity-40 pointer-events-none" />
+    </div>
   );
 }

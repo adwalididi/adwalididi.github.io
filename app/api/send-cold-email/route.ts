@@ -2,7 +2,6 @@ import { createClient } from '@supabase/supabase-js';
 import { cookies } from 'next/headers';
 import { sendBrevoEmail } from '@/lib/brevo';
 import { sendColdEmailSchema } from '@/lib/validators';
-import { checkRateLimit } from '@/lib/rate-limit';
 import { isAllowedRequestOrigin } from '@/lib/request-origin';
 import { hasMxRecords } from '@/lib/email-validator';
 
@@ -16,13 +15,6 @@ export async function POST(request: Request) {
     const session = (await cookies()).get('admin_session_outreach');
     if (!session || session.value !== 'active') {
       return Response.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-    const limit = await checkRateLimit(request, 'send-cold-email');
-    if (!limit.ok) {
-      return Response.json(
-        { error: `Rate limit exceeded. Try again in ${limit.retryAfterSeconds || 60}s.` },
-        { status: 429 }
-      );
     }
 
     const parsed = sendColdEmailSchema.safeParse(await request.json());

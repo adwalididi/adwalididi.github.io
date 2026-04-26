@@ -7,7 +7,7 @@ import { m, AnimatePresence } from "framer-motion"
 const faqs = [
   {
     q: "How much do Meta Ads cost for a small business in India?",
-    a: "You can start Meta Ads with as little as ₹200–₹500 per day. For most small businesses, we recommend ₹5,000–₹10,000/month in ad spend alongside our management fee (starting ₹4,000/month). What matters more than the budget is how it's spent — targeting, creative quality, and campaign structure.",
+    a: "You can start Meta Ads with as little as ₹200–₹500 per day. For most small businesses, we recommend ₹5,000–₹10,000/month in ad spend alongside our management fee (starting ₹5,000/month). What matters more than the budget is how it's spent — targeting, creative quality, and campaign structure.",
   },
   {
     q: "How long does it take for a Google Business Profile to rank?",
@@ -31,7 +31,7 @@ const faqs = [
   },
   {
     q: "What is the minimum budget needed to start digital marketing?",
-    a: "Google Business Profile management starts at ₹1,500/month — the most affordable entry point. For paid ads, management starts at ₹4,000/month plus your ad spend (we recommend at least ₹5,000/month to start).",
+    a: "Google Business Profile management starts at ₹3,000/month — the most affordable entry point. For paid ads, management starts at ₹5,000/month plus your ad spend (we recommend at least ₹5,000/month to start).",
   },
   {
     q: "Can you handle ads, Google profile, and creatives all together?",

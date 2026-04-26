@@ -43,7 +43,7 @@ const services = [
     ],
     bestFor: "Local service businesses — clinics, salons, gyms, restaurants, travel agencies, coaching institutes, contractors",
     color: "saffron" as const,
-    pricing: "Starting from ₹1,500/month",
+    pricing: "Starting from ₹3,000/month",
   },
   {
     id: "ads",
@@ -61,7 +61,7 @@ const services = [
     ],
     bestFor: "Businesses with a product or service people search for or can be targeted by interest — travel agencies, e-commerce, clinics, gyms, real estate, courses",
     color: "plum" as const,
-    pricing: "Starting from ₹4,000/month + ad spend",
+    pricing: "Starting from ₹5,000/month + ad spend",
   },
   {
     id: "creatives",
@@ -94,7 +94,7 @@ const services = [
     ],
     bestFor: "Businesses wanting consistent organic presence, brand recall, and audience engagement alongside paid ads.",
     color: "coral" as const,
-    pricing: "Starting from ₹5,000/month",
+    pricing: "Starting from ₹10,000/month",
   },
   {
     id: "influencer",
@@ -126,7 +126,7 @@ const services = [
     ],
     bestFor: "Local business wanting high-visibility presence in specific areas — events, high-footfall zones, competitor locations.",
     color: "sage" as const,
-    pricing: "Starting from ₹1,000",
+    pricing: "Starting from ₹5,000",
   },
 ]
 

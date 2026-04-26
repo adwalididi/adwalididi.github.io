@@ -7,23 +7,10 @@ const redis = new Redis({
   token: process.env.UPSTASH_REDIS_REST_TOKEN || 'dummy',
 });
 
-// Create limiters per endpoint
+// Rate limiter — only protects public-facing endpoints.
+// Admin endpoints (send-cold-email, generate-email, generate-whatsapp) are
+// behind session auth and don't need in-app rate limiting.
 const limiters = {
-  'send-cold-email': new Ratelimit({
-    redis,
-    limiter: Ratelimit.slidingWindow(10, '1 m'),
-    prefix: 'rl:send-cold-email',
-  }),
-  'generate-email': new Ratelimit({
-    redis,
-    limiter: Ratelimit.slidingWindow(15, '1 m'),
-    prefix: 'rl:generate-email',
-  }),
-  'generate-whatsapp': new Ratelimit({
-    redis,
-    limiter: Ratelimit.slidingWindow(15, '1 m'),
-    prefix: 'rl:generate-whatsapp',
-  }),
   'send-welcome': new Ratelimit({
     redis,
     limiter: Ratelimit.slidingWindow(5, '10 m'),
