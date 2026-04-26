@@ -17,7 +17,7 @@ const faqs = [
   },
   {
     question: "How much do your services cost?",
-    answer: "We don't have one-size-fits-all packages because every business is different. But we're not expensive — most small businesses we work with spend between ₹5,000–₹15,000/month depending on what they need. WhatsApp us and we'll be upfront about numbers in the first conversation.",
+    answer: "We don't have one-size-fits-all packages because every business is different. But we're not expensive — most small businesses we work with spend between ₹10,000–₹25,000/month depending on what they need. WhatsApp us and we'll be upfront about numbers in the first conversation.",
   },
 ]
 

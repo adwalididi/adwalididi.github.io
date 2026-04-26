@@ -12,13 +12,13 @@ export const metadata: Metadata = {
     title: 'Blog | Digital Marketing Tips for Indian Businesses — Ad Wali Didi',
     description: 'Practical digital marketing tips and insights for Indian small businesses. No jargon, just real advice.',
     url: '/blog/',
-    images: [{ url: 'og-blog.webp', width: 1200, height: 630, alt: 'Digital Marketing Blog — Ad Wali Didi' }],
+    images: [{ url: '/og-blog.webp', width: 1200, height: 630, alt: 'Digital Marketing Blog — Ad Wali Didi' }],
   },
   twitter: {
     card: 'summary_large_image',
     title: 'Blog | Digital Marketing Tips for Indian Businesses',
     description: 'Practical digital marketing tips and insights for Indian small businesses.',
-    images: ['og-blog.webp'],
+    images: ['/og-blog.webp'],
   },
 }
 

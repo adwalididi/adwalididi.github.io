@@ -38,13 +38,13 @@ export const metadata: Metadata = {
     siteName: 'Ad Wali Didi',
     title: 'Ad Wali Didi | Google Ads, Meta Ads & Ad Creatives for Indian Businesses',
     description: 'We help Indian businesses get more enquiries through Google Business Profile, Meta Ads, and Ad Creatives. 150+ enquiries generated in Month 1 for a travel startup.',
-    images: [{ url: 'og-home.webp', width: 1200, height: 630, alt: 'Ad Wali Didi — Digital Marketing for Indian Businesses' }],
+    images: [{ url: '/og-home.webp', width: 1200, height: 630, alt: 'Ad Wali Didi — Digital Marketing for Indian Businesses' }],
   },
   twitter: {
     card: 'summary_large_image',
     title: 'Ad Wali Didi | Google Ads, Meta Ads & Ad Creatives for Indian Businesses',
     description: 'We help Indian businesses get more enquiries through Google Business Profile, Meta Ads, and Ad Creatives.',
-    images: ['og-home.webp'],
+    images: ['/og-home.webp'],
   },
   alternates: {
     canonical: '/',

@@ -16,13 +16,13 @@ export const metadata: Metadata = {
     title: 'Our Services | Google Ads, Meta Ads & GBP Management — Ad Wali Didi',
     description: 'Google Business Profile management, Meta Ads, Google Ads and Ad Creatives for Indian small businesses. One agency, three services, zero coordination headache.',
     url: '/services/',
-    images: [{ url: 'og-services.webp', width: 1200, height: 630, alt: 'Our Services — Ad Wali Didi' }],
+    images: [{ url: '/og-services.webp', width: 1200, height: 630, alt: 'Our Services — Ad Wali Didi' }],
   },
   twitter: {
     card: 'summary_large_image',
     title: 'Our Services | Google Ads, Meta Ads & GBP Management — Ad Wali Didi',
     description: 'Google Business Profile management, Meta Ads, Google Ads and Ad Creatives for Indian small businesses.',
-    images: ['og-services.webp'],
+    images: ['/og-services.webp'],
   },
 }
 
@@ -61,7 +61,7 @@ const services = [
     ],
     bestFor: "Businesses with a product or service people search for or can be targeted by interest — travel agencies, e-commerce, clinics, gyms, real estate, courses",
     color: "plum" as const,
-    pricing: "Starting from ₹5,000/month + ad spend",
+    pricing: "Starting from ₹10,000/month + ad spend",
   },
   {
     id: "creatives",
