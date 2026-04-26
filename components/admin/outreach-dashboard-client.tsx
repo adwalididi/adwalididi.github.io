@@ -562,6 +562,46 @@ export default function OutreachDashboardClient({ sentTodayInitial }: { sentToda
     }
   }
 
+  async function bulkMarkDone() {
+    let queue = activeTab === 'email'
+      ? leads.filter(l => l.email && l.emailStatus === 'pending')
+      : leads.filter(l => l.phone && l.waStatus === 'pending');
+
+    if (selectedLeadIds.size > 0) {
+      queue = queue.filter(l => selectedLeadIds.has(l.id));
+    }
+    if (queue.length === 0) return;
+    
+    if (!window.confirm(`Are you sure you want to mark ${queue.length} leads as done without generating or sending messages?`)) {
+      return;
+    }
+
+    try {
+      const patchKey = activeTab === 'email' ? 'emailStatus' : 'waStatus';
+      
+      queue.forEach(lead => {
+        updateLead(lead.id, { [patchKey]: 'sent' } as Partial<Lead>);
+      });
+      
+      const chunkSize = 10;
+      for (let i = 0; i < queue.length; i += chunkSize) {
+        const chunk = queue.slice(i, i + chunkSize);
+        await Promise.all(chunk.map(lead => 
+          fetch(`/api/outreach-leads/${lead.id}/`, {
+            method: 'PATCH',
+            credentials: 'include',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ [patchKey]: 'sent' }),
+          })
+        ));
+      }
+      setSelectedLeadIds(new Set());
+    } catch (e) {
+      console.error('Bulk mark done error:', e);
+      alert('Failed to mark some leads as done.');
+    }
+  }
+
   // ─── Computed ─────────────────────────────────────────────────────
 
   const emailPending   = leads.filter(l => l.email && l.emailStatus === 'pending').length;
@@ -740,21 +780,31 @@ export default function OutreachDashboardClient({ sentTodayInitial }: { sentToda
         </button>
 
         {pendingCount > 0 && (
-          <button 
-            onClick={bulkGenerating ? () => { abortBulkRef.current = true; setIsStopping(true); } : bulkGenerate}
-            disabled={bulkGenerating && isStopping}
-            className={`flex items-center gap-2 px-5 py-2.5 rounded-xl font-bold text-xs transition-all cursor-pointer ${
-              bulkGenerating 
-                ? 'bg-red-600 hover:bg-red-700 text-white shadow-lg' 
-                : 'bg-blue-600 hover:bg-blue-700 text-white disabled:opacity-50'
-            }`}>
-            {bulkGenerating && !isStopping ? <X size={14} /> : bulkGenerating && isStopping ? <Loader2 size={14} className="animate-spin" /> : <Sparkles size={14} />}
-            {bulkGenerating
-              ? isStopping ? 'Stopping...' : `Stop Generating (${bulkGenerateProgress.completed}/${bulkGenerateProgress.total || pendingCount})`
-              : selectedLeadIds.size > 0 
-                ? `Generate Selected (${selectedLeadIds.size})` 
-                : `Generate All (${pendingCount})`}
-          </button>
+          <>
+            <button 
+              onClick={bulkGenerating ? () => { abortBulkRef.current = true; setIsStopping(true); } : bulkGenerate}
+              disabled={bulkGenerating && isStopping}
+              className={`flex items-center gap-2 px-5 py-2.5 rounded-xl font-bold text-xs transition-all cursor-pointer ${
+                bulkGenerating 
+                  ? 'bg-red-600 hover:bg-red-700 text-white shadow-lg' 
+                  : 'bg-blue-600 hover:bg-blue-700 text-white disabled:opacity-50'
+              }`}>
+              {bulkGenerating && !isStopping ? <X size={14} /> : bulkGenerating && isStopping ? <Loader2 size={14} className="animate-spin" /> : <Sparkles size={14} />}
+              {bulkGenerating
+                ? isStopping ? 'Stopping...' : `Stop Generating (${bulkGenerateProgress.completed}/${bulkGenerateProgress.total || pendingCount})`
+                : selectedLeadIds.size > 0 
+                  ? `Generate Selected (${selectedLeadIds.size})` 
+                  : `Generate All (${pendingCount})`}
+            </button>
+            <button 
+              onClick={bulkMarkDone}
+              className="flex items-center gap-2 px-5 py-2.5 bg-card border border-border text-foreground rounded-xl font-bold text-xs hover:bg-muted transition-all cursor-pointer">
+              <Check size={14} />
+              {selectedLeadIds.size > 0 
+                ? `Mark Selected Done (${selectedLeadIds.size})` 
+                : `Mark All Done (${pendingCount})`}
+            </button>
+          </>
         )}
         {activeTab === 'email' && generatedCount > 0 && (
           <button 
@@ -1033,9 +1083,9 @@ export default function OutreachDashboardClient({ sentTodayInitial }: { sentToda
                             status={status} 
                             onChange={(newStatus) => {
                               if (activeTab === 'email') {
-                                persistLead(lead.id, { emailStatus: newStatus as any });
+                                persistLead(lead.id, { emailStatus: newStatus as Lead['emailStatus'] });
                               } else {
-                                persistLead(lead.id, { waStatus: newStatus as any });
+                                persistLead(lead.id, { waStatus: newStatus as Lead['waStatus'] });
                               }
                             }} 
                           />
@@ -1053,11 +1103,17 @@ export default function OutreachDashboardClient({ sentTodayInitial }: { sentToda
                           {activeTab === 'email' && hasContact && (
                             <>
                               {lead.emailStatus === 'pending' && (
-                                <button onClick={() => generateEmail(lead)} disabled={isGenEmail}
-                                  className="flex items-center gap-1.5 px-3 py-1.5 bg-blue-600 text-white rounded-lg text-[11px] font-bold hover:bg-blue-700 disabled:opacity-50 cursor-pointer transition-all">
-                                  {isGenEmail ? <Loader2 size={12} className="animate-spin" /> : <Sparkles size={12} />}
-                                  Generate
-                                </button>
+                                <>
+                                  <button onClick={() => generateEmail(lead)} disabled={isGenEmail}
+                                    className="flex items-center gap-1.5 px-3 py-1.5 bg-blue-600 text-white rounded-lg text-[11px] font-bold hover:bg-blue-700 disabled:opacity-50 cursor-pointer transition-all">
+                                    {isGenEmail ? <Loader2 size={12} className="animate-spin" /> : <Sparkles size={12} />}
+                                    Generate
+                                  </button>
+                                  <button onClick={() => persistLead(lead.id, { emailStatus: 'sent' })}
+                                    className="flex items-center gap-1.5 px-3 py-1.5 bg-card border border-border text-foreground rounded-lg text-[11px] font-bold hover:bg-muted cursor-pointer transition-all" title="Mark as Done">
+                                    <Check size={12} /> Mark Done
+                                  </button>
+                                </>
                               )}
                               {lead.emailStatus === 'generated' && (
                                 <>
@@ -1098,11 +1154,17 @@ export default function OutreachDashboardClient({ sentTodayInitial }: { sentToda
                           {activeTab === 'whatsapp' && hasContact && (
                             <>
                               {lead.waStatus === 'pending' && (
-                                <button onClick={() => generateWhatsApp(lead)} disabled={isGenWa}
-                                  className="flex items-center gap-1.5 px-3 py-1.5 bg-[#25D366] text-white rounded-lg text-[11px] font-bold hover:bg-[#20bd5a] disabled:opacity-50 cursor-pointer transition-all">
-                                  {isGenWa ? <Loader2 size={12} className="animate-spin" /> : <Sparkles size={12} />}
-                                  Generate
-                                </button>
+                                <>
+                                  <button onClick={() => generateWhatsApp(lead)} disabled={isGenWa}
+                                    className="flex items-center gap-1.5 px-3 py-1.5 bg-[#25D366] text-white rounded-lg text-[11px] font-bold hover:bg-[#20bd5a] disabled:opacity-50 cursor-pointer transition-all">
+                                    {isGenWa ? <Loader2 size={12} className="animate-spin" /> : <Sparkles size={12} />}
+                                    Generate
+                                  </button>
+                                  <button onClick={() => persistLead(lead.id, { waStatus: 'sent' })}
+                                    className="flex items-center gap-1.5 px-3 py-1.5 bg-card border border-border text-foreground rounded-lg text-[11px] font-bold hover:bg-muted cursor-pointer transition-all" title="Mark as Done">
+                                    <Check size={12} /> Mark Done
+                                  </button>
+                                </>
                               )}
                               {lead.waStatus === 'generated' && (
                                 <>
