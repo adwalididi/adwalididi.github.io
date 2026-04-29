@@ -66,7 +66,7 @@ const jsonLd = {
   "logo": "https://adwalididi.com/logo-dark.webp",
   "contactPoint": {
     "@type": "ContactPoint",
-    "telephone": "+91-6261643774",
+    "telephone": ["+91-6261643774", "+91-7558617172"],
     "email": "hello@adwalididi.com",
     "contactType": "customer service",
     "availableLanguage": ["English", "Hindi"]

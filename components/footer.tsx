@@ -2,7 +2,7 @@
 
 import Link from "next/link"
 import Image from "next/image"
-import { Instagram, Facebook, Linkedin, Mail } from "lucide-react"
+import { Instagram, Facebook, Linkedin, Mail, Phone } from "lucide-react"
 
 export function Footer() {
   return (
@@ -34,6 +34,20 @@ export function Footer() {
               >
                 <Mail size={16} />
                 <span>hello@adwalididi.com</span>
+              </a>
+              <a
+                href="tel:+916261643774"
+                className="inline-flex items-center gap-2 text-white-70 hover:text-white transition-colors"
+              >
+                <Phone size={16} />
+                <span>+91 62616 43774</span>
+              </a>
+              <a
+                href="tel:+917558617172"
+                className="inline-flex items-center gap-2 text-white-70 hover:text-white transition-colors"
+              >
+                <Phone size={16} />
+                <span>+91 75586 17172</span>
               </a>
               <a
                 href="https://wa.me/916261643774?text=Hi!%20I'd%20like%20a%20free%20audit%20of%20my%20business."

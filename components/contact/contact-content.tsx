@@ -1,7 +1,7 @@
 "use client"
 
 import { useEffect, useRef, useState } from "react"
-import { Instagram, Facebook, Linkedin, Clock, Mail } from "lucide-react"
+import { Instagram, Facebook, Linkedin, Clock, Mail, Phone } from "lucide-react"
 import { WhatsAppIcon } from "@/components/ui/whatsapp-icon"
 
 export function ContactContent() {
@@ -99,6 +99,22 @@ export function ContactContent() {
               >
                 <Mail size={22} aria-hidden="true" />
                 <span>hello@adwalididi.com</span>
+              </a>
+
+              <a
+                href="tel:+916261643774"
+                className="flex items-center gap-3 text-muted-text hover:text-teal transition-colors"
+              >
+                <Phone size={22} aria-hidden="true" />
+                <span>+91 62616 43774</span>
+              </a>
+
+              <a
+                href="tel:+917558617172"
+                className="flex items-center gap-3 text-muted-text hover:text-teal transition-colors"
+              >
+                <Phone size={22} aria-hidden="true" />
+                <span>+91 75586 17172</span>
               </a>
 
               <div className="flex items-center gap-3 text-muted-text">

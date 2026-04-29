@@ -20,9 +20,9 @@ export function HeroSection() {
     >
       <div className="absolute inset-0 z-0 overflow-hidden">
         <div className="relative w-full h-full">
-          <Image 
-            src="/images/hero_meeting.webp" 
-            alt="Ad Wali Didi Team Meeting" 
+          <Image
+            src="/images/hero_meeting.webp"
+            alt="Ad Wali Didi Team Meeting"
             fill
             className="object-cover"
             priority
@@ -38,7 +38,7 @@ export function HeroSection() {
           animate={{ opacity: isMounted ? 1 : 0 }}
           transition={{ duration: 1.2, ease: "easeOut" }}
         >
-          <m.h1 
+          <m.h1
             className="font-[var(--font-syne)] text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-white leading-tight"
             initial={{ opacity: 0 }}
             animate={{ opacity: isMounted ? 1 : 0 }}
@@ -47,7 +47,7 @@ export function HeroSection() {
             <span className="block">Aapka Business.</span>
             <span className="block mt-2 text-bright-gold">Humari Zimmedari.</span>
           </m.h1>
-          
+
           <m.p
             className="mt-6 sm:mt-8 text-lg sm:text-xl md:text-2xl max-w-3xl mx-auto leading-relaxed text-white-90"
             initial={{ opacity: 0 }}

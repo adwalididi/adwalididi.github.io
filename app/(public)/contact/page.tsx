@@ -34,7 +34,7 @@ const jsonLd = {
       "mainEntity": {
         "@type": "Organization",
         "name": "Ad Wali Didi",
-        "telephone": "+91-6261643774",
+        "telephone": ["+91-6261643774", "+91-7558617172"],
         "email": "hello@adwalididi.com"
       }
     },

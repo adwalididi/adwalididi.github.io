@@ -33,3 +33,8 @@ dist/
 
 # Digital Brochure & Quotation Exports
 public/export/
+
+# Ngrok local testing scripts
+ngrok.bat
+ngrok.ps1
+ngrok.yml
