@@ -99,37 +99,37 @@ export function Footer() {
             <h4 className="font-semibold text-lg mb-4 text-white">Quick Links</h4>
             <ul className="space-y-3">
               <li>
-                <Link href="/services/" className="text-white-70 hover:text-white transition-colors">
+                <Link href="/services" className="text-white-70 hover:text-white transition-colors">
                   Services
                 </Link>
               </li>
               <li>
-                <Link href="/portfolio/" className="text-white-70 hover:text-white transition-colors">
+                <Link href="/portfolio" className="text-white-70 hover:text-white transition-colors">
                   Our Work
                 </Link>
               </li>
               <li>
-                <Link href="/about/" className="text-white-70 hover:text-white transition-colors">
+                <Link href="/about" className="text-white-70 hover:text-white transition-colors">
                   About Us
                 </Link>
               </li>
               <li>
-                <Link href="/contact/" className="text-white-70 hover:text-white transition-colors">
+                <Link href="/contact" className="text-white-70 hover:text-white transition-colors">
                   Contact
                 </Link>
               </li>
               <li>
-                <Link href="/blog/" className="text-white-70 hover:text-white transition-colors">
+                <Link href="/blog" className="text-white-70 hover:text-white transition-colors">
                   Blog
                 </Link>
               </li>
               <li>
-                <Link href="/privacy-policy/" className="text-white-70 hover:text-white transition-colors">
+                <Link href="/privacy-policy" className="text-white-70 hover:text-white transition-colors">
                   Privacy Policy
                 </Link>
               </li>
               <li>
-                <Link href="/terms-of-use/" className="text-white-70 hover:text-white transition-colors">
+                <Link href="/terms-of-use" className="text-white-70 hover:text-white transition-colors">
                   Terms of Use
                 </Link>
               </li>
@@ -140,12 +140,12 @@ export function Footer() {
           <div className="flex flex-col">
             <h4 className="font-semibold text-lg mb-4 text-white">Services</h4>
             <ul className="space-y-3">
-              <li><Link href="/services/#gbp" className="text-white-70 hover:text-white transition-colors">Google Business Profile</Link></li>
-              <li><Link href="/services/#ads" className="text-white-70 hover:text-white transition-colors">Paid Ads (Meta + Google)</Link></li>
-              <li><Link href="/services/#creatives" className="text-white-70 hover:text-white transition-colors">Ad Creatives</Link></li>
-              <li><Link href="/services/#social" className="text-white-70 hover:text-white transition-colors">Social Media Marketing</Link></li>
-              <li><Link href="/services/#influencer" className="text-white-70 hover:text-white transition-colors">Influencer Marketing</Link></li>
-              <li><Link href="/services/#ooh" className="text-white-70 hover:text-white transition-colors">Outdoor Advertising (OOH)</Link></li>
+              <li><Link href="/services#gbp" className="text-white-70 hover:text-white transition-colors">Google Business Profile</Link></li>
+              <li><Link href="/services#ads" className="text-white-70 hover:text-white transition-colors">Paid Ads (Meta + Google)</Link></li>
+              <li><Link href="/services#creatives" className="text-white-70 hover:text-white transition-colors">Ad Creatives</Link></li>
+              <li><Link href="/services#social" className="text-white-70 hover:text-white transition-colors">Social Media Marketing</Link></li>
+              <li><Link href="/services#influencer" className="text-white-70 hover:text-white transition-colors">Influencer Marketing</Link></li>
+              <li><Link href="/services#ooh" className="text-white-70 hover:text-white transition-colors">Outdoor Advertising (OOH)</Link></li>
             </ul>
             <p className="text-white/50 text-sm mt-auto pt-10 whitespace-nowrap">
               Made with love for Indian businesses

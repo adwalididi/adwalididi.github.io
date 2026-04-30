@@ -1,0 +1,3 @@
+# _redirects — not needed for trailing slash handling.
+# Cloudflare Pages natively redirects /path/ → /path (301).
+# Next.js is set to trailingSlash: false so they align with zero extra compute.

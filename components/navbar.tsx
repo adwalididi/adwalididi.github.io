@@ -7,10 +7,10 @@ import { usePathname } from "next/navigation"
 
 const navLinks = [
   { href: "/", label: "Home" },
-  { href: "/services/", label: "Services" },
-  { href: "/portfolio/", label: "Our Work" },
-  { href: "/about/", label: "About" },
-  { href: "/blog/", label: "Blog" },
+  { href: "/services", label: "Services" },
+  { href: "/portfolio", label: "Our Work" },
+  { href: "/about", label: "About" },
+  { href: "/blog", label: "Blog" },
 ]
 
 export function Navbar() {
@@ -68,8 +68,8 @@ export function Navbar() {
               </Link>
             ))}
             <Link
-              href="/contact/"
-              className={`px-5 py-2.5 rounded-xl font-medium transition-colors ${isActive("/contact/")
+              href="/contact"
+              className={`px-5 py-2.5 rounded-xl font-medium transition-colors ${isActive("/contact")
                 ? 'bg-teal/90 text-white'
                 : 'bg-teal text-white hover:opacity-90'
                 }`}

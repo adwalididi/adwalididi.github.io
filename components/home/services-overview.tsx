@@ -100,7 +100,7 @@ export function ServicesOverview() {
             Plus: Social Media Marketing, Influencer Marketing & Outdoor Advertising (OOH)
           </p>
           <Link
-            href="/services/"
+            href="/services"
             className="inline-flex items-center gap-2 text-teal font-semibold hover:text-deep-teal hover:gap-4 transition-all"
           >
             Explore All Services

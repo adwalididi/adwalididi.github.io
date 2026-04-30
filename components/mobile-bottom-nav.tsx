@@ -6,10 +6,10 @@ import { Home, Zap, Briefcase, FileText, MessageCircle } from "lucide-react"
 
 const navItems = [
   { href: "/", label: "Home", icon: Home },
-  { href: "/services/", label: "Services", icon: Zap },
-  { href: "/portfolio/", label: "Work", icon: Briefcase },
-  { href: "/blog/", label: "Blog", icon: FileText },
-  { href: "/contact/", label: "Contact", icon: MessageCircle },
+  { href: "/services", label: "Services", icon: Zap },
+  { href: "/portfolio", label: "Work", icon: Briefcase },
+  { href: "/blog", label: "Blog", icon: FileText },
+  { href: "/contact", label: "Contact", icon: MessageCircle },
 ]
 
 export function MobileBottomNav() {
