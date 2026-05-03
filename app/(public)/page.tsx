@@ -6,6 +6,7 @@ import { OurProcess } from "@/components/home/our-process"
 
 const WhyUs = dynamic(() => import("@/components/home/why-us").then(mod => mod.WhyUs))
 const PortfolioPreview = dynamic(() => import("@/components/home/portfolio-preview").then(mod => mod.PortfolioPreview))
+const GoogleReviews = dynamic(() => import("@/components/home/google-reviews").then(mod => mod.GoogleReviews))
 // Client wrapper handles ssr:false — required for Next.js 16 Server Components
 import { LeadFormWrapper } from "@/components/home/lead-form-wrapper"
 const FaqSection = dynamic(() => import("@/components/home/faq-section").then(mod => mod.FaqSection))
@@ -98,6 +99,7 @@ export default function HomePage() {
       <OurProcess />
       <WhyUs />
       <PortfolioPreview />
+      <GoogleReviews />
       <LeadFormWrapper />
       <FaqSection />
       <Testimonial />

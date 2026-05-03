@@ -1,0 +1,47 @@
+{
+  "placeRating": 5,
+  "totalReviews": 5,
+  "lastFetchedAt": "2026-05-02T17:58:08.919Z",
+  "reviews": [
+    {
+      "author": "Alkesh Patil",
+      "photoUri": "https://lh3.googleusercontent.com/a/ACg8ocJB-r7AA9gXZAuBwzU1B1Y8WK51gtJwJjUsE3_zc62qj5zCV6o=s128-c0x00000000-cc-rp-mo",
+      "rating": 5,
+      "text": "Whether it is making creative graphics or running Facebook ads, their work is excellent. They think totally different from others and are very polite. They clear all doubts patiently. Highly recommended for any local business looking for proper online marketing.",
+      "relativeTime": "a week ago",
+      "publishTime": "2026-04-22T09:14:42.151823457Z"
+    },
+    {
+      "author": "Piyush Patil",
+      "photoUri": "https://lh3.googleusercontent.com/a-/ALV-UjXAgeWsonrOBHSTAKAgW5EEMgb6Bwq1x6L7cHfNwAMjKhGScZ-K=s128-c0x00000000-cc-rp-mo",
+      "rating": 5,
+      "text": "Best experience ever",
+      "relativeTime": "a week ago",
+      "publishTime": "2026-04-21T17:49:21.231272470Z"
+    },
+    {
+      "author": "Sourabh Kekan",
+      "photoUri": "https://lh3.googleusercontent.com/a-/ALV-UjWUNROpjKai5-aM2GKMu6XhFWCe_3-6liTUp0WU-CYpRQfBnVtI=s128-c0x00000000-cc-rp-mo",
+      "rating": 5,
+      "text": "Honestly, I was struggling to get people through the door even though my products are solid. Met Ad Wali Didi and she completely changed the game. She doesn't just 'run ads'—she actually understands who my customers are. My DMs are finally busy and the ROI has been great. If you’re a small business owner tired of wasting money on 'boost post,' just talk to her once.",
+      "relativeTime": "a week ago",
+      "publishTime": "2026-04-21T17:45:19.896823503Z"
+    },
+    {
+      "author": "SUNITA SHIVAJI NILE",
+      "photoUri": "https://lh3.googleusercontent.com/a-/ALV-UjWbuB98fjhEjiY2jzMS9UgYxHTgIMONwE4D3tODQkMR_ZWUu8ly=s128-c0x00000000-cc-rp-mo",
+      "rating": 5,
+      "text": "Very genuine team for running ad campaigns. They managed our budget properly and the campaign results were really nice. Whenever we had any doubt about where the ads were showing, they explained it very simply. Helpful people who know their work.",
+      "relativeTime": "a week ago",
+      "publishTime": "2026-04-21T15:04:29.260388475Z"
+    },
+    {
+      "author": "Shubham Biswas",
+      "photoUri": "https://lh3.googleusercontent.com/a-/ALV-UjXQ2R9mezo7PUxG55B5-TKACfp5yTFaGEd8xwwEK9fGxhXT2pVS=s128-c0x00000000-cc-rp-mo",
+      "rating": 5,
+      "text": "",
+      "relativeTime": "a week ago",
+      "publishTime": "2026-04-21T16:25:18.499347327Z"
+    }
+  ]
+}

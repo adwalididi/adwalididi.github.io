@@ -236,6 +236,10 @@ export default function OutreachDashboardClient({ sentTodayInitial }: { sentToda
   }
 
   async function removeLead(id: string) {
+    const lead = leads.find(l => l.id === id);
+    const name = lead?.businessName || 'this lead';
+    if (!window.confirm(`Delete "${name}"? This cannot be undone.`)) return;
+
     // Optimistic: remove immediately
     setLeads(prev => prev.filter(l => l.id !== id));
     try {
@@ -303,10 +307,19 @@ export default function OutreachDashboardClient({ sentTodayInitial }: { sentToda
       const existingEmails = new Set(leads.map(l => l.email.toLowerCase()).filter(Boolean));
       const existingPhones = new Set(leads.map(l => l.phone).filter(Boolean));
 
+      // Strip emojis, special chars, and unwanted formatting from a CSV field
+      function sanitizeCsvField(val: string): string {
+        return val
+          .replace(/['"]/g, '')           // remove stray quotes
+          .replace(/[^\p{L}\p{N}\s\-.,&()/]/gu, '') // strip emojis & symbols
+          .replace(/\s+/g, ' ')           // collapse multiple spaces
+          .trim();
+      }
+
       const imported: Lead[] = [];
       let skipped = 0;
       for (let i = 1; i < rows.length; i++) {
-        const vals = rows[i].map((v) => v.replace(/['"]/g, '').trim());
+        const vals = rows[i].map((v) => sanitizeCsvField(v));
         const r: Record<string, string> = {};
         headers.forEach((h, idx) => { r[h] = vals[idx] || ''; });
         const biz = r.business_name || r.businessname || r.business || '';
@@ -602,17 +615,66 @@ export default function OutreachDashboardClient({ sentTodayInitial }: { sentToda
     }
   }
 
+  // ─── Bulk Retry Failed ────────────────────────────────────────────
+
+  async function bulkRetryFailed() {
+    abortBulkRef.current = false;
+    setIsStopping(false);
+    let queue = activeTab === 'email'
+      ? leads.filter(l => l.email && l.emailStatus === 'failed')
+      : leads.filter(l => l.phone && l.waStatus === 'failed');
+
+    if (selectedLeadIds.size > 0) {
+      queue = queue.filter(l => selectedLeadIds.has(l.id));
+    }
+    if (queue.length === 0) return;
+
+    // Reset failed status to pending so they re-enter the generate flow
+    queue.forEach(lead => {
+      updateLead(lead.id, activeTab === 'email'
+        ? { emailStatus: 'pending', emailError: undefined }
+        : { waStatus: 'pending', waError: undefined }
+      );
+    });
+
+    setBulkGenerateProgress({ completed: 0, total: queue.length });
+    setBulkGenerating(true);
+    try {
+      for (let i = 0; i < queue.length; i += 1) {
+        if (abortBulkRef.current) break;
+        const lead = queue[i];
+        if (activeTab === 'email') {
+          await generateEmail(lead);
+        } else {
+          await generateWhatsApp(lead);
+        }
+        setBulkGenerateProgress({ completed: i + 1, total: queue.length });
+        if (i < queue.length - 1) {
+          await new Promise(r => setTimeout(r, 1000));
+        }
+      }
+    } finally {
+      setBulkGenerating(false);
+      setIsStopping(false);
+      setBulkGenerateProgress({ completed: 0, total: 0 });
+      setSelectedLeadIds(new Set());
+    }
+  }
+
   // ─── Computed ─────────────────────────────────────────────────────
 
   const emailPending   = leads.filter(l => l.email && l.emailStatus === 'pending').length;
   const emailGenerated = leads.filter(l => l.email && l.emailStatus === 'generated').length;
   const emailSent      = leads.filter(l => l.emailStatus === 'sent').length;
+  const emailFailed    = leads.filter(l => l.email && l.emailStatus === 'failed').length;
   const waPending      = leads.filter(l => l.phone && l.waStatus === 'pending').length;
   const waGenerated    = leads.filter(l => l.phone && l.waStatus === 'generated').length;
   const waSent         = leads.filter(l => l.phone && l.waStatus === 'sent').length;
+  const waFailed       = leads.filter(l => l.phone && l.waStatus === 'failed').length;
 
   const pendingCount   = activeTab === 'email' ? emailPending : waPending;
   const generatedCount = activeTab === 'email' ? emailGenerated : waGenerated;
+  const failedCount    = activeTab === 'email' ? emailFailed : waFailed;
 
   // ─── Filtered + Sorted Leads ──────────────────────────────────────
 
@@ -821,6 +883,17 @@ export default function OutreachDashboardClient({ sentTodayInitial }: { sentToda
               : selectedLeadIds.size > 0
                 ? `Send Selected (${selectedLeadIds.size})`
                 : `Send All (${generatedCount})`}
+          </button>
+        )}
+        {failedCount > 0 && !bulkGenerating && !bulkSending && (
+          <button
+            onClick={bulkRetryFailed}
+            className="flex items-center gap-2 px-5 py-2.5 bg-destructive/10 border border-destructive/20 text-destructive rounded-xl font-bold text-xs hover:bg-destructive/20 transition-all cursor-pointer"
+          >
+            <AlertCircle size={14} />
+            {selectedLeadIds.size > 0
+              ? `Retry Selected Failed (${selectedLeadIds.size})`
+              : `Retry All Failed (${failedCount})`}
           </button>
         )}
       </div>
