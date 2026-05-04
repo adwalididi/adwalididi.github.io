@@ -176,7 +176,7 @@ export default function OutreachDashboardClient({ sentTodayInitial }: { sentToda
   // Fetch leads from Supabase on mount
   async function fetchLeads() {
     try {
-      const res = await fetch(`/api/outreach-leads/?t=${Date.now()}`, { credentials: 'include' });
+      const res = await fetch(`/api/outreach-leads?t=${Date.now()}`, { credentials: 'include' });
       const data = await res.json();
       if (data.leads) setLeads(data.leads.map(mapDbToLead));
     } catch (e) {
@@ -221,7 +221,7 @@ export default function OutreachDashboardClient({ sentTodayInitial }: { sentToda
     setForm({ email: '', phone: '', businessName: '', ownerName: '', city: '', industry: INDUSTRIES[0], targetService: SERVICES[0] });
     setShowForm(false);
     try {
-      const res = await fetch('/api/outreach-leads/', {
+      const res = await fetch('/api/outreach-leads', {
         method: 'POST',
         credentials: 'include',
         headers: { 'Content-Type': 'application/json' },
@@ -243,7 +243,7 @@ export default function OutreachDashboardClient({ sentTodayInitial }: { sentToda
     // Optimistic: remove immediately
     setLeads(prev => prev.filter(l => l.id !== id));
     try {
-      await fetch(`/api/outreach-leads/${id}/`, { method: 'DELETE', credentials: 'include' });
+      await fetch(`/api/outreach-leads/${id}`, { method: 'DELETE', credentials: 'include' });
     } catch (e) {
       console.error('Delete lead error:', e);
       // Restore on failure by refreshing
@@ -260,7 +260,7 @@ export default function OutreachDashboardClient({ sentTodayInitial }: { sentToda
   async function persistLead(id: string, patch: Partial<Lead>) {
     updateLead(id, patch); // keep UI in sync
     try {
-      await fetch(`/api/outreach-leads/${id}/`, {
+      await fetch(`/api/outreach-leads/${id}`, {
         method: 'PATCH',
         credentials: 'include',
         headers: { 'Content-Type': 'application/json' },
@@ -276,7 +276,7 @@ export default function OutreachDashboardClient({ sentTodayInitial }: { sentToda
   async function importFromCRM() {
     setImportingCRM(true);
     try {
-      const res = await fetch('/api/get-crm-leads/', { credentials: 'include' });
+      const res = await fetch('/api/get-crm-leads', { credentials: 'include' });
       const data = await res.json();
       if (data.error) throw new Error(data.error);
       // Refresh full list — server already upserted, deduplication handled by DB
@@ -353,7 +353,7 @@ export default function OutreachDashboardClient({ sentTodayInitial }: { sentToda
         setLeads(prev => [...imported, ...prev]);
 
         // Persist to Supabase in background
-        fetch('/api/outreach-leads/', {
+        fetch('/api/outreach-leads', {
           method: 'POST',
           credentials: 'include',
           headers: { 'Content-Type': 'application/json' },
@@ -379,7 +379,7 @@ export default function OutreachDashboardClient({ sentTodayInitial }: { sentToda
     if (!lead.email) return;
     setGeneratingEmailId(lead.id);
     try {
-      const res = await fetch('/api/generate-email/', {
+      const res = await fetch('/api/generate-email', {
         method: 'POST',
         credentials: 'include',
         headers: { 'Content-Type': 'application/json' },
@@ -415,7 +415,7 @@ export default function OutreachDashboardClient({ sentTodayInitial }: { sentToda
     if (!lead.phone) return;
     setGeneratingWaId(lead.id);
     try {
-      const res = await fetch('/api/generate-whatsapp/', {
+      const res = await fetch('/api/generate-whatsapp', {
         method: 'POST',
         credentials: 'include',
         headers: { 'Content-Type': 'application/json' },
@@ -455,7 +455,7 @@ export default function OutreachDashboardClient({ sentTodayInitial }: { sentToda
     let attempts = 0;
     while (attempts < 3) {
       try {
-        const res = await fetch('/api/send-cold-email/', {
+        const res = await fetch('/api/send-cold-email', {
           method: 'POST',
           credentials: 'include',
           headers: { 'Content-Type': 'application/json' },
@@ -600,7 +600,7 @@ export default function OutreachDashboardClient({ sentTodayInitial }: { sentToda
       for (let i = 0; i < queue.length; i += chunkSize) {
         const chunk = queue.slice(i, i + chunkSize);
         await Promise.all(chunk.map(lead => 
-          fetch(`/api/outreach-leads/${lead.id}/`, {
+          fetch(`/api/outreach-leads/${lead.id}`, {
             method: 'PATCH',
             credentials: 'include',
             headers: { 'Content-Type': 'application/json' },
