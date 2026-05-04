@@ -61,7 +61,6 @@ export default function LeadsTableClient() {
   const { theme, toggleTheme, mounted } = useAdminTheme();
 
   const [leads, setLeads] = useState<Lead[]>([]);
-  const [loading, setLoading] = useState(true);
 
   // Fetch leads on mount
   useEffect(() => {
@@ -69,9 +68,8 @@ export default function LeadsTableClient() {
       .then(r => r.json())
       .then(data => {
         setLeads(Array.isArray(data) ? data : data.leads || []);
-        setLoading(false);
       })
-      .catch(() => setLoading(false));
+      .catch(console.error);
   }, []);
   const [search, setSearch] = useState('');
   const [industryFilter, setIndustryFilter] = useState('All');

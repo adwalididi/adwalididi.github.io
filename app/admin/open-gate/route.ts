@@ -1,27 +1,26 @@
 import { NextResponse } from 'next/server';
 
-
 export const runtime = 'edge';
 
 export async function POST(request: Request) {
   const url = new URL(request.url);
   const formData = await request.formData();
   const secret = String(formData.get('secret') || '').trim();
-  const target = formData.get('target') as string || 'leads';
+  const target = formData.get('target') as string || '/admin/leads';
   const expectedSecret = process.env.ADMIN_PASSWORD?.trim();
 
   if (!secret || !expectedSecret || secret !== expectedSecret) {
-    return NextResponse.redirect(new URL(`/admin/login/?error=gate&redirect=/admin/${target}`, url), 303);
+    return NextResponse.redirect(new URL(`/admin/login/?error=gate&redirect=${encodeURIComponent(target)}`, url), 303);
   }
 
-  const redirectUrl = new URL(`/admin/login/?redirect=/admin/${target}`, url);
+  const redirectUrl = new URL(`/admin/login/?redirect=${encodeURIComponent(target)}`, url);
   const response = NextResponse.redirect(redirectUrl, 303);
 
   response.cookies.set('admin_gate', 'active', {
     httpOnly: true,
     secure: process.env.NODE_ENV === 'production',
     sameSite: 'lax',
-    path: '/admin/',
+    path: '/',
   });
 
   return response;
