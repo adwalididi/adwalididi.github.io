@@ -19,6 +19,7 @@ export async function POST(request: Request) {
 
     const parsed = generateEmailSchema.safeParse(await request.json());
     if (!parsed.success) {
+      console.error('generate-email validation failed:', JSON.stringify(parsed.error.format()));
       return Response.json({ error: 'Invalid request payload' }, { status: 400 });
     }
 
