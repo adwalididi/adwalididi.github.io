@@ -21,7 +21,8 @@ export const generateEmailSchema = z.object({
   city: optionalTrimmedString(80),
   industry: trimmedString(120),
   targetService: trimmedString(120),
-  email: z.string().trim().email().max(320).optional().nullable(),
+  // email here is only for logging — format validation happens at send time
+  email: z.string().trim().max(320).nullish().transform((value) => value || undefined),
 });
 
 export const generateWhatsAppSchema = z.object({

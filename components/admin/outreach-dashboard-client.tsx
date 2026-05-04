@@ -307,22 +307,24 @@ export default function OutreachDashboardClient({ sentTodayInitial }: { sentToda
       const existingEmails = new Set(leads.map(l => l.email.toLowerCase()).filter(Boolean));
       const existingPhones = new Set(leads.map(l => l.phone).filter(Boolean));
 
-      // Strip emojis, special chars, and unwanted formatting from a CSV field
-      function sanitizeCsvField(val: string): string {
-        return val
-          .replace(/['"]/g, '')           // remove stray quotes
-          .replace(/[^\p{L}\p{N}\s\-.,&()/]/gu, '') // strip emojis & symbols
-          .replace(/\s+/g, ' ')           // collapse multiple spaces
-          .trim();
+      // Clean basic formatting for all fields
+      function cleanBasic(val: string): string {
+        return val.replace(/['"]/g, '').replace(/\s+/g, ' ').trim();
+      }
+
+      // Strip emojis & symbols specifically for names/text fields
+      function stripSymbols(val: string): string {
+        return val.replace(/[^\p{L}\p{N}\s\-.,&()]/gu, '').trim();
       }
 
       const imported: Lead[] = [];
       let skipped = 0;
       for (let i = 1; i < rows.length; i++) {
-        const vals = rows[i].map((v) => sanitizeCsvField(v));
+        const vals = rows[i].map((v) => cleanBasic(v));
         const r: Record<string, string> = {};
         headers.forEach((h, idx) => { r[h] = vals[idx] || ''; });
-        const biz = r.business_name || r.businessname || r.business || '';
+        
+        const biz = stripSymbols(r.business_name || r.businessname || r.business || '');
         if (!biz) continue;
 
         const email = r.email || '';
@@ -340,8 +342,8 @@ export default function OutreachDashboardClient({ sentTodayInitial }: { sentToda
 
         imported.push(newLead({
           businessName: biz,
-          ownerName: r.owner_name || r.ownername || r.owner || r.name || '',
-          city: r.city || r.location || '',
+          ownerName: stripSymbols(r.owner_name || r.ownername || r.owner || r.name || ''),
+          city: stripSymbols(r.city || r.location || ''),
           email,
           phone,
           industry: r.industry || INDUSTRIES[0],
@@ -377,6 +379,12 @@ export default function OutreachDashboardClient({ sentTodayInitial }: { sentToda
 
   async function generateEmail(lead: Lead) {
     if (!lead.email) return;
+    // Validate email format client-side — catches scraped malformed emails (e.g. missing @)
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(lead.email)) {
+      await persistLead(lead.id, { emailStatus: 'failed', emailError: `Invalid email format: "${lead.email}"` });
+      return;
+    }
     setGeneratingEmailId(lead.id);
     try {
       const res = await fetch('/api/generate-email', {
