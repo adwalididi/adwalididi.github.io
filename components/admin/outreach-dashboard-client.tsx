@@ -50,14 +50,14 @@ interface Lead {
   // Email channel
   generatedSubject?: string;
   generatedBody?: string;
-  emailStatus: 'pending' | 'generated' | 'sent' | 'delivered' | 'failed';
+  emailStatus: 'pending' | 'generated' | 'sent' | 'delivered' | 'failed' | 'unreachable';
   outreachLogId?: string; // Supabase outreach_log row ID
   emailError?: string;
   // WhatsApp channel
   generatedMessage?: string;
   waLink?: string;
   formattedPhone?: string;
-  waStatus: 'pending' | 'generated' | 'sent' | 'delivered' | 'failed';
+  waStatus: 'pending' | 'generated' | 'sent' | 'delivered' | 'failed' | 'unreachable';
   waError?: string;
 }
 
@@ -168,7 +168,7 @@ export default function OutreachDashboardClient({ sentTodayInitial }: { sentToda
 
   // Search, filter, sort
   const [searchQuery, setSearchQuery] = useState('');
-  const [statusFilter, setStatusFilter] = useState<'all' | 'pending' | 'generated' | 'sent' | 'delivered' | 'failed'>('all');
+  const [statusFilter, setStatusFilter] = useState<'all' | 'pending' | 'generated' | 'sent' | 'delivered' | 'failed' | 'unreachable'>('all');
   const [industryFilter, setIndustryFilter] = useState('all');
   const [sortBy, setSortBy] = useState<'name' | 'status' | 'none'>('none');
   const [sortDir, setSortDir] = useState<'asc' | 'desc'>('asc');
@@ -721,11 +721,11 @@ export default function OutreachDashboardClient({ sentTodayInitial }: { sentToda
         return sortDir === 'asc' ? cmp : -cmp;
       });
     } else if (sortBy === 'status') {
-      const order = { pending: 0, generated: 1, sent: 2, delivered: 3, failed: 4 };
+      const order = { pending: 0, generated: 1, sent: 2, delivered: 3, unreachable: 4, failed: 5 };
       result.sort((a, b) => {
         const sa = activeTab === 'email' ? a.emailStatus : a.waStatus;
         const sb = activeTab === 'email' ? b.emailStatus : b.waStatus;
-        const cmp = (order[sa] ?? 4) - (order[sb] ?? 4);
+        const cmp = (order[sa] ?? 5) - (order[sb] ?? 5);
         return sortDir === 'asc' ? cmp : -cmp;
       });
     }
@@ -958,8 +958,8 @@ export default function OutreachDashboardClient({ sentTodayInitial }: { sentToda
             <div className="flex items-center gap-1.5">
               <Filter size={12} className="text-muted-foreground shrink-0" />
               <span className="text-[10px] font-black text-muted-foreground uppercase tracking-widest shrink-0">Status</span>
-              <div className="flex gap-1">
-                {(['all', 'pending', 'generated', 'sent', 'delivered', 'failed'] as const).map(s => (
+              <div className="flex gap-1 flex-wrap">
+                {(['all', 'pending', 'generated', 'sent', 'delivered', 'failed', 'unreachable'] as const).map(s => (
                   <button
                     key={s}
                     onClick={() => setStatusFilter(s)}
@@ -1455,13 +1455,14 @@ function FormSelect({ label, value, onChange, options }: {
 
 function StatusDropdown({ status, onChange }: { status: string; onChange: (newStatus: string) => void }) {
   const styles: Record<string, string> = {
-    pending:   'bg-yellow-500/10 text-yellow-600 border-yellow-500/20',
-    generated: 'bg-blue-500/10 text-blue-600 border-blue-500/20',
-    sent:      'bg-primary/10 text-primary border-primary/20',
-    delivered: 'bg-emerald-500/10 text-emerald-600 border-emerald-500/20',
-    failed:    'bg-destructive/10 text-destructive border-destructive/20',
+    pending:     'bg-yellow-500/10 text-yellow-600 border-yellow-500/20',
+    generated:   'bg-blue-500/10 text-blue-600 border-blue-500/20',
+    sent:        'bg-primary/10 text-primary border-primary/20',
+    delivered:   'bg-emerald-500/10 text-emerald-600 border-emerald-500/20',
+    unreachable: 'bg-slate-500/10 text-slate-500 dark:text-slate-400 border-slate-500/20',
+    failed:      'bg-destructive/10 text-destructive border-destructive/20',
   };
-  const options = ['pending', 'generated', 'sent', 'delivered', 'failed'];
+  const options = ['pending', 'generated', 'sent', 'delivered', 'unreachable', 'failed'];
   
   return (
     <div className="relative group/status w-fit">
