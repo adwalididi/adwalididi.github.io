@@ -45,6 +45,7 @@ const statusOptions = [
   { label: 'Contacted',      value: 'Contacted',      color: 'bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/20' },
   { label: 'In Discussion',  value: 'In Discussion',  color: 'bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border-indigo-500/20' },
   { label: 'Closed-Won',     value: 'Closed-Won',     color: 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20' },
+  { label: 'Unreachable',    value: 'Unreachable',    color: 'bg-slate-500/10 text-slate-500 dark:text-slate-400 border-slate-500/20' },
   { label: 'Junk',           value: 'Junk',           color: 'bg-rose-500/10 text-rose-600 dark:text-rose-400 border-rose-500/20' },
 ];
 
@@ -120,7 +121,7 @@ export default function LeadsTableClient({
         const timeB = new Date(b.created_at).getTime();
         return sortOrder === 'desc' ? timeB - timeA : timeA - timeB;
       } else {
-        const priority: Record<string, number> = { 'New': 0, 'Contacted': 1, 'In Discussion': 2, 'Closed-Won': 3, 'Junk': 4 };
+        const priority: Record<string, number> = { 'New': 0, 'Contacted': 1, 'In Discussion': 2, 'Closed-Won': 3, 'Unreachable': 4, 'Junk': 5 };
         const valA = priority[a.status || 'New'] ?? 99;
         const valB = priority[b.status || 'New'] ?? 99;
         return sortOrder === 'desc' ? valB - valA : valA - valB;
