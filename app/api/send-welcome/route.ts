@@ -1,4 +1,4 @@
-import { Resend } from 'resend';
+// Lightweight Resend wrapper — replaces the heavy `resend` SDK + `svix` (~1.1 MB)
 import { welcomeEmailSchema } from '@/lib/validators';
 import { hasMxRecords } from '@/lib/email-validator';
 import { checkRateLimit } from '@/lib/rate-limit';
@@ -28,8 +28,6 @@ function isAllowedRequestOrigin(request: Request): boolean {
 }
 
 export async function POST(request: Request) {
-  const resend = new Resend(process.env.RESEND_API_KEY || 're_dummy_build_key');
-  
   try {
     // Only allow same-origin browser calls to this public endpoint.
     if (!isAllowedRequestOrigin(request)) {
@@ -80,18 +78,28 @@ Speak soon,
 ${senderName}
 Ad Wali Didi`;
 
-    const { data, error } = await resend.emails.send({
-      from: `Ad Wali Didi <${process.env.RESEND_FROM_EMAIL || 'hello@adwalididi.com'}>`,
-      to: [email],
-      subject: `Hi ${firstName},`,
-      text: textPayload,
+    // Direct Resend REST API call (replaces resend npm package)
+    const res = await fetch('https://api.resend.com/emails', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${process.env.RESEND_API_KEY || ''}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        from: `Ad Wali Didi <${process.env.RESEND_FROM_EMAIL || 'hello@adwalididi.com'}>`,
+        to: [email],
+        subject: `Hi ${firstName},`,
+        text: textPayload,
+      }),
     });
 
-    if (error) {
-      console.error('Resend error:', error);
+    if (!res.ok) {
+      const errBody = await res.text();
+      console.error('Resend error:', errBody);
       return Response.json({ success: false, error: 'Failed to send welcome email' }, { status: 500 });
     }
 
+    const data = await res.json();
     return Response.json({ success: true, id: data?.id });
   } catch (e) {
     console.error('Welcome email error:', e);

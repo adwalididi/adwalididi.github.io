@@ -1,6 +1,6 @@
 import { createClient } from '@supabase/supabase-js';
 import { cookies } from 'next/headers';
-import { GoogleGenAI } from '@google/genai';
+import { testGeminiKey } from '@/lib/gemini';
 
 export const runtime = 'edge';
 export const dynamic = 'force-dynamic';
@@ -8,7 +8,6 @@ export const fetchCache = 'force-no-store';
 
 export async function GET(request: Request) {
   const session = (await cookies()).get('admin_session');
-  // Just a simple security check to ensure it's accessed by admin
   if (!session || session.value !== 'active') {
     return Response.json({ error: 'Unauthorized' }, { status: 401 });
   }
@@ -79,7 +78,7 @@ export async function GET(request: Request) {
     })());
   }
 
-  // 4. Check Gemini Keys
+  // 4. Check Gemini Keys (using lightweight fetch-based test)
   const geminiKeys = [
     process.env.GEMINI_API_KEY,
     process.env.GEMINI_API_KEY_2,
@@ -99,12 +98,12 @@ export async function GET(request: Request) {
       tasks.push((async () => {
         try {
           const start = Date.now();
-          const ai = new GoogleGenAI({ apiKey: geminiKeys[i] as string });
-          await ai.models.generateContent({
-            model: 'gemini-2.5-flash',
-            contents: 'Respond with exactly "ok". You are a tester.',
-          });
-          results[keyName] = { status: 'operational', latency: Date.now() - start, error: null };
+          const result = await testGeminiKey(geminiKeys[i] as string);
+          if (result.ok) {
+            results[keyName] = { status: 'operational', latency: Date.now() - start, error: null };
+          } else {
+            results[keyName] = { status: 'failing', latency: Date.now() - start, error: result.error || 'Unknown error' };
+          }
         } catch (e: unknown) {
           results[keyName] = { status: 'failing', latency: 0, error: e instanceof Error ? e.message : 'Connection failed' };
         }

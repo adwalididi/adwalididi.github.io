@@ -1,5 +1,4 @@
 import { supabase } from '@/lib/supabase';
-import { v4 as uuidv4 } from 'uuid';
 
 export type ConsentState = {
   analytics_storage: 'granted' | 'denied';
@@ -55,7 +54,7 @@ export const setConsent = async (state: ConsentState, action: string = 'update')
   try {
     let consentId = localStorage.getItem('consent_receipt_id');
     if (!consentId) {
-      consentId = uuidv4();
+      consentId = crypto.randomUUID();
       localStorage.setItem('consent_receipt_id', consentId);
     }
 
