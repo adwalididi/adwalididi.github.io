@@ -66,9 +66,14 @@
     "resend": "^6.10.0",
     "sonner": "^1.7.1",
     "tailwind-merge": "^3.3.1",
-    "uuid": "^13.0.0",
+    "uuid": "^14.0.0",
     "vaul": "^1.1.2",
     "zod": "^3.24.1"
+  },
+  "overrides": {
+    "protobufjs": "^7.5.5",
+    "undici": "^6.23.1",
+    "uuid": "^14.0.0"
   },
   "devDependencies": {
     "@cloudflare/next-on-pages": "^1.13.16",

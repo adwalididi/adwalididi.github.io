@@ -13,7 +13,7 @@ export const runtime = 'edge';
  */
 export async function GET() {
   try {
-    const session = (await cookies()).get('admin_session_outreach');
+    const session = (await cookies()).get('admin_session');
     if (!session || session.value !== 'active') {
       return Response.json({ error: 'Unauthorized' }, { status: 401 });
     }

@@ -59,6 +59,7 @@ interface Lead {
   formattedPhone?: string;
   waStatus: 'pending' | 'generated' | 'sent' | 'delivered' | 'failed' | 'unreachable';
   waError?: string;
+  createdAt?: string;
 }
 
 function newLead(partial: Partial<Lead> & Pick<Lead, 'businessName'>): Lead {
@@ -150,6 +151,7 @@ function mapDbToLead(row: Record<string, unknown>): Lead {
     emailError:       (row.email_error     as string) || undefined,
     waError:          (row.wa_error        as string) || undefined,
     outreachLogId:    (row.outreach_log_id as string) || undefined,
+    createdAt:        (row.created_at      as string) || undefined,
   };
 }
 
@@ -1122,9 +1124,14 @@ export default function OutreachDashboardClient({ sentTodayInitial }: { sentToda
                         ) : (
                           <p className="font-semibold text-foreground truncate max-w-[150px]">{lead.businessName}</p>
                         )}
-                        <p className="text-[10px] text-muted-foreground">
+                        <p className="text-[10px] text-muted-foreground mt-0.5">
                           {lead.industry.split(' /')[0]}{lead.city ? ` • ${lead.city}` : ''}
                         </p>
+                        {lead.createdAt && (
+                          <p className="text-[9px] text-muted-foreground/40 uppercase tracking-widest mt-1" title="Date Added">
+                            Added: {new Date(lead.createdAt).toLocaleDateString()}
+                          </p>
+                        )}
                       </td>
                       <td className="px-4 py-3 hidden sm:table-cell">
                         {isEditing ? (

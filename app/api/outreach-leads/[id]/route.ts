@@ -12,7 +12,7 @@ function getSupabase() {
 }
 
 async function requireAuth(): Promise<boolean> {
-  const session = (await cookies()).get('admin_session_outreach');
+  const session = (await cookies()).get('admin_session');
   return session?.value === 'active';
 }
 

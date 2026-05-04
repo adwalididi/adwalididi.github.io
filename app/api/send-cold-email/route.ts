@@ -12,7 +12,7 @@ export async function POST(request: Request) {
     if (!isAllowedRequestOrigin(request)) {
       return Response.json({ error: 'Forbidden' }, { status: 403 });
     }
-    const session = (await cookies()).get('admin_session_outreach');
+    const session = (await cookies()).get('admin_session');
     if (!session || session.value !== 'active') {
       return Response.json({ error: 'Unauthorized' }, { status: 401 });
     }
