@@ -5,7 +5,6 @@ import { sendColdEmailSchema } from '@/lib/validators';
 import { isAllowedRequestOrigin } from '@/lib/request-origin';
 import { hasMxRecords } from '@/lib/email-validator';
 
-export const runtime = 'edge';
 
 export async function POST(request: Request) {
   try {

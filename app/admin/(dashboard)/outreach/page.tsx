@@ -1,7 +1,8 @@
 import { createClient } from '@supabase/supabase-js';
 import OutreachDashboardClient from '@/components/admin/outreach-dashboard-client';
 
-export const runtime = 'edge';
+
+export const dynamic = 'force-dynamic';
 
 export default async function AdminOutreach() {
   const supabase = createClient(

@@ -3,7 +3,6 @@ import Link from 'next/link';
 import { cookies } from 'next/headers';
 import { AdminThemeProvider } from '@/components/admin/admin-theme-provider';
 
-export const runtime = 'edge';
 
 export default async function AdminLogin({
   searchParams

@@ -1,7 +1,8 @@
 import { createClient } from '@supabase/supabase-js';
 import LeadsTableClient from '@/components/admin/leads-table-client';
 
-export const runtime = 'edge';
+
+export const dynamic = 'force-dynamic';
 
 export default async function AdminLeads() {
   const supabase = createClient(

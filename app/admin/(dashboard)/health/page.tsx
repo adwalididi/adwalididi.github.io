@@ -1,6 +1,5 @@
 import HealthDashboardClient from '@/components/admin/health-dashboard-client';
 
-export const runtime = 'edge';
 
 export default function AdminHealth() {
   return (
