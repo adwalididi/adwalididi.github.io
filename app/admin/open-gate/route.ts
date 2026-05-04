@@ -11,11 +11,11 @@ export async function POST(request: Request) {
   const expectedSecret = process.env.ADMIN_PASSWORD?.trim();
 
   if (!secret || !expectedSecret || secret !== expectedSecret) {
-    return NextResponse.redirect(new URL(`/admin/login/?error=gate&redirect=/admin/${target}`, url));
+    return NextResponse.redirect(new URL(`/admin/login/?error=gate&redirect=/admin/${target}`, url), 303);
   }
 
   const redirectUrl = new URL(`/admin/login/?redirect=/admin/${target}`, url);
-  const response = NextResponse.redirect(redirectUrl);
+  const response = NextResponse.redirect(redirectUrl, 303);
 
   response.cookies.set('admin_gate', 'active', {
     httpOnly: true,
