@@ -1,3 +1,5 @@
+export const runtime = 'edge';
+
 // Lightweight Resend wrapper — replaces the heavy `resend` SDK + `svix` (~1.1 MB)
 import { welcomeEmailSchema } from '@/lib/validators';
 import { hasMxRecords } from '@/lib/email-validator';

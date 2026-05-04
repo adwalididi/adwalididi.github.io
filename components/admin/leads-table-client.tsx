@@ -57,18 +57,22 @@ const serviceLabels: Record<string, string> = {
   'social': 'Social Media'
 };
 
-export default function LeadsTableClient({ 
-  leads: initialLeads,
-  onStatusUpdate 
-}: { 
-  leads: Lead[],
-  onStatusUpdate: (id: string, status: string) => Promise<void>
-}) {
+export default function LeadsTableClient() {
   const { theme, toggleTheme, mounted } = useAdminTheme();
 
+  const [leads, setLeads] = useState<Lead[]>([]);
+  const [loading, setLoading] = useState(true);
 
-
-  const [leads, setLeads] = useState<Lead[]>(initialLeads);
+  // Fetch leads on mount
+  useEffect(() => {
+    fetch('/api/get-crm-leads')
+      .then(r => r.json())
+      .then(data => {
+        setLeads(Array.isArray(data) ? data : data.leads || []);
+        setLoading(false);
+      })
+      .catch(() => setLoading(false));
+  }, []);
   const [search, setSearch] = useState('');
   const [industryFilter, setIndustryFilter] = useState('All');
   const [serviceFilter, setServiceFilter] = useState('All');
@@ -137,7 +141,12 @@ export default function LeadsTableClient({
     setLeads(leads.map(l => l.id === leadId ? { ...l, status: newStatus } : l));
     
     try {
-      await onStatusUpdate(leadId, newStatus);
+      const res = await fetch('/api/update-lead-status', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ leadId, status: newStatus }),
+      });
+      if (!res.ok) throw new Error('Failed');
     } catch (err) {
       console.error("Failed to update status:", err);
       // Rollback

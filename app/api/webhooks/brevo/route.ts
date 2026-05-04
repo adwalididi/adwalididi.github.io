@@ -1,6 +1,8 @@
 import { createClient } from '@supabase/supabase-js';
 
 
+export const runtime = 'edge';
+
 // We do not require auth here because Brevo is calling this, not an admin session.
 export async function POST(request: Request) {
   try {

@@ -155,7 +155,7 @@ function mapDbToLead(row: Record<string, unknown>): Lead {
   };
 }
 
-export default function OutreachDashboardClient({ sentTodayInitial }: { sentTodayInitial: number }) {
+export default function OutreachDashboardClient({ sentTodayInitial = 0 }: { sentTodayInitial?: number } = {}) {
   const { theme, toggleTheme, mounted } = useAdminTheme();
   const [activeTab, setActiveTab] = useState<'email' | 'whatsapp'>('email');
   const [leads, setLeads] = useState<Lead[]>([]);

@@ -6,6 +6,8 @@ import { generateEmailSchema } from '@/lib/validators';
 import { isAllowedRequestOrigin } from '@/lib/request-origin';
 
 
+export const runtime = 'edge';
+
 export async function POST(request: Request) {
   try {
     if (!isAllowedRequestOrigin(request)) {

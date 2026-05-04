@@ -3,6 +3,8 @@ import { cookies } from 'next/headers';
 import { isAllowedRequestOrigin } from '@/lib/request-origin';
 
 
+export const runtime = 'edge';
+
 function getSupabase() {
   return createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,

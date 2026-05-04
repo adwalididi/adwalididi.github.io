@@ -2,6 +2,8 @@ import { createClient } from '@supabase/supabase-js';
 import { cookies } from 'next/headers';
 
 
+export const runtime = 'edge';
+
 /**
  * GET /api/get-crm-leads/
  *
