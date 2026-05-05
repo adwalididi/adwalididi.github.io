@@ -1,7 +1,7 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
   "main": ".open-next/worker.js",
-  "name": "adwalididi-website",
+  "name": "adwalididi-website-preview",
   "compatibility_date": "2026-05-05",
   "compatibility_flags": ["nodejs_compat", "global_fetch_strictly_public"],
   "assets": {
@@ -11,7 +11,7 @@
   "services": [
     {
       "binding": "WORKER_SELF_REFERENCE",
-      "service": "adwalididi-website"
+      "service": "adwalididi-website-preview"
     }
   ]
 }
