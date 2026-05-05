@@ -15,6 +15,8 @@ node_modules
 .next/
 .open-next/
 .wrangler/
+.wrangler-bundle*/
+.wrangler-bundle-size/
 .DS_Store
 
 # TypeScript / tooling caches (local only — do not commit)

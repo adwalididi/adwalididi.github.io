@@ -5,7 +5,7 @@ import Image from "next/image"
 import { getBlogPost, getAllBlogSlugs, getAllBlogPosts } from "@/lib/blog-data"
 import { ArrowLeft, Calendar, Clock } from "lucide-react"
 import { WhatsAppIcon } from "@/components/ui/whatsapp-icon"
-import { MDXRemote } from "next-mdx-remote/rsc"
+import { BlogPostContent } from "./blog-post-content"
 
 interface BlogPostPageProps {
   params: Promise<{ slug: string }>
@@ -171,7 +171,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
           </div>
 
           <div className="prose prose-lg max-w-none">
-            <MDXRemote source={post.content} />
+            <BlogPostContent content={post.content} />
           </div>
 
           {/* CTA After Article */}

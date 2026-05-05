@@ -76,7 +76,7 @@ This document is the working playbook for moving this app from `@cloudflare/next
 ## Cloudflare Free Tier Guardrails
 
 - Workers Free tier allows 3 MiB compressed Worker size and 100,000 requests per day.
-- The size gate uses gzip size and a 2.9 MiB budget to leave a small safety buffer.
+- The size gate uses `wrangler deploy --dry-run` and checks Wrangler's reported gzip upload size against a 2.9 MiB budget.
 - Static asset requests are free and unlimited when they do not invoke Functions/Workers.
 - Every SSR request, middleware request, route handler request, and proxy request can count as a Workers request.
 - Proxying high-volume traffic through the Worker can consume the daily Free tier request budget quickly.
