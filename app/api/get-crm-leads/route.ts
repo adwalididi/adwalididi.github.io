@@ -1,8 +1,6 @@
 import { createClient } from '@supabase/supabase-js';
 import { cookies } from 'next/headers';
 
-export const runtime = 'edge';
-
 export async function GET() {
   try {
     const session = (await cookies()).get('admin_session_outreach');

@@ -13,6 +13,8 @@ next.user-config.*
 # Common ignores
 node_modules
 .next/
+.open-next/
+.wrangler/
 .DS_Store
 
 # TypeScript / tooling caches (local only — do not commit)

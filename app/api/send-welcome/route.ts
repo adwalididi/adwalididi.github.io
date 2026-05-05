@@ -2,8 +2,6 @@ import { Resend } from 'resend';
 import { getWelcomeEmailHtml } from '@/lib/email-templates/welcome-email';
 import { welcomeEmailSchema } from '@/lib/validators';
 
-export const runtime = 'edge';
-
 function isAllowedRequestOrigin(request: Request): boolean {
   const requestUrl = new URL(request.url);
   const headerValue = request.headers.get('origin') || request.headers.get('referer');

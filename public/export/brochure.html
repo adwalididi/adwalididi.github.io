@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ad Wali Didi - Information Brochure</title>
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&family=Syne:wght@600;700;800&display=swap"
+        rel="stylesheet">
+
+    <!-- Tailwind Script for Browser Compilation -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        teal: '#008573',
+                        'deep-teal': '#006B5C',
+                        'ocean-blue': '#107D98',
+                        gold: '#dbad3e',
+                        'dark-gold': '#9A7A1A',
+                        'near-black': '#1a1a1a',
+                        'muted-text': '#555555',
+                        'teal-tint': '#F2FAF8',
+                        'blue-tint': '#EEF6FA',
+                        'gold-tint': '#FDF7E8',
+                        'teal-border': '#C8E8E3',
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        display: ['Syne', 'sans-serif'],
+                        component: ['Space Grotesk', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* A4 Print Setup */
+        @page {
+            size: A4;
+            margin: 0;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #f3f4f6;
+            /* Gray background outside pages */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .a4-page {
+            width: 210mm;
+            height: 297mm;
+            background: white;
+            margin: 20px auto;
+            padding: 15mm 20mm;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            position: relative;
+            box-sizing: border-box;
+            overflow: hidden;
+            page-break-after: always;
+            display: flex;
+            flex-direction: column;
+            z-index: 1;
+        }
+
+        /* Faint Watermark */
+        .a4-page::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 60%;
+            height: 60%;
+            background-image: url('../logo-dark.webp');
+            background-repeat: no-repeat;
+            background-position: center;
+            background-size: contain;
+            opacity: 0.03;
+            /* Very subtle so it doesn't distract */
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        @media print {
+            body {
+                background-color: white;
+            }
+
+            .a4-page {
+                margin: 0;
+                box-shadow: none;
+                padding: 15mm 20mm;
+                page-break-after: always;
+            }
+
+            /* Ensure links are clickable in PDF */
+            a {
+                text-decoration: none !important;
+            }
+        }
+
+        /* Reusable UI Components */
+        h1,
+        h2,
+        h3 {
+            font-family: 'Syne', sans-serif;
+        }
+
+        .font-component {
+            font-family: 'Space Grotesk', sans-serif;
+        }
+
+        .header-accent {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 8px;
+            background: linear-gradient(90deg, #008573, #dbad3e);
+        }
+
+        .footer {
+            margin-top: auto;
+            border-top: 1px solid #C8E8E3;
+            padding-top: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.85rem;
+            color: #555555;
+        }
+    </style>
+</head>
+
+<body class="text-near-black font-sans antialiased">
+
+    <!-- PAGE 1: Brand & Value -->
+    <div class="a4-page">
+        <div class="header-accent"></div>
+
+        <main class="flex-grow pt-4">
+            <div class="flex items-center gap-8 mb-10">
+                <div class="shrink-0">
+                    <img src="../logo-dark.webp" alt="Ad Wali Didi Logo" class="h-32 object-contain">
+                </div>
+                <div>
+                    <div class="text-teal font-component font-semibold text-sm bg-teal-tint px-3 py-1 rounded-full inline-block mb-3">Digital
+                        Marketing Agency</div>
+                    <h1 class="text-4xl font-bold leading-tight mb-3">Helping Indian small businesses become visible online.
+                    </h1>
+                    <p class="text-lg text-muted-text max-w-2xl leading-relaxed">
+                        We manage Google Business Profiles, run Meta & Google Ads, and design creatives that actually bring
+                        enquiries—not just impressions.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Stats -->
+            <div class="grid grid-cols-3 gap-6 mb-12">
+                <div class="bg-teal-tint p-6 rounded-xl border border-teal-border">
+                    <div class="text-3xl font-display font-bold text-teal mb-1">550+</div>
+                    <div class="text-sm font-component text-deep-teal uppercase tracking-wider font-semibold">Leads for
+                        Construction Biz</div>
+                </div>
+                <div class="bg-gold-tint p-6 rounded-xl border border-gold">
+                    <div class="text-3xl font-display font-bold text-dark-gold mb-1">150+</div>
+                    <div class="text-sm font-component text-dark-gold uppercase tracking-wider font-semibold">Enquiries
+                        in Month 1 (Travel)</div>
+                </div>
+                <div class="bg-blue-tint p-6 rounded-xl border border-blue-border">
+                    <div class="text-3xl font-display font-bold text-ocean-blue mb-1">ROI</div>
+                    <div class="text-sm font-component text-ocean-blue uppercase tracking-wider font-semibold">Focus on
+                        Real Results</div>
+                </div>
+            </div>
+
+            <div class="mb-8">
+                <h2 class="text-2xl font-bold mb-4">Our Story</h2>
+                <p class="text-muted-text leading-relaxed mb-4">
+                    Ad Wali Didi started with a simple observation: Indian small businesses are underserved by
+                    traditional marketing agencies. Agencies either charge massive retainers meant for funded startups,
+                    or local freelancers disappear when results drop.
+                </p>
+                <p class="text-muted-text leading-relaxed">
+                    We bridge that gap. We provide agency-level strategy, execution, and reporting, but with the
+                    transparency and pricing that makes sense for a growing local business.
+                </p>
+            </div>
+
+            <div>
+                <h2 class="text-2xl font-bold mb-4">What Makes Us Different?</h2>
+                <ul class="space-y-3">
+                    <li class="flex items-start gap-3">
+                        <svg class="w-6 h-6 text-teal shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                        </svg>
+                        <span class="text-muted-text"><strong>No Jargon:</strong> We don't hide behind confusing
+                            marketing terms. We talk in numbers that matter to you.</span>
+                    </li>
+                    <li class="flex items-start gap-3">
+                        <svg class="w-6 h-6 text-teal shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                        </svg>
+                        <span class="text-muted-text"><strong>Enquiries over Impressions:</strong> Likes don't pay the
+                            bills. We focus our metrics on calls, messages, and walk-ins.</span>
+                    </li>
+                    <li class="flex items-start gap-3">
+                        <svg class="w-6 h-6 text-teal shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                        </svg>
+                        <span class="text-muted-text"><strong>One Unified Team:</strong> You get strategy, ad
+                            management, and creative design all under one roof. No coordinating between multiple
+                            freelancers.</span>
+                    </li>
+                </ul>
+            </div>
+        </main>
+
+        <footer class="footer">
+            <div><a href="https://adwalididi.com" class="text-teal hover:underline font-medium">adwalididi.com</a></div>
+            <div>Page 1</div>
+        </footer>
+    </div>
+
+    <!-- PAGE 2: The Big Three Services -->
+    <div class="a4-page">
+        <div class="header-accent"></div>
+        <main class="flex-grow pt-4">
+            <div class="flex items-center gap-6 mb-8">
+                <div class="shrink-0"><img src="../logo-dark.webp" alt="Ad Wali Didi" class="h-24 object-contain"></div>
+                <div>
+                    <span class="text-teal font-component font-semibold tracking-wider uppercase text-sm">Core
+                        Capabilities</span>
+                    <h1 class="text-3xl font-bold mt-1">Strategic Services</h1>
+                    <p class="text-muted-text mt-1 text-base">The three pillars of consistent online lead generation.</p>
+                </div>
+            </div>
+
+            <!-- Service 1 -->
+            <div class="border-l-4 border-teal pl-6 py-2 mb-8 bg-teal-tint/50 rounded-r-xl p-6">
+                <div class="flex justify-between items-end mb-2">
+                    <h2 class="text-2xl font-bold">Google Business Profile (GBP)</h2>
+                    <span class="font-component text-teal font-semibold">From ₹1,500/mo</span>
+                </div>
+                <h3 class="text-lg font-semibold text-near-black mb-2">Your Google Profile Is Either Working For You Or
+                    Against You</h3>
+                <p class="text-muted-text mb-4 text-sm leading-relaxed">
+                    When someone searches for your type of business in your city, your Google profile is the first thing
+                    they see. If it's incomplete or has few reviews, they'll call your competitor instead.
+                </p>
+                <div class="grid grid-cols-2 gap-x-4 gap-y-2 text-sm text-near-black">
+                    <div class="flex items-center gap-2">• Setup & Optimization</div>
+                    <div class="flex items-center gap-2">• Review Management</div>
+                    <div class="flex items-center gap-2">• Regular Active Posts</div>
+                    <div class="flex items-center gap-2">• Keyword Placement</div>
+                </div>
+            </div>
+
+            <!-- Service 2 -->
+            <div class="border-l-4 border-ocean-blue pl-6 py-2 mb-8 bg-blue-tint/50 rounded-r-xl p-6">
+                <div class="flex justify-between items-end mb-2">
+                    <h2 class="text-2xl font-bold">Paid Ads (Meta + Google)</h2>
+                    <span class="font-component text-ocean-blue font-semibold">From ₹4,000/mo</span>
+                </div>
+                <h3 class="text-lg font-semibold text-near-black mb-2">Ads That Bring Enquiries, Not Just Impressions
+                </h3>
+                <p class="text-muted-text mb-4 text-sm leading-relaxed">
+                    A lot of businesses run ads. Most don't know if they're working. We run Meta and Google Ads starting
+                    with what will work fastest, prove it, then scale.
+                </p>
+                <div class="grid grid-cols-2 gap-x-4 gap-y-2 text-sm text-near-black">
+                    <div class="flex items-center gap-2">• Audience Research</div>
+                    <div class="flex items-center gap-2">• Campaign Setup</div>
+                    <div class="flex items-center gap-2">• Ongoing Optimization</div>
+                    <div class="flex items-center gap-2">• Clear Monthly Reporting</div>
+                </div>
+            </div>
+
+            <!-- Service 3 -->
+            <div class="border-l-4 border-gold pl-6 py-2 mb-8 bg-gold-tint/50 rounded-r-xl p-6">
+                <div class="flex justify-between items-end mb-2">
+                    <h2 class="text-2xl font-bold">Ad Creatives</h2>
+                    <span class="font-component text-dark-gold font-semibold">From ₹4,000/set</span>
+                </div>
+                <h3 class="text-lg font-semibold text-near-black mb-2">Your Ad Is Only As Good As What People See</h3>
+                <p class="text-muted-text mb-4 text-sm leading-relaxed">
+                    Most design studios don't understand performance. We design creatives that are built to convert, not
+                    just to look nice in a portfolio.
+                </p>
+                <div class="grid grid-cols-2 gap-x-4 gap-y-2 text-sm text-near-black">
+                    <div class="flex items-center gap-2">• Static Ad Designs</div>
+                    <div class="flex items-center gap-2">• Reels & Video Concepts</div>
+                    <div class="flex items-center gap-2">• Copy & Headlines</div>
+                    <div class="flex items-center gap-2">• A/B Testing Variations</div>
+                </div>
+            </div>
+
+        </main>
+        <footer class="footer">
+            <div><a href="https://adwalididi.com/services"
+                    class="text-teal hover:underline font-medium">adwalididi.com/services</a></div>
+            <div>Page 2</div>
+        </footer>
+    </div>
+
+    <!-- PAGE 3: Specialized Services & Workflow -->
+    <div class="a4-page">
+        <div class="header-accent"></div>
+        <main class="flex-grow pt-4">
+            <div class="flex items-center gap-6 mb-8">
+                <div class="shrink-0"><img src="../logo-dark.webp" alt="Ad Wali Didi" class="h-24 object-contain"></div>
+                <div>
+                    <span class="text-teal font-component font-semibold tracking-wider uppercase text-sm">Extended
+                        Support</span>
+                    <h1 class="text-3xl font-bold mt-1">Specialized Services</h1>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-6 mb-12">
+                <div class="border border-teal-border rounded-xl p-5">
+                    <h3 class="text-xl font-bold mb-2">Social Media Marketing</h3>
+                    <p class="text-sm text-muted-text mb-3">Consistent organic presence on Instagram & Facebook without
+                        the daily hustle. We handle the grid so you handle the business.</p>
+                    <span class="text-sm font-component font-semibold text-teal">From ₹5,000/mo</span>
+                </div>
+                <div class="border border-teal-border rounded-xl p-5">
+                    <h3 class="text-xl font-bold mb-2">Influencer Marketing</h3>
+                    <p class="text-sm text-muted-text mb-3">Reach hidden audiences through trusted voices. We identify,
+                        brief, and manage relevant local creators.</p>
+                    <span class="text-sm font-component font-semibold text-teal">From ₹2,000/campaign</span>
+                </div>
+            </div>
+
+            <div class="bg-near-black text-white rounded-2xl p-8 mb-10 relative overflow-hidden">
+                <div class="absolute top-0 right-0 w-32 h-32 bg-gold opacity-20 rounded-bl-full"></div>
+                <h2 class="text-2xl font-bold mb-2 text-gold">The "Full Package"</h2>
+                <p class="text-white/80 mb-6 text-sm">For established businesses that want to dominate their local
+                    market. A complete done-for-you digital growth system.</p>
+
+                <div class="grid grid-cols-2 gap-4 text-sm">
+                    <div class="flex items-start gap-2">
+                        <svg class="w-5 h-5 text-gold shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                        </svg>
+                        <span>Meta + Google Ads Managed</span>
+                    </div>
+                    <div class="flex items-start gap-2">
+                        <svg class="w-5 h-5 text-gold shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                        </svg>
+                        <span>GBP Full Optimization</span>
+                    </div>
+                    <div class="flex items-start gap-2">
+                        <svg class="w-5 h-5 text-gold shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                        </svg>
+                        <span>8 Fresh Ad Creatives/mo</span>
+                    </div>
+                    <div class="flex items-start gap-2">
+                        <svg class="w-5 h-5 text-gold shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                        </svg>
+                        <span>Dedicated Strategy Sessions</span>
+                    </div>
+                </div>
+            </div>
+
+            <div>
+                <h2 class="text-2xl font-bold mb-6">Our Workflow</h2>
+                <div class="grid grid-cols-3 gap-4">
+                    
+                    <div class="relative bg-white border border-teal-border rounded-xl p-4 pt-8">
+                        <div class="absolute -top-4 left-4 w-10 h-10 rounded-full border border-white bg-teal text-white flex items-center justify-center font-bold shadow">1</div>
+                        <h3 class="font-bold text-lg mb-1">Audit & Discovery</h3>
+                        <p class="text-sm text-muted-text leading-relaxed">We review your assets, competitors, and goals to build a roadmap.</p>
+                    </div>
+                    
+                    <div class="relative bg-white border border-teal-border rounded-xl p-4 pt-8">
+                        <div class="absolute -top-4 left-4 w-10 h-10 rounded-full border border-white bg-teal text-white flex items-center justify-center font-bold shadow">2</div>
+                        <h3 class="font-bold text-lg mb-1">Asset Creation</h3>
+                        <p class="text-sm text-muted-text leading-relaxed">We write the copy, design creatives, and set up tracking infrastructure.</p>
+                    </div>
+
+                    <div class="relative bg-white border border-teal-border rounded-xl p-4 pt-8">
+                        <div class="absolute -top-4 left-4 w-10 h-10 rounded-full border border-white bg-teal text-white flex items-center justify-center font-bold shadow">3</div>
+                        <h3 class="font-bold text-lg mb-1">Launch & Optimize</h3>
+                        <p class="text-sm text-muted-text leading-relaxed">Campaigns go live. We monitor daily, tweaking audiences and budgets.</p>
+                    </div>
+
+                </div>
+            </div>
+
+        </main>
+        <footer class="footer">
+            <div><a href="https://adwalididi.com/services"
+                    class="text-teal hover:underline font-medium">adwalididi.com/services</a></div>
+            <div>Page 3</div>
+        </footer>
+    </div>
+
+    <!-- PAGE 4: Results & Impact -->
+    <div class="a4-page">
+        <div class="header-accent"></div>
+        <main class="flex-grow pt-4">
+            <div class="flex items-center gap-6 mb-8">
+                <div class="shrink-0"><img src="../logo-dark.webp" alt="Ad Wali Didi" class="h-24 object-contain"></div>
+                <div>
+                    <span class="text-teal font-component font-semibold tracking-wider uppercase text-sm">Portfolio</span>
+                    <h1 class="text-3xl font-bold mt-1">Real Results for Real Businesses</h1>
+                </div>
+            </div>
+
+            <!-- Case Study 1 -->
+            <div class="bg-gray-50 border border-gray-200 rounded-2xl p-6 mb-8">
+                <div class="flex justify-between items-start mb-4">
+                    <div>
+                        <span
+                            class="text-xs font-bold uppercase tracking-wider text-ocean-blue bg-blue-tint px-2 py-1 rounded">Travel
+                            & Tourism</span>
+                        <h2 class="text-2xl font-bold mt-2">150+ Enquiries in Month 1</h2>
+                    </div>
+                </div>
+                <p class="text-muted-text text-sm mb-4">
+                    A new travel startup needed immediate traction for their customized tour packages. We bypassed slow
+                    SEO and launched targeted Meta Ads using high-quality destination visuals and clear pricing hooks.
+                </p>
+                <div class="grid grid-cols-3 gap-4 border-t border-gray-200 pt-4">
+                    <div>
+                        <div class="text-xs text-muted-text uppercase tracking-wider">Ad Spend</div>
+                        <div class="font-bold text-lg">₹15,000</div>
+                    </div>
+                    <div>
+                        <div class="text-xs text-muted-text uppercase tracking-wider">Cost Per Lead</div>
+                        <div class="font-bold text-lg text-teal">₹92</div>
+                    </div>
+                    <div>
+                        <div class="text-xs text-muted-text uppercase tracking-wider">Platforms</div>
+                        <div class="font-bold text-sm mt-1">Meta Ads</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Case Study 2 -->
+            <div class="bg-gray-50 border border-gray-200 rounded-2xl p-6 mb-8">
+                <div class="flex justify-between items-start mb-4">
+                    <div>
+                        <span
+                            class="text-xs font-bold uppercase tracking-wider text-dark-gold bg-gold-tint px-2 py-1 rounded">Construction
+                            & B2B</span>
+                        <h2 class="text-2xl font-bold mt-2">550+ Leads over 6 Months</h2>
+                    </div>
+                </div>
+                <p class="text-muted-text text-sm mb-4">
+                    A local construction firm wanted high-ticket commercial contracts. We optimized their Google
+                    Business Profile to capture local intent and ran Google Search Ads for high-intent keywords like
+                    "commercial builders near me".
+                </p>
+                <div class="grid grid-cols-3 gap-4 border-t border-gray-200 pt-4">
+                    <div>
+                        <div class="text-xs text-muted-text uppercase tracking-wider">Timeframe</div>
+                        <div class="font-bold text-lg">6 Months</div>
+                    </div>
+                    <div>
+                        <div class="text-xs text-muted-text uppercase tracking-wider">Lead Volume</div>
+                        <div class="font-bold text-lg text-teal">550+</div>
+                    </div>
+                    <div>
+                        <div class="text-xs text-muted-text uppercase tracking-wider">Platforms</div>
+                        <div class="font-bold text-sm mt-1">Google Ads + GBP</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Testimonial -->
+            <div class="bg-teal-tint border border-teal-border rounded-2xl p-8 relative mt-12">
+                <div
+                    class="absolute -top-6 left-8 bg-teal text-white w-12 h-12 flex items-center justify-center rounded-full text-3xl font-display leading-none">
+                    "</div>
+                <p class="text-lg text-deep-teal font-medium italic mb-4 mt-2">
+                    "We had tried two other freelancers before Ad Wali Didi. They sent us fancy reports but no actual
+                    phone calls. In our first month with this team, our phones finally started ringing. They understand
+                    local business."
+                </p>
+                <div class="flex items-center gap-3">
+                    <div
+                        class="w-10 h-10 bg-gray-300 rounded-full flex items-center justify-center font-bold text-gray-500">
+                        RP</div>
+                    <div>
+                        <div class="font-bold text-near-black">Rahul P.</div>
+                        <div class="text-xs text-muted-text">Business Owner, Pune</div>
+                    </div>
+                </div>
+            </div>
+
+        </main>
+        <footer class="footer">
+            <div><a href="https://adwalididi.com/portfolio"
+                    class="text-teal hover:underline font-medium">adwalididi.com/portfolio</a></div>
+            <div>Page 4</div>
+        </footer>
+    </div>
+
+    <!-- PAGE 5: Contact & Action -->
+    <div class="a4-page">
+        <div class="header-accent"></div>
+        <main class="flex-grow flex flex-col pt-4">
+            <div class="flex items-center gap-6 mb-8">
+                <div class="shrink-0"><img src="../logo-dark.webp" alt="Ad Wali Didi" class="h-24 object-contain"></div>
+                <div>
+                    <span class="text-teal font-component font-semibold tracking-wider uppercase text-sm">Next Steps</span>
+                    <h1 class="text-3xl font-bold mt-1">Frequently Asked Questions</h1>
+                </div>
+            </div>
+
+            <div class="space-y-6 mb-12 flex-grow">
+                <div>
+                    <h3 class="font-bold text-lg mb-1">What is the minimum budget needed?</h3>
+                    <p class="text-sm text-muted-text">Google Profile management starts at ₹1,500/month. Paid ads
+                        management starts at ₹4,000/month plus your actual ad spend (we recommend a minimum of
+                        ₹5,000/month in ad spend to see results).</p>
+                </div>
+                <div>
+                    <h3 class="font-bold text-lg mb-1">Do I need Google Ads or Meta Ads?</h3>
+                    <p class="text-sm text-muted-text">Google Ads works best when people actively search for your
+                        service (e.g. 'dentist near me'). Meta Ads work better for reaching people before they know they
+                        want something. We advise based on your specific business.</p>
+                </div>
+                <div>
+                    <h3 class="font-bold text-lg mb-1">Do you work with businesses outside Maharashtra?</h3>
+                    <p class="text-sm text-muted-text">Yes. We work with businesses across India. Since our core
+                        services are digital, location is no barrier.</p>
+                </div>
+                <div>
+                    <h3 class="font-bold text-lg mb-1">How long does it take to see results?</h3>
+                    <p class="text-sm text-muted-text">Paid Ads can generate leads within the first 48 hours. Google
+                        Business Profile optimization takes 4-8 weeks to naturally improve your local search ranking.
+                    </p>
+                </div>
+            </div>
+
+            <!-- CTA Section -->
+            <div class="bg-near-black rounded-2xl p-8 text-center mt-auto">
+                <h2 class="text-3xl font-display font-bold text-white mb-4">Get Your Free Marketing Audit</h2>
+                <p class="text-white/80 text-sm mb-8 max-w-md mx-auto">
+                    Not sure where to start? Drop us a message on WhatsApp. We'll review your current online presence
+                    and tell you exactly what you need—no obligations.
+                </p>
+
+                <div class="flex flex-col sm:flex-row items-center justify-center gap-6">
+                    <div class="text-left">
+                        <div class="text-teal font-component text-sm mb-1 uppercase tracking-wider font-semibold">
+                            WhatsApp Directly</div>
+                        <div class="text-2xl font-bold text-white mb-2">+91 6261643774</div>
+                        <div class="text-white/70 text-sm"><a href="mailto:hello@adwalididi.com"
+                                class="hover:underline">hello@adwalididi.com</a></div>
+                    </div>
+
+                    <div class="w-[2px] h-16 bg-white/20 hidden sm:block"></div>
+
+                    <div class="flex flex-col items-center">
+                        <a href="https://wa.me/916261643774?text=Hi,%20I%27m%20reaching%20out%20from%20your%20digital%20brochure.%20I%27d%20like%20to%20get%20a%20free%20marketing%20audit." target="_blank" class="bg-[#25D366] hover:bg-[#20bd5a] text-white font-bold py-3 px-6 rounded-full inline-flex items-center gap-2 transition-colors">
+                            <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51a12.8 12.8 0 0 0-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413Z"/></svg>
+                            Chat on WhatsApp
+                        </a>
+                        <div class="text-xs text-white/70 mt-3">Opens direct chat</div>
+                    </div>
+                </div>
+
+                <div class="mt-8 pt-6 border-t border-white/20 flex flex-col items-center justify-center gap-2">
+                    <a href="https://adwalididi.com"
+                        class="text-white text-lg font-bold hover:underline hover:text-teal-200 transition-colors">www.adwalididi.com</a>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+</body>
+
+</html>

@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ad Wali Didi - Business Proposal & Quotation</title>
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&family=Syne:wght@600;700;800&display=swap"
+        rel="stylesheet">
+
+    <!-- Tailwind Script for Browser Compilation -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        teal: '#008573',
+                        'deep-teal': '#006B5C',
+                        'ocean-blue': '#107D98',
+                        gold: '#dbad3e',
+                        'dark-gold': '#9A7A1A',
+                        'near-black': '#1a1a1a',
+                        'muted-text': '#555555',
+                        'teal-tint': '#F2FAF8',
+                        'blue-tint': '#EEF6FA',
+                        'gold-tint': '#FDF7E8',
+                        'teal-border': '#C8E8E3',
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        display: ['Syne', 'sans-serif'],
+                        component: ['Space Grotesk', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* A4 Print Setup */
+        @page {
+            size: A4;
+            margin: 0;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #f3f4f6;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .a4-page {
+            width: 210mm;
+            height: 297mm;
+            background: white;
+            margin: 20px auto;
+            padding: 15mm 20mm;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            position: relative;
+            box-sizing: border-box;
+            overflow: hidden;
+            page-break-after: always;
+            display: flex;
+            flex-direction: column;
+            z-index: 1;
+        }
+
+        /* Faint Watermark */
+        .a4-page::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 60%;
+            height: 60%;
+            background-image: url('../logo-dark.webp');
+            background-repeat: no-repeat;
+            background-position: center;
+            background-size: contain;
+            opacity: 0.03;
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        @media print {
+            body { background-color: white; }
+            .a4-page { margin: 0; box-shadow: none; page-break-after: always; }
+        }
+
+        h1, h2, h3 { font-family: 'Syne', sans-serif; }
+        .font-component { font-family: 'Space Grotesk', sans-serif; }
+
+        .header-accent {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 8px;
+            background: linear-gradient(90deg, #008573, #dbad3e);
+        }
+
+        table { width: 100%; border-collapse: collapse; margin: 20px 0; }
+        th { background-color: #F2FAF8; color: #006B5C; text-align: left; padding: 12px; border: 1px solid #C8E8E3; font-family: 'Space Grotesk', sans-serif; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.05em; }
+        td { padding: 12px; border: 1px solid #C8E8E3; font-size: 0.9rem; vertical-align: top; }
+        .service-row:nth-child(even) { background-color: #fafafa; }
+    </style>
+</head>
+
+<body class="text-near-black font-sans antialiased">
+
+    <!-- PAGE 1: INTRODUCTION & RECIPIENT -->
+    <div class="a4-page">
+        <div class="header-accent"></div>
+        
+        <header class="flex items-center gap-8 mb-10 mt-4">
+            <div class="shrink-0">
+                <img src="../logo-dark.webp" alt="Ad Wali Didi Logo" class="h-32 object-contain">
+            </div>
+            <div class="border-l-2 border-teal-border pl-8">
+                <h1 class="text-3xl font-bold text-near-black">Business Proposal</h1>
+                <p class="text-teal font-component font-semibold uppercase tracking-wider text-sm mt-1">Custom Marketing Strategy</p>
+            </div>
+        </header>
+
+        <div class="grid grid-cols-2 gap-12 mb-10">
+            <div>
+                <h3 class="text-xs font-bold uppercase tracking-widest text-muted-text mb-4">Prepared For</h3>
+                <div class="text-xl font-bold">[CLIENT NAME / BUSINESS NAME]</div>
+                <div class="text-muted-text">[CLIENT ADDRESS / CITY]</div>
+                <div class="text-muted-text mt-2 font-medium">Attn: [CONTACT PERSON]</div>
+            </div>
+            <div class="text-right">
+                <h3 class="text-xs font-bold uppercase tracking-widest text-muted-text mb-4">Proposal Details</h3>
+                <div class="text-sm"><strong>Date:</strong> April 22, 2026</div>
+                <div class="text-sm"><strong>Proposal #:</strong> AWD-2026-001</div>
+                <div class="text-sm"><strong>Valid Until:</strong> May 07, 2026</div>
+            </div>
+        </div>
+
+        <main class="flex-grow">
+            <div class="prose max-w-none">
+                <h2 class="text-2xl font-bold mb-4">Executive Summary</h2>
+                <p class="text-muted-text leading-relaxed mb-6">
+                    Thank you for giving <strong>Ad Wali Didi</strong> the opportunity to propose a digital marketing strategy for your business. Based on our initial assessment, we have designed a roadmap focused on increasing your local visibility and generating high-intent enquiries.
+                </p>
+                <p class="text-muted-text leading-relaxed mb-6">
+                    This proposal outlines a performance-driven approach covering Google Business optimization, strategic paid advertising, and conversion-focused creatives. Our goal is not just to provide impressions, but to deliver a measurable Return on Investment (ROI).
+                </p>
+
+                <h3 class="text-xl font-bold mb-4">Project Objectives</h3>
+                <div class="grid grid-cols-1 gap-4">
+                    <div class="flex items-start gap-4 bg-teal-tint p-4 rounded-xl border border-teal-border">
+                        <div class="bg-teal text-white rounded-full w-6 h-6 flex items-center justify-center shrink-0 mt-1 font-bold text-xs">1</div>
+                        <div>
+                            <div class="font-bold">Local Market Dominance</div>
+                            <div class="text-sm text-muted-text">Ensure your business appears in the 'Top 3' of local Google searches.</div>
+                        </div>
+                    </div>
+                    <div class="flex items-start gap-4 bg-blue-tint p-4 rounded-xl border border-blue-border">
+                        <div class="bg-ocean-blue text-white rounded-full w-6 h-6 flex items-center justify-center shrink-0 mt-1 font-bold text-xs">2</div>
+                        <div>
+                            <div class="font-bold">Enquiry Growth</div>
+                            <div class="text-sm text-muted-text">Launch ads specifically optimized for calls, messages, and store visits.</div>
+                        </div>
+                    </div>
+                    <div class="flex items-start gap-4 bg-gold-tint p-4 rounded-xl border border-gold">
+                        <div class="bg-dark-gold text-white rounded-full w-6 h-6 flex items-center justify-center shrink-0 mt-1 font-bold text-xs">3</div>
+                        <div>
+                            <div class="font-bold">Brand Consistency</div>
+                            <div class="text-sm text-muted-text">Establish a professional visual identity across all digital touchpoints.</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <footer class="footer">
+            <div class="flex items-center gap-4">
+                <span class="font-bold">Ad Wali Didi</span>
+                <span class="text-teal-border">|</span>
+                <span>+91 6261643774</span>
+            </div>
+            <div>Page 1</div>
+        </footer>
+    </div>
+
+    <!-- PAGE 2: SCOPE & COMMERCIALS -->
+    <div class="a4-page">
+        <div class="header-accent"></div>
+        
+        <header class="mb-8 mt-4">
+            <h2 class="text-2xl font-bold">Scope of Work (SOW)</h2>
+            <div class="h-1 w-20 bg-teal mt-1"></div>
+        </header>
+
+        <main class="flex-grow">
+            <table>
+                <thead>
+                    <tr>
+                        <th class="w-1/4">Service</th>
+                        <th>Deliverables & Frequency</th>
+                        <th class="w-1/4 text-right">Investment</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr class="service-row">
+                        <td class="font-bold">Google Business Profile (GBP)</td>
+                        <td class="text-sm">
+                            <ul class="list-disc ml-4 space-y-1">
+                                <li>Keyword optimization & Setup</li>
+                                <li>4 Professional Posts per Month</li>
+                                <li>Review monitoring & response management</li>
+                                <li>Local citation building</li>
+                            </ul>
+                        </td>
+                        <td class="text-right font-component font-bold">₹XXXXX/mo</td>
+                    </tr>
+                    <tr class="service-row">
+                        <td class="font-bold">Meta & Google Ads Management</td>
+                        <td class="text-sm">
+                            <ul class="list-disc ml-4 space-y-1">
+                                <li>Custom Audience Research & Setup</li>
+                                <li>A/B Testing of Headlines & Copy</li>
+                                <li>Weekly Bid & Budget Optimization</li>
+                                <li>Real-time Lead Tracking</li>
+                            </ul>
+                        </td>
+                        <td class="text-right font-component font-bold">₹XXXXX/mo</td>
+                    </tr>
+                    <tr class="service-row">
+                        <td class="font-bold">Ad Creative Design</td>
+                        <td class="text-sm">
+                            <ul class="list-disc ml-4 space-y-1">
+                                <li>6 Static High-Conversion Graphics</li>
+                                <li>2 Reel/Video Motion Graphics</li>
+                                <li>All Platform Resize (FB, Insta, Google)</li>
+                            </ul>
+                        </td>
+                        <td class="text-right font-component font-bold">₹XXXXX/mo</td>
+                    </tr>
+                </tbody>
+                <tfoot>
+                    <tr class="bg-near-black text-white">
+                        <td colspan="2" class="font-bold p-4">Total Monthly Retainer (Exclusive of GST)</td>
+                        <td class="text-right font-component font-bold p-4 text-xl">₹XXXXX</td>
+                    </tr>
+                </tfoot>
+            </table>
+
+            <div class="mt-4 bg-gray-50 p-4 rounded-xl border border-gray-200">
+                <h3 class="font-bold text-lg mb-4">Commercial Terms</h3>
+                <ul class="space-y-3 text-sm">
+                    <li class="flex items-center gap-3">
+                        <svg class="w-5 h-5 text-teal" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                        <span><strong>Payment:</strong> 100% Advance payment at the start of each service month.</span>
+                    </li>
+                    <li class="flex items-center gap-3">
+                        <svg class="w-5 h-5 text-teal" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                        <span><strong>Ad Spend:</strong> Ad budget (payable to Meta/Google) is not included in management fee.</span>
+                    </li>
+                    <li class="flex items-center gap-3">
+                        <svg class="w-5 h-5 text-teal" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                        <span><strong>Termination:</strong> Either party can terminate with a 15-day written notice.</span>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="mt-8 grid grid-cols-2 gap-20">
+                <div class="border-t border-gray-300 pt-4">
+                    <div class="text-xs text-muted-text uppercase mb-8">Authorized Signatory (Ad Wali Didi)</div>
+                    <div class="font-component text-sm italic mb-1 text-teal">Shubham Nile</div>
+                    <div class="font-bold">Founder, Ad Wali Didi</div>
+                </div>
+                <div class="border-t border-gray-300 pt-4">
+                    <div class="text-xs text-muted-text uppercase mb-12">Client Acceptance (Sign & Date)</div>
+                    <div class="h-1 w-full border-b border-dashed border-gray-400"></div>
+                </div>
+            </div>
+        </main>
+
+        <footer class="footer">
+            <div class="flex items-center gap-4">
+                <span class="font-bold">www.adwalididi.com</span>
+                <span class="text-teal-border">|</span>
+                <span>hello@adwalididi.com</span>
+            </div>
+            <div>Page 2</div>
+        </footer>
+    </div>
+
+</body>
+
+</html>

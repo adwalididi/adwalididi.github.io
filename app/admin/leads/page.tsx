@@ -6,8 +6,6 @@ import LeadsTableClient from '@/components/admin/leads-table-client';
 import { AdminLogo } from '@/components/admin/admin-logo';
 import { AdminThemeProvider } from '@/components/admin/admin-theme-provider';
 
-export const runtime = 'edge';
-
 export default async function AdminLeads({ 
   searchParams 
 }: { 

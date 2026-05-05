@@ -5,8 +5,6 @@ import { cookies } from 'next/headers';
 import OutreachDashboardClient from '@/components/admin/outreach-dashboard-client';
 import { AdminThemeProvider } from '@/components/admin/admin-theme-provider';
 
-export const runtime = 'edge';
-
 export default async function AdminOutreach({
   searchParams
 }: {

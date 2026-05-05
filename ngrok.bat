@@ -1,0 +1,3 @@
+@echo off
+echo Starting ngrok for Next.js on 127.0.0.1:3000...
+ngrok http 127.0.0.1:3000 --host-header=rewrite
