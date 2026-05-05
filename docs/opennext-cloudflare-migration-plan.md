@@ -43,11 +43,12 @@ This document is the working playbook for moving this app from `@cloudflare/next
   - `cf:typegen`: generates Cloudflare binding types when bindings are introduced.
   - `cf:size`: validates the gzip Worker budget.
 - Add `open-next.config.ts` with minimal adapter config. Do not enable R2 incremental cache until the account has a real R2 bucket.
-- Add `wrangler.jsonc` with:
+- Add `wrangler.worker.jsonc` with:
   - `main` set to `.open-next/worker.js`.
   - `assets.directory` set to `.open-next/assets`.
   - `nodejs_compat` and `global_fetch_strictly_public`.
   - A self-reference service binding named `WORKER_SELF_REFERENCE`.
+- Do not keep this Workers config at root as `wrangler.jsonc` while using the Cloudflare Pages Git integration. Pages reads root Wrangler config as Pages config and expects `pages_build_output_dir`, while OpenNext needs Workers-only fields such as `main`, `assets`, and service bindings.
 - Add `.dev.vars` with `NEXTJS_ENV=development` for local Cloudflare preview.
 - Add `public/_headers` for long-lived static caching of `/_next/static/*`.
 - Add `.open-next/` to `.gitignore`.
@@ -113,3 +114,14 @@ This document is the working playbook for moving this app from `@cloudflare/next
 - Keep runtime and proxy changes separate in review so route behavior can be isolated.
 - If bundle size exceeds budget, first inspect middleware/proxy imports, then route-level server imports, then consider moving heavy functionality out of the Worker.
 - Do not run broad dependency repair commands such as `npm audit fix --force` as part of this migration.
+
+## Cloudflare Dashboard Setup
+
+- Do not use the old Pages build command `npx @cloudflare/next-on-pages@1`. That command reinstalls the deprecated adapter and requires every dynamic route to export `runtime = 'edge'`.
+- Preferred OpenNext deployment target: Cloudflare Workers with assets, using `npm run cf:deploy` or Workers Builds.
+- If continuing to use the existing Cloudflare Pages Git project only as a static Pages project, do not expect it to run the OpenNext Worker unless the deployment flow explicitly uploads `.open-next/worker.js` as a Worker.
+- Recommended dashboard action: create or switch to a Cloudflare Workers deployment for this branch/repo and set its build command to `npm run cf:deploy` or use `npm run cf:upload` for staged versions.
+- Keep the old Pages project paused or pointed at a static-only fallback until the Worker deployment is verified.
+- If Cloudflare logs show `Executing user command: npx @cloudflare/next-on-pages@1`, the build is still coming from the old Pages project settings. GitHub Actions changes do not affect that Pages runner.
+- If Cloudflare logs show `Found wrangler.json file` during a Pages build, remove the root Pages-facing `wrangler.json` from the deployed commit or replace it with a real Pages config. The OpenNext Workers config in this repo is intentionally named `wrangler.worker.jsonc`.
+- The GitHub Actions workflow should deploy with `wrangler deploy --config wrangler.worker.jsonc`, after `npm run cf:build` and `npm run cf:size` pass.
