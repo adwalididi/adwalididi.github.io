@@ -23,7 +23,7 @@ export async function generateMetadata({ params }: BlogPostPageProps): Promise<M
   return {
     title: `${post.title} — Ad Wali Didi Blog`,
     description: post.metaDescription,
-    keywords: post.keywords,
+    keywords: [...post.keywords],
     openGraph: {
       type: 'article',
       title: post.title,
