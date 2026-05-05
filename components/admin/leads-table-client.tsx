@@ -45,6 +45,7 @@ const statusOptions = [
   { label: 'Contacted',      value: 'Contacted',      color: 'bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/20' },
   { label: 'In Discussion',  value: 'In Discussion',  color: 'bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border-indigo-500/20' },
   { label: 'Closed-Won',     value: 'Closed-Won',     color: 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20' },
+  { label: 'Unreachable',    value: 'Unreachable',    color: 'bg-slate-500/10 text-slate-500 dark:text-slate-400 border-slate-500/20' },
   { label: 'Junk',           value: 'Junk',           color: 'bg-rose-500/10 text-rose-600 dark:text-rose-400 border-rose-500/20' },
 ];
 
@@ -56,18 +57,20 @@ const serviceLabels: Record<string, string> = {
   'social': 'Social Media'
 };
 
-export default function LeadsTableClient({ 
-  leads: initialLeads,
-  onStatusUpdate 
-}: { 
-  leads: Lead[],
-  onStatusUpdate: (id: string, status: string) => Promise<void>
-}) {
+export default function LeadsTableClient() {
   const { theme, toggleTheme, mounted } = useAdminTheme();
 
+  const [leads, setLeads] = useState<Lead[]>([]);
 
-
-  const [leads, setLeads] = useState<Lead[]>(initialLeads);
+  // Fetch leads on mount
+  useEffect(() => {
+    fetch('/api/get-crm-leads')
+      .then(r => r.json())
+      .then(data => {
+        setLeads(Array.isArray(data) ? data : data.leads || []);
+      })
+      .catch(console.error);
+  }, []);
   const [search, setSearch] = useState('');
   const [industryFilter, setIndustryFilter] = useState('All');
   const [serviceFilter, setServiceFilter] = useState('All');
@@ -120,7 +123,7 @@ export default function LeadsTableClient({
         const timeB = new Date(b.created_at).getTime();
         return sortOrder === 'desc' ? timeB - timeA : timeA - timeB;
       } else {
-        const priority: Record<string, number> = { 'New': 0, 'Contacted': 1, 'In Discussion': 2, 'Closed-Won': 3, 'Junk': 4 };
+        const priority: Record<string, number> = { 'New': 0, 'Contacted': 1, 'In Discussion': 2, 'Closed-Won': 3, 'Unreachable': 4, 'Junk': 5 };
         const valA = priority[a.status || 'New'] ?? 99;
         const valB = priority[b.status || 'New'] ?? 99;
         return sortOrder === 'desc' ? valB - valA : valA - valB;
@@ -136,7 +139,12 @@ export default function LeadsTableClient({
     setLeads(leads.map(l => l.id === leadId ? { ...l, status: newStatus } : l));
     
     try {
-      await onStatusUpdate(leadId, newStatus);
+      const res = await fetch('/api/update-lead-status', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ leadId, status: newStatus }),
+      });
+      if (!res.ok) throw new Error('Failed');
     } catch (err) {
       console.error("Failed to update status:", err);
       // Rollback

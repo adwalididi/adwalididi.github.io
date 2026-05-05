@@ -4,7 +4,7 @@ import { useState, useRef, useEffect } from 'react';
 import {
   Mail, MessageCircle, Plus, Upload, Sparkles, Send, Copy, ExternalLink,
   Trash2, ChevronDown, Loader2, Check, AlertCircle, X, Users, Pencil,
-  Sun, Moon
+  Sun, Moon, AtSign, Phone, TriangleAlert, Search, Filter, ArrowUpDown
 } from 'lucide-react';
 import { useAdminTheme } from '@/components/admin/admin-theme-provider';
 
@@ -44,20 +44,22 @@ interface Lead {
   phone: string;
   businessName: string;
   ownerName: string;
+  city?: string;
   industry: string;
   targetService: string;
   // Email channel
   generatedSubject?: string;
   generatedBody?: string;
-  emailStatus: 'pending' | 'generated' | 'sent' | 'failed';
+  emailStatus: 'pending' | 'generated' | 'sent' | 'delivered' | 'failed' | 'unreachable';
   outreachLogId?: string; // Supabase outreach_log row ID
   emailError?: string;
   // WhatsApp channel
   generatedMessage?: string;
   waLink?: string;
   formattedPhone?: string;
-  waStatus: 'pending' | 'generated' | 'failed';
+  waStatus: 'pending' | 'generated' | 'sent' | 'delivered' | 'failed' | 'unreachable';
   waError?: string;
+  createdAt?: string;
 }
 
 function newLead(partial: Partial<Lead> & Pick<Lead, 'businessName'>): Lead {
@@ -66,6 +68,7 @@ function newLead(partial: Partial<Lead> & Pick<Lead, 'businessName'>): Lead {
     email: '',
     phone: '',
     ownerName: '',
+    city: '',
     industry: INDUSTRIES[0],
     targetService: SERVICES[0],
     emailStatus: 'pending',
@@ -126,7 +129,33 @@ function parseCsv(text: string): string[][] {
 
 // ─── Component ────────────────────────────────────────────────────────────────
 
-export default function OutreachDashboardClient({ sentTodayInitial }: { sentTodayInitial: number }) {
+/** Map a Supabase snake_case row → camelCase Lead object */
+function mapDbToLead(row: Record<string, unknown>): Lead {
+  return {
+    id:               row.id               as string,
+    crmId:            (row.crm_id          as string) || undefined,
+    email:            (row.email           as string) || '',
+    phone:            (row.phone           as string) || '',
+    businessName:     (row.business_name   as string) || '',
+    ownerName:        (row.owner_name      as string) || '',
+    city:             (row.city            as string) || undefined,
+    industry:         (row.industry        as string) || INDUSTRIES[0],
+    targetService:    (row.target_service  as string) || SERVICES[0],
+    generatedSubject: (row.generated_subject as string) || undefined,
+    generatedBody:    (row.generated_body  as string) || undefined,
+    generatedMessage: (row.generated_message as string) || undefined,
+    waLink:           (row.wa_link         as string) || undefined,
+    formattedPhone:   (row.formatted_phone as string) || undefined,
+    emailStatus:      (row.email_status    as Lead['emailStatus']) || 'pending',
+    waStatus:         (row.wa_status       as Lead['waStatus'])   || 'pending',
+    emailError:       (row.email_error     as string) || undefined,
+    waError:          (row.wa_error        as string) || undefined,
+    outreachLogId:    (row.outreach_log_id as string) || undefined,
+    createdAt:        (row.created_at      as string) || undefined,
+  };
+}
+
+export default function OutreachDashboardClient({ sentTodayInitial = 0 }: { sentTodayInitial?: number } = {}) {
   const { theme, toggleTheme, mounted } = useAdminTheme();
   const [activeTab, setActiveTab] = useState<'email' | 'whatsapp'>('email');
   const [leads, setLeads] = useState<Lead[]>([]);
@@ -134,28 +163,36 @@ export default function OutreachDashboardClient({ sentTodayInitial }: { sentToda
   const [showForm, setShowForm] = useState(false);
   const [previewLead, setPreviewLead] = useState<Lead | null>(null);
   const [editingId, setEditingId] = useState<string | null>(null);
-  const [hydrated, setHydrated] = useState(false);
+  const [loadingLeads, setLoadingLeads] = useState(true);
 
-  // Load from localStorage on mount
-  useEffect(() => {
-    try {
-      const saved = localStorage.getItem('outreach_leads');
-      if (saved) setLeads(JSON.parse(saved));
-    } catch {}
-    setHydrated(true);
-  }, []);
+  // Selection
+  const [selectedLeadIds, setSelectedLeadIds] = useState<Set<string>>(new Set());
 
-  // Save to localStorage on every change
-  useEffect(() => {
-    if (!hydrated) return;
+  // Search, filter, sort
+  const [searchQuery, setSearchQuery] = useState('');
+  const [statusFilter, setStatusFilter] = useState<'all' | 'pending' | 'generated' | 'sent' | 'delivered' | 'failed' | 'unreachable'>('all');
+  const [industryFilter, setIndustryFilter] = useState('all');
+  const [sortBy, setSortBy] = useState<'name' | 'status' | 'none'>('none');
+  const [sortDir, setSortDir] = useState<'asc' | 'desc'>('asc');
+
+  // Fetch leads from Supabase on mount
+  async function fetchLeads() {
     try {
-      localStorage.setItem('outreach_leads', JSON.stringify(leads));
-    } catch {}
-  }, [leads, hydrated]);
+      const res = await fetch(`/api/outreach-leads?t=${Date.now()}`, { credentials: 'include' });
+      const data = await res.json();
+      if (data.leads) setLeads(data.leads.map(mapDbToLead));
+    } catch (e) {
+      console.error('Failed to load leads:', e);
+    } finally {
+      setLoadingLeads(false);
+    }
+  }
+
+  useEffect(() => { fetchLeads(); }, []);
 
   // Form state
   const [form, setForm] = useState({
-    email: '', phone: '', businessName: '', ownerName: '',
+    email: '', phone: '', businessName: '', ownerName: '', city: '',
     industry: INDUSTRIES[0], targetService: SERVICES[0],
   });
 
@@ -169,24 +206,71 @@ export default function OutreachDashboardClient({ sentTodayInitial }: { sentToda
   const [bulkGenerating, setBulkGenerating] = useState(false);
   const [bulkSending, setBulkSending] = useState(false);
   const [importingCRM, setImportingCRM] = useState(false);
+  const [bulkGenerateProgress, setBulkGenerateProgress] = useState({ completed: 0, total: 0 });
+  const [bulkSendProgress, setBulkSendProgress] = useState({ completed: 0, total: 0 });
 
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const abortBulkRef = useRef<boolean>(false);
+  const [isStopping, setIsStopping] = useState(false);
 
   // ─── Lead CRUD ────────────────────────────────────────────────────
 
-  function addLead() {
+  async function addLead() {
     if (!form.businessName.trim()) return;
-    setLeads(prev => [newLead({ ...form, businessName: form.businessName.trim() }), ...prev]);
-    setForm({ email: '', phone: '', businessName: '', ownerName: '', industry: INDUSTRIES[0], targetService: SERVICES[0] });
+    const optimistic = newLead({ ...form, businessName: form.businessName.trim() });
+    // Optimistic: show immediately
+    setLeads(prev => [optimistic, ...prev]);
+    setForm({ email: '', phone: '', businessName: '', ownerName: '', city: '', industry: INDUSTRIES[0], targetService: SERVICES[0] });
     setShowForm(false);
+    try {
+      const res = await fetch('/api/outreach-leads', {
+        method: 'POST',
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: optimistic.id, ...form, businessName: form.businessName.trim() }),
+      });
+      if (!res.ok) throw new Error('Failed to save');
+    } catch (e) {
+      console.error('Add lead error:', e);
+      // Rollback optimistic update
+      setLeads(prev => prev.filter(l => l.id !== optimistic.id));
+    }
   }
 
-  function removeLead(id: string) {
+  async function removeLead(id: string) {
+    const lead = leads.find(l => l.id === id);
+    const name = lead?.businessName || 'this lead';
+    if (!window.confirm(`Delete "${name}"? This cannot be undone.`)) return;
+
+    // Optimistic: remove immediately
     setLeads(prev => prev.filter(l => l.id !== id));
+    try {
+      await fetch(`/api/outreach-leads/${id}`, { method: 'DELETE', credentials: 'include' });
+    } catch (e) {
+      console.error('Delete lead error:', e);
+      // Restore on failure by refreshing
+      fetchLeads();
+    }
   }
 
+  /** In-memory update for real-time edit fields — call persistLead to save. */
   function updateLead(id: string, patch: Partial<Lead>) {
     setLeads(prev => prev.map(l => l.id === id ? { ...l, ...patch } : l));
+  }
+
+  /** Persist a patch to Supabase — used for generated content, status updates, and on edit 'Done'. */
+  async function persistLead(id: string, patch: Partial<Lead>) {
+    updateLead(id, patch); // keep UI in sync
+    try {
+      await fetch(`/api/outreach-leads/${id}`, {
+        method: 'PATCH',
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(patch),
+      });
+    } catch (e) {
+      console.error('Persist lead error:', e);
+    }
   }
 
   // ─── Import from CRM ──────────────────────────────────────────────
@@ -194,14 +278,13 @@ export default function OutreachDashboardClient({ sentTodayInitial }: { sentToda
   async function importFromCRM() {
     setImportingCRM(true);
     try {
-      const res = await fetch('/api/get-crm-leads/', { credentials: 'include' });
+      const res = await fetch('/api/get-crm-leads', { credentials: 'include' });
       const data = await res.json();
-      if (data.leads) {
-        setLeads(prev => {
-          const existingCrmIds = new Set(prev.map(l => l.crmId).filter(Boolean));
-          const newLeads = data.leads.filter((l: Lead) => !existingCrmIds.has(l.crmId));
-          return [...newLeads, ...prev];
-        });
+      if (data.error) throw new Error(data.error);
+      // Refresh full list — server already upserted, deduplication handled by DB
+      await fetchLeads();
+      if (data.imported === 0) {
+        alert(`No new leads to import (${data.skipped} already imported).`);
       }
     } catch (e) {
       console.error('CRM import failed:', e);
@@ -221,23 +304,74 @@ export default function OutreachDashboardClient({ sentTodayInitial }: { sentToda
       const rows = parseCsv(text);
       if (rows.length < 2) return;
       const headers = rows[0].map(normalizeCsvHeader);
+
+      // Build sets of existing emails & phones for dedup
+      const existingEmails = new Set(leads.map(l => l.email.toLowerCase()).filter(Boolean));
+      const existingPhones = new Set(leads.map(l => l.phone).filter(Boolean));
+
+      // Clean basic formatting for all fields
+      function cleanBasic(val: string): string {
+        return val.replace(/['"]/g, '').replace(/\s+/g, ' ').trim();
+      }
+
+      // Strip emojis & symbols specifically for names/text fields
+      function stripSymbols(val: string): string {
+        return val.replace(/[^\p{L}\p{N}\s\-.,&()]/gu, '').trim();
+      }
+
       const imported: Lead[] = [];
+      let skipped = 0;
       for (let i = 1; i < rows.length; i++) {
-        const vals = rows[i].map((v) => v.replace(/['"]/g, '').trim());
+        const vals = rows[i].map((v) => cleanBasic(v));
         const r: Record<string, string> = {};
         headers.forEach((h, idx) => { r[h] = vals[idx] || ''; });
-        const biz = r.business_name || r.businessname || r.business || '';
+        
+        const biz = stripSymbols(r.business_name || r.businessname || r.business || '');
         if (!biz) continue;
+
+        const email = r.email || '';
+        const phone = r.phone || '';
+
+        // Skip if email or phone already exists in current leads
+        const isDuplicate =
+          (email && existingEmails.has(email.toLowerCase())) ||
+          (phone && existingPhones.has(phone));
+        if (isDuplicate) { skipped++; continue; }
+
+        // Add to dedup sets so we also catch within-CSV duplicates
+        if (email) existingEmails.add(email.toLowerCase());
+        if (phone) existingPhones.add(phone);
+
         imported.push(newLead({
           businessName: biz,
-          ownerName: r.owner_name || r.ownername || r.owner || r.name || '',
-          email: r.email || '',
-          phone: r.phone || '',
+          ownerName: stripSymbols(r.owner_name || r.ownername || r.owner || r.name || ''),
+          city: stripSymbols(r.city || r.location || ''),
+          email,
+          phone,
           industry: r.industry || INDUSTRIES[0],
           targetService: r.target_service || r.targetservice || r.service || SERVICES[0],
         }));
       }
-      setLeads(prev => [...imported, ...prev]);
+
+      if (imported.length > 0) {
+        setLeads(prev => [...imported, ...prev]);
+
+        // Persist to Supabase in background
+        fetch('/api/outreach-leads', {
+          method: 'POST',
+          credentials: 'include',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ leads: imported }),
+        })
+          .then(res => { if (!res.ok) throw new Error('Bulk save failed'); return res.json(); })
+          .then(data => console.log(`✅ Persisted ${data.inserted} CSV leads to Supabase`))
+          .catch(err => console.error('CSV bulk persist error:', err));
+      }
+
+      const msg = skipped > 0
+        ? `✅ Imported ${imported.length} lead${imported.length !== 1 ? 's' : ''}. ⚠️ Skipped ${skipped} duplicate${skipped !== 1 ? 's' : ''} (matching email or phone).`
+        : `✅ Imported ${imported.length} lead${imported.length !== 1 ? 's' : ''} — no duplicates found.`;
+      alert(msg);
     };
     reader.readAsText(file);
     e.target.value = '';
@@ -247,21 +381,28 @@ export default function OutreachDashboardClient({ sentTodayInitial }: { sentToda
 
   async function generateEmail(lead: Lead) {
     if (!lead.email) return;
+    // Validate email format client-side — catches scraped malformed emails (e.g. missing @)
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(lead.email)) {
+      await persistLead(lead.id, { emailStatus: 'failed', emailError: `Invalid email format: "${lead.email}"` });
+      return;
+    }
     setGeneratingEmailId(lead.id);
     try {
-      const res = await fetch('/api/generate-email/', {
+      const res = await fetch('/api/generate-email', {
         method: 'POST',
         credentials: 'include',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           businessName: lead.businessName, ownerName: lead.ownerName,
+          city: lead.city,
           industry: lead.industry, targetService: lead.targetService,
           email: lead.email,
         }),
       });
       const data = await res.json();
       if (data.subject && data.body) {
-        updateLead(lead.id, {
+        await persistLead(lead.id, {
           generatedSubject: data.subject,
           generatedBody: data.body,
           emailStatus: 'generated',
@@ -269,10 +410,10 @@ export default function OutreachDashboardClient({ sentTodayInitial }: { sentToda
           emailError: undefined,
         });
       } else {
-        updateLead(lead.id, { emailStatus: 'failed', emailError: data.error || 'Generation failed' });
+        await persistLead(lead.id, { emailStatus: 'failed', emailError: data.error || 'Generation failed' });
       }
     } catch {
-      updateLead(lead.id, { emailStatus: 'failed', emailError: 'Request failed' });
+      await persistLead(lead.id, { emailStatus: 'failed', emailError: 'Request failed' });
     } finally {
       setGeneratingEmailId(null);
     }
@@ -284,19 +425,20 @@ export default function OutreachDashboardClient({ sentTodayInitial }: { sentToda
     if (!lead.phone) return;
     setGeneratingWaId(lead.id);
     try {
-      const res = await fetch('/api/generate-whatsapp/', {
+      const res = await fetch('/api/generate-whatsapp', {
         method: 'POST',
         credentials: 'include',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           phone: lead.phone, name: lead.ownerName,
+          city: lead.city,
           businessName: lead.businessName, industry: lead.industry,
           targetService: lead.targetService,
         }),
       });
       const data = await res.json();
       if (data.message) {
-        updateLead(lead.id, {
+        await persistLead(lead.id, {
           generatedMessage: data.message,
           waLink: data.waLink,
           formattedPhone: data.formattedPhone,
@@ -304,10 +446,10 @@ export default function OutreachDashboardClient({ sentTodayInitial }: { sentToda
           waError: undefined,
         });
       } else {
-        updateLead(lead.id, { waStatus: 'failed', waError: data.error || 'Generation failed' });
+        await persistLead(lead.id, { waStatus: 'failed', waError: data.error || 'Generation failed' });
       }
     } catch {
-      updateLead(lead.id, { waStatus: 'failed', waError: 'Request failed' });
+      await persistLead(lead.id, { waStatus: 'failed', waError: 'Request failed' });
     } finally {
       setGeneratingWaId(null);
     }
@@ -319,27 +461,49 @@ export default function OutreachDashboardClient({ sentTodayInitial }: { sentToda
     if (!lead.email || !lead.generatedSubject || !lead.generatedBody) return;
     if (sentToday >= 300) return;
     setSendingId(lead.id);
-    try {
-      const res = await fetch('/api/send-cold-email/', {
-        method: 'POST',
-        credentials: 'include',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          to: lead.email,
-          toName: lead.ownerName,
-          subject: lead.generatedSubject,
-          body: lead.generatedBody,
-          outreachLogId: lead.outreachLogId || null,
-        }),
-      });
-      const data = await res.json();
-      updateLead(lead.id, { emailStatus: data.success ? 'sent' : 'failed' });
-      if (data.success) setSentToday(p => p + 1);
-    } catch {
-      updateLead(lead.id, { emailStatus: 'failed' });
-    } finally {
-      setSendingId(null);
+
+    let attempts = 0;
+    while (attempts < 3) {
+      try {
+        const res = await fetch('/api/send-cold-email', {
+          method: 'POST',
+          credentials: 'include',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            to: lead.email,
+            toName: lead.ownerName,
+            subject: lead.generatedSubject,
+            body: lead.generatedBody,
+            outreachLogId: lead.outreachLogId || null,
+          }),
+        });
+        const data = await res.json();
+
+        if (res.status === 429) {
+          attempts++;
+          if (attempts < 3) {
+            // Exponential backoff
+            await new Promise(r => setTimeout(r, Math.pow(2, attempts) * 1000));
+            continue;
+          }
+        }
+
+        const newStatus = data.success ? 'sent' : 'failed';
+        await persistLead(lead.id, { emailStatus: newStatus, emailError: data.error });
+        if (data.success) {
+          setSentToday(p => p + 1);
+        }
+        break;
+      } catch (e) {
+        attempts++;
+        if (attempts >= 3) {
+          await persistLead(lead.id, { emailStatus: 'failed', emailError: String(e) });
+        } else {
+          await new Promise(r => setTimeout(r, Math.pow(2, attempts) * 1000));
+        }
+      }
     }
+    setSendingId(null);
   }
 
   // ─── Copy WA Message ─────────────────────────────────────────────
@@ -354,19 +518,157 @@ export default function OutreachDashboardClient({ sentTodayInitial }: { sentToda
   // ─── Bulk Actions ─────────────────────────────────────────────────
 
   async function bulkGenerate() {
-    setBulkGenerating(true);
-    if (activeTab === 'email') {
-      for (const lead of leads.filter(l => l.email && l.emailStatus === 'pending')) await generateEmail(lead);
-    } else {
-      for (const lead of leads.filter(l => l.phone && l.waStatus === 'pending')) await generateWhatsApp(lead);
+    abortBulkRef.current = false;
+    setIsStopping(false);
+    let queue = activeTab === 'email'
+      ? leads.filter(l => l.email && l.emailStatus === 'pending')
+      : leads.filter(l => l.phone && l.waStatus === 'pending');
+
+    if (selectedLeadIds.size > 0) {
+      queue = queue.filter(l => selectedLeadIds.has(l.id));
     }
-    setBulkGenerating(false);
+    if (queue.length === 0) return;
+
+    setBulkGenerateProgress({ completed: 0, total: queue.length });
+    setBulkGenerating(true);
+    try {
+      for (let i = 0; i < queue.length; i += 1) {
+        if (abortBulkRef.current) break;
+        const lead = queue[i];
+        if (activeTab === 'email') {
+          await generateEmail(lead);
+        } else {
+          await generateWhatsApp(lead);
+        }
+        setBulkGenerateProgress({ completed: i + 1, total: queue.length });
+        if (i < queue.length - 1) {
+          await new Promise(r => setTimeout(r, 1000)); // Pace Gemini API
+        }
+      }
+    } finally {
+      setBulkGenerating(false);
+      setIsStopping(false);
+      setBulkGenerateProgress({ completed: 0, total: 0 });
+      setSelectedLeadIds(new Set()); // Clear selection after processing
+    }
   }
 
   async function bulkSend() {
+    abortBulkRef.current = false;
+    setIsStopping(false);
+    let queue = leads.filter(l => l.email && l.emailStatus === 'generated');
+    if (selectedLeadIds.size > 0) {
+      queue = queue.filter(l => selectedLeadIds.has(l.id));
+    }
+    if (queue.length === 0) return;
+    
+    if (!window.confirm(`Are you sure you want to send emails to ${queue.length} leads?`)) {
+      return;
+    }
+
+    setBulkSendProgress({ completed: 0, total: queue.length });
     setBulkSending(true);
-    for (const lead of leads.filter(l => l.email && l.emailStatus === 'generated')) await sendEmail(lead);
-    setBulkSending(false);
+    try {
+      for (let i = 0; i < queue.length; i += 1) {
+        if (abortBulkRef.current) break;
+        await sendEmail(queue[i]);
+        setBulkSendProgress({ completed: i + 1, total: queue.length });
+        if (i < queue.length - 1) {
+          await new Promise(r => setTimeout(r, 1200)); // Rate limiting buffer
+        }
+      }
+    } finally {
+      setBulkSending(false);
+      setIsStopping(false);
+      setBulkSendProgress({ completed: 0, total: 0 });
+      setSelectedLeadIds(new Set()); // Clear selection after processing
+    }
+  }
+
+  async function bulkMarkDone() {
+    let queue = activeTab === 'email'
+      ? leads.filter(l => l.email && l.emailStatus === 'pending')
+      : leads.filter(l => l.phone && l.waStatus === 'pending');
+
+    if (selectedLeadIds.size > 0) {
+      queue = queue.filter(l => selectedLeadIds.has(l.id));
+    }
+    if (queue.length === 0) return;
+    
+    if (!window.confirm(`Are you sure you want to mark ${queue.length} leads as done without generating or sending messages?`)) {
+      return;
+    }
+
+    try {
+      const patchKey = activeTab === 'email' ? 'emailStatus' : 'waStatus';
+      
+      queue.forEach(lead => {
+        updateLead(lead.id, { [patchKey]: 'sent' } as Partial<Lead>);
+      });
+      
+      const chunkSize = 10;
+      for (let i = 0; i < queue.length; i += chunkSize) {
+        const chunk = queue.slice(i, i + chunkSize);
+        await Promise.all(chunk.map(lead => 
+          fetch(`/api/outreach-leads/${lead.id}`, {
+            method: 'PATCH',
+            credentials: 'include',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ [patchKey]: 'sent' }),
+          })
+        ));
+      }
+      setSelectedLeadIds(new Set());
+    } catch (e) {
+      console.error('Bulk mark done error:', e);
+      alert('Failed to mark some leads as done.');
+    }
+  }
+
+  // ─── Bulk Retry Failed ────────────────────────────────────────────
+
+  async function bulkRetryFailed() {
+    abortBulkRef.current = false;
+    setIsStopping(false);
+    let queue = activeTab === 'email'
+      ? leads.filter(l => l.email && l.emailStatus === 'failed')
+      : leads.filter(l => l.phone && l.waStatus === 'failed');
+
+    if (selectedLeadIds.size > 0) {
+      queue = queue.filter(l => selectedLeadIds.has(l.id));
+    }
+    if (queue.length === 0) return;
+
+    // Reset failed status to pending so they re-enter the generate flow
+    queue.forEach(lead => {
+      updateLead(lead.id, activeTab === 'email'
+        ? { emailStatus: 'pending', emailError: undefined }
+        : { waStatus: 'pending', waError: undefined }
+      );
+    });
+
+    setBulkGenerateProgress({ completed: 0, total: queue.length });
+    setBulkGenerating(true);
+    try {
+      for (let i = 0; i < queue.length; i += 1) {
+        if (abortBulkRef.current) break;
+        const lead = queue[i];
+        if (activeTab === 'email') {
+          await generateEmail(lead);
+        } else {
+          await generateWhatsApp(lead);
+        }
+        setBulkGenerateProgress({ completed: i + 1, total: queue.length });
+        if (i < queue.length - 1) {
+          await new Promise(r => setTimeout(r, 1000));
+        }
+      }
+    } finally {
+      setBulkGenerating(false);
+      setIsStopping(false);
+      setBulkGenerateProgress({ completed: 0, total: 0 });
+      setSelectedLeadIds(new Set());
+    }
   }
 
   // ─── Computed ─────────────────────────────────────────────────────
@@ -374,13 +676,118 @@ export default function OutreachDashboardClient({ sentTodayInitial }: { sentToda
   const emailPending   = leads.filter(l => l.email && l.emailStatus === 'pending').length;
   const emailGenerated = leads.filter(l => l.email && l.emailStatus === 'generated').length;
   const emailSent      = leads.filter(l => l.emailStatus === 'sent').length;
+  const emailFailed    = leads.filter(l => l.email && l.emailStatus === 'failed').length;
   const waPending      = leads.filter(l => l.phone && l.waStatus === 'pending').length;
   const waGenerated    = leads.filter(l => l.phone && l.waStatus === 'generated').length;
+  const waSent         = leads.filter(l => l.phone && l.waStatus === 'sent').length;
+  const waFailed       = leads.filter(l => l.phone && l.waStatus === 'failed').length;
 
   const pendingCount   = activeTab === 'email' ? emailPending : waPending;
   const generatedCount = activeTab === 'email' ? emailGenerated : waGenerated;
+  const failedCount    = activeTab === 'email' ? emailFailed : waFailed;
+
+  // ─── Filtered + Sorted Leads ──────────────────────────────────────
+
+  const filteredLeads = (() => {
+    let result = [...leads];
+
+    // Search
+    if (searchQuery.trim()) {
+      const q = searchQuery.trim().toLowerCase();
+      result = result.filter(l =>
+        l.businessName.toLowerCase().includes(q) ||
+        l.ownerName.toLowerCase().includes(q) ||
+        l.email.toLowerCase().includes(q) ||
+        l.phone.includes(q) ||
+        (l.city || '').toLowerCase().includes(q)
+      );
+    }
+
+    // Status filter
+    if (statusFilter !== 'all') {
+      result = result.filter(l => {
+        const s = activeTab === 'email' ? l.emailStatus : l.waStatus;
+        return s === statusFilter;
+      });
+    }
+
+    // Industry filter — segment match so CSV values like "Hotel" match "Hotel / Resort"
+    if (industryFilter !== 'all') {
+      const filterParts = industryFilter.toLowerCase().split(/\s*\/\s*/).map(s => s.trim());
+      result = result.filter(l => {
+        const ind = l.industry.toLowerCase().trim();
+        // Exact full match
+        if (ind === industryFilter.toLowerCase()) return true;
+        // Split lead's industry into parts and check if any segment matches
+        const leadParts = ind.split(/\s*\/\s*/).map(s => s.trim());
+        return leadParts.some(lp => filterParts.some(fp => lp === fp));
+      });
+    }
+
+    // Sort
+    if (sortBy === 'name') {
+      result.sort((a, b) => {
+        const cmp = a.businessName.localeCompare(b.businessName);
+        return sortDir === 'asc' ? cmp : -cmp;
+      });
+    } else if (sortBy === 'status') {
+      const order = { pending: 0, generated: 1, sent: 2, delivered: 3, unreachable: 4, failed: 5 };
+      result.sort((a, b) => {
+        const sa = activeTab === 'email' ? a.emailStatus : a.waStatus;
+        const sb = activeTab === 'email' ? b.emailStatus : b.waStatus;
+        const cmp = (order[sa] ?? 5) - (order[sb] ?? 5);
+        return sortDir === 'asc' ? cmp : -cmp;
+      });
+    }
+
+    return result;
+  })();
+
+  const hasActiveFilters = searchQuery.trim() !== '' || statusFilter !== 'all' || industryFilter !== 'all' || sortBy !== 'none';
+
+  function toggleSelectAll() {
+    if (selectedLeadIds.size === filteredLeads.length && filteredLeads.length > 0) {
+      setSelectedLeadIds(new Set());
+    } else {
+      setSelectedLeadIds(new Set(filteredLeads.map(l => l.id)));
+    }
+  }
+
+  function toggleSelect(id: string) {
+    const newSet = new Set(selectedLeadIds);
+    if (newSet.has(id)) newSet.delete(id);
+    else newSet.add(id);
+    setSelectedLeadIds(newSet);
+  }
+
+  function clearAllFilters() {
+    setSearchQuery('');
+    setStatusFilter('all');
+    setIndustryFilter('all');
+    setSortBy('none');
+    setSortDir('asc');
+  }
+
+  function toggleSort(field: 'name' | 'status') {
+    if (sortBy === field) {
+      if (sortDir === 'asc') setSortDir('desc');
+      else { setSortBy('none'); setSortDir('asc'); }
+    } else {
+      setSortBy(field);
+      setSortDir('asc');
+    }
+  }
 
   // ─── Render ───────────────────────────────────────────────────────
+
+  if (loadingLeads) {
+    return (
+      <div className="flex items-center justify-center py-20 text-muted-foreground">
+        <Loader2 size={24} className="animate-spin mr-3" />
+        <span className="text-sm font-medium">Loading leads...</span>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-5">
@@ -419,7 +826,7 @@ export default function OutreachDashboardClient({ sentTodayInitial }: { sentToda
         <StatCard label="Total" value={leads.length} color="text-foreground" />
         <StatCard label="Pending" value={pendingCount} color="text-yellow-600" />
         <StatCard label="Generated" value={generatedCount} color="text-blue-500" />
-        <StatCard label={activeTab === 'email' ? `Sent (${sentToday}/300)` : 'Sent via WA'} value={activeTab === 'email' ? emailSent : waGenerated} color="text-primary" />
+        <StatCard label={activeTab === 'email' ? `Sent (${sentToday}/300)` : 'Sent via WA'} value={activeTab === 'email' ? emailSent : waSent} color="text-primary" />
       </div>
 
       {/* Action Bar */}
@@ -445,17 +852,58 @@ export default function OutreachDashboardClient({ sentTodayInitial }: { sentToda
         </button>
 
         {pendingCount > 0 && (
-          <button onClick={bulkGenerate} disabled={bulkGenerating}
-            className="flex items-center gap-2 px-5 py-2.5 bg-blue-600 text-white rounded-xl font-bold text-xs hover:bg-blue-700 disabled:opacity-50 transition-all cursor-pointer">
-            {bulkGenerating ? <Loader2 size={14} className="animate-spin" /> : <Sparkles size={14} />}
-            Generate All ({pendingCount})
-          </button>
+          <>
+            <button 
+              onClick={bulkGenerating ? () => { abortBulkRef.current = true; setIsStopping(true); } : bulkGenerate}
+              disabled={bulkGenerating && isStopping}
+              className={`flex items-center gap-2 px-5 py-2.5 rounded-xl font-bold text-xs transition-all cursor-pointer ${
+                bulkGenerating 
+                  ? 'bg-red-600 hover:bg-red-700 text-white shadow-lg' 
+                  : 'bg-blue-600 hover:bg-blue-700 text-white disabled:opacity-50'
+              }`}>
+              {bulkGenerating && !isStopping ? <X size={14} /> : bulkGenerating && isStopping ? <Loader2 size={14} className="animate-spin" /> : <Sparkles size={14} />}
+              {bulkGenerating
+                ? isStopping ? 'Stopping...' : `Stop Generating (${bulkGenerateProgress.completed}/${bulkGenerateProgress.total || pendingCount})`
+                : selectedLeadIds.size > 0 
+                  ? `Generate Selected (${selectedLeadIds.size})` 
+                  : `Generate All (${pendingCount})`}
+            </button>
+            <button 
+              onClick={bulkMarkDone}
+              className="flex items-center gap-2 px-5 py-2.5 bg-card border border-border text-foreground rounded-xl font-bold text-xs hover:bg-muted transition-all cursor-pointer">
+              <Check size={14} />
+              {selectedLeadIds.size > 0 
+                ? `Mark Selected Done (${selectedLeadIds.size})` 
+                : `Mark All Done (${pendingCount})`}
+            </button>
+          </>
         )}
         {activeTab === 'email' && generatedCount > 0 && (
-          <button onClick={bulkSend} disabled={bulkSending || sentToday >= 300}
-            className="flex items-center gap-2 px-5 py-2.5 bg-emerald-600 text-white rounded-xl font-bold text-xs hover:bg-emerald-700 disabled:opacity-50 transition-all cursor-pointer">
-            {bulkSending ? <Loader2 size={14} className="animate-spin" /> : <Send size={14} />}
-            Send All ({generatedCount})
+          <button 
+            onClick={bulkSending ? () => { abortBulkRef.current = true; setIsStopping(true); } : bulkSend}
+            disabled={bulkSending ? isStopping : (sentToday >= 300)}
+            className={`flex items-center gap-2 px-5 py-2.5 rounded-xl font-bold text-xs transition-all cursor-pointer ${
+              bulkSending 
+                ? 'bg-red-600 hover:bg-red-700 text-white shadow-lg' 
+                : 'bg-emerald-600 hover:bg-emerald-700 text-white disabled:opacity-50'
+            }`}>
+            {bulkSending && !isStopping ? <X size={14} /> : bulkSending && isStopping ? <Loader2 size={14} className="animate-spin" /> : <Send size={14} />}
+            {bulkSending
+              ? isStopping ? 'Stopping...' : `Stop Sending (${bulkSendProgress.completed}/${bulkSendProgress.total || generatedCount})`
+              : selectedLeadIds.size > 0
+                ? `Send Selected (${selectedLeadIds.size})`
+                : `Send All (${generatedCount})`}
+          </button>
+        )}
+        {failedCount > 0 && !bulkGenerating && !bulkSending && (
+          <button
+            onClick={bulkRetryFailed}
+            className="flex items-center gap-2 px-5 py-2.5 bg-destructive/10 border border-destructive/20 text-destructive rounded-xl font-bold text-xs hover:bg-destructive/20 transition-all cursor-pointer"
+          >
+            <AlertCircle size={14} />
+            {selectedLeadIds.size > 0
+              ? `Retry Selected Failed (${selectedLeadIds.size})`
+              : `Retry All Failed (${failedCount})`}
           </button>
         )}
       </div>
@@ -470,6 +918,7 @@ export default function OutreachDashboardClient({ sentTodayInitial }: { sentToda
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             <FormInput label="Business Name *" value={form.businessName} onChange={v => setForm(p => ({...p, businessName: v}))} placeholder="Sharma's Restaurant" />
             <FormInput label="Owner Name" value={form.ownerName} onChange={v => setForm(p => ({...p, ownerName: v}))} placeholder="Rahul Sharma" />
+            <FormInput label="City (optional)" value={form.city} onChange={v => setForm(p => ({...p, city: v}))} placeholder="Mumbai" />
             <FormInput label="Email (for email outreach)" type="email" value={form.email} onChange={v => setForm(p => ({...p, email: v}))} placeholder="owner@business.com" />
             <FormInput label="Phone (for WhatsApp)" type="tel" value={form.phone} onChange={v => setForm(p => ({...p, phone: v.replace(/\D/g,'').slice(0,10)}))} placeholder="9876543210" />
             <FormSelect label="Industry" value={form.industry} onChange={v => setForm(p => ({...p, industry: v}))} options={INDUSTRIES} />
@@ -484,6 +933,116 @@ export default function OutreachDashboardClient({ sentTodayInitial }: { sentToda
               className="px-5 py-3 bg-card border border-border text-muted-foreground rounded-xl font-bold text-sm hover:bg-muted transition-all cursor-pointer">
               Cancel
             </button>
+          </div>
+        </div>
+      )}
+
+      {/* Search / Filter / Sort Bar */}
+      {leads.length > 0 && (
+        <div className="bg-card border border-border rounded-2xl p-4 space-y-3">
+          {/* Row 1: Search + Clear */}
+          <div className="flex items-center gap-3">
+            <div className="relative flex-1">
+              <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={e => setSearchQuery(e.target.value)}
+                placeholder="Search by business, owner, email, phone, city…"
+                className="w-full bg-background border border-border rounded-xl py-2.5 pl-9 pr-3 text-sm text-foreground placeholder:text-muted-foreground/40 focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10 transition-all"
+              />
+            </div>
+            {hasActiveFilters && (
+              <button
+                onClick={clearAllFilters}
+                className="flex items-center gap-1.5 px-4 py-2.5 bg-destructive/10 text-destructive border border-destructive/20 rounded-xl text-xs font-bold hover:bg-destructive/20 cursor-pointer transition-all shrink-0"
+              >
+                <X size={12} /> Clear All
+              </button>
+            )}
+          </div>
+
+          {/* Row 2: Filters + Sort */}
+          <div className="flex flex-wrap items-center gap-2">
+            {/* Status filter */}
+            <div className="flex items-center gap-1.5">
+              <Filter size={12} className="text-muted-foreground shrink-0" />
+              <span className="text-[10px] font-black text-muted-foreground uppercase tracking-widest shrink-0">Status</span>
+              <div className="flex gap-1 flex-wrap">
+                {(['all', 'pending', 'generated', 'sent', 'delivered', 'failed', 'unreachable'] as const).map(s => (
+                  <button
+                    key={s}
+                    onClick={() => setStatusFilter(s)}
+                    className={`px-3 py-1.5 rounded-lg text-[11px] font-bold transition-all cursor-pointer ${
+                      statusFilter === s
+                        ? 'bg-primary text-white shadow-sm'
+                        : 'bg-muted text-muted-foreground hover:bg-muted/80'
+                    }`}
+                  >
+                    {s === 'all' ? 'All' : s.charAt(0).toUpperCase() + s.slice(1)}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div className="w-px h-6 bg-border hidden sm:block" />
+
+            {/* Industry filter */}
+            <div className="flex items-center gap-1.5">
+              <span className="text-[10px] font-black text-muted-foreground uppercase tracking-widest shrink-0">Industry</span>
+              <div className="relative">
+                <select
+                  value={industryFilter}
+                  onChange={e => setIndustryFilter(e.target.value)}
+                  className={`bg-background border rounded-lg px-3 py-1.5 text-[11px] font-bold appearance-none cursor-pointer pr-7 focus:outline-none focus:ring-2 focus:ring-primary/10 transition-all ${
+                    industryFilter !== 'all'
+                      ? 'border-primary text-primary'
+                      : 'border-border text-muted-foreground'
+                  }`}
+                >
+                  <option value="all">All Industries</option>
+                  {INDUSTRIES.map(ind => (
+                    <option key={ind} value={ind}>{ind.split(' /')[0]}</option>
+                  ))}
+                </select>
+                <ChevronDown size={12} className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none" />
+              </div>
+            </div>
+
+            <div className="w-px h-6 bg-border hidden sm:block" />
+
+            {/* Sort buttons */}
+            <div className="flex items-center gap-1.5">
+              <ArrowUpDown size={12} className="text-muted-foreground shrink-0" />
+              <span className="text-[10px] font-black text-muted-foreground uppercase tracking-widest shrink-0">Sort</span>
+              <button
+                onClick={() => toggleSort('name')}
+                className={`px-3 py-1.5 rounded-lg text-[11px] font-bold transition-all cursor-pointer ${
+                  sortBy === 'name'
+                    ? 'bg-primary text-white shadow-sm'
+                    : 'bg-muted text-muted-foreground hover:bg-muted/80'
+                }`}
+              >
+                Name {sortBy === 'name' ? (sortDir === 'asc' ? '↑' : '↓') : ''}
+              </button>
+              <button
+                onClick={() => toggleSort('status')}
+                className={`px-3 py-1.5 rounded-lg text-[11px] font-bold transition-all cursor-pointer ${
+                  sortBy === 'status'
+                    ? 'bg-primary text-white shadow-sm'
+                    : 'bg-muted text-muted-foreground hover:bg-muted/80'
+                }`}
+              >
+                Status {sortBy === 'status' ? (sortDir === 'asc' ? '↑' : '↓') : ''}
+              </button>
+            </div>
+
+            {/* Result count */}
+            {hasActiveFilters && (
+              <span className="ml-auto text-[11px] font-bold text-muted-foreground">
+                {filteredLeads.length} of {leads.length} leads
+              </span>
+            )}
           </div>
         </div>
       )}
@@ -503,6 +1062,14 @@ export default function OutreachDashboardClient({ sentTodayInitial }: { sentToda
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b border-border bg-muted/30">
+                  <th className="px-4 py-3 w-10 text-left">
+                    <input
+                      type="checkbox"
+                      checked={filteredLeads.length > 0 && selectedLeadIds.size === filteredLeads.length}
+                      onChange={toggleSelectAll}
+                      className="rounded border-border text-primary focus:ring-primary/20 bg-background cursor-pointer"
+                    />
+                  </th>
                   <th className="text-left px-4 py-3 text-[10px] font-black text-primary uppercase tracking-widest">Business</th>
                   <th className="text-left px-4 py-3 text-[10px] font-black text-primary uppercase tracking-widest hidden sm:table-cell">Owner</th>
                   <th className="text-left px-4 py-3 text-[10px] font-black text-primary uppercase tracking-widest hidden md:table-cell">Contact</th>
@@ -512,7 +1079,21 @@ export default function OutreachDashboardClient({ sentTodayInitial }: { sentToda
                 </tr>
               </thead>
               <tbody>
-                {leads.map(lead => {
+                {filteredLeads.length === 0 && leads.length > 0 ? (
+                  <tr>
+                    <td colSpan={7} className="px-4 py-10 text-center">
+                      <div className="flex flex-col items-center gap-2">
+                        <Search size={20} className="text-muted-foreground" />
+                        <p className="text-sm font-semibold text-foreground">No leads match your filters</p>
+                        <p className="text-xs text-muted-foreground">Try adjusting your search or filter criteria</p>
+                        <button onClick={clearAllFilters} className="mt-2 px-4 py-2 bg-primary/10 text-primary rounded-lg text-xs font-bold hover:bg-primary/20 cursor-pointer transition-all">
+                          Clear All Filters
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ) : null}
+                {filteredLeads.map(lead => {
                   const status      = activeTab === 'email' ? lead.emailStatus : lead.waStatus;
                   const hasContact  = activeTab === 'email' ? !!lead.email : !!lead.phone;
                   const isGenEmail  = generatingEmailId === lead.id;
@@ -524,14 +1105,33 @@ export default function OutreachDashboardClient({ sentTodayInitial }: { sentToda
 
                   return (
                     <tr key={lead.id} className="border-b border-border/40 hover:bg-muted/40 transition-colors">
+                      <td className="px-4 py-3 w-10">
+                        <input
+                          type="checkbox"
+                          checked={selectedLeadIds.has(lead.id)}
+                          onChange={() => toggleSelect(lead.id)}
+                          className="rounded border-border text-primary focus:ring-primary/20 bg-background cursor-pointer"
+                        />
+                      </td>
                       <td className="px-4 py-3">
                         {isEditing ? (
-                          <input value={lead.businessName} onChange={e => updateLead(lead.id, { businessName: e.target.value })}
-                            className="bg-background border border-primary/30 rounded-lg px-2 py-1 text-sm text-foreground w-full max-w-[150px] focus:outline-none focus:ring-2 focus:ring-primary/20" />
+                          <div className="space-y-1">
+                            <input value={lead.businessName} onChange={e => updateLead(lead.id, { businessName: e.target.value })}
+                              className="bg-background border border-primary/30 rounded-lg px-2 py-1 text-sm text-foreground w-full max-w-[150px] focus:outline-none focus:ring-2 focus:ring-primary/20" />
+                            <input value={lead.city || ''} onChange={e => updateLead(lead.id, { city: e.target.value })} placeholder="City"
+                              className="bg-background border border-primary/30 rounded-lg px-2 py-1 text-xs text-foreground w-full max-w-[150px] focus:outline-none focus:ring-2 focus:ring-primary/20" />
+                          </div>
                         ) : (
                           <p className="font-semibold text-foreground truncate max-w-[150px]">{lead.businessName}</p>
                         )}
-                        <p className="text-[10px] text-muted-foreground">{lead.industry.split(' /')[0]}</p>
+                        <p className="text-[10px] text-muted-foreground mt-0.5">
+                          {lead.industry.split(' /')[0]}{lead.city ? ` • ${lead.city}` : ''}
+                        </p>
+                        {lead.createdAt && (
+                          <p className="text-[9px] text-muted-foreground/40 uppercase tracking-widest mt-1" title="Date Added">
+                            Added: {new Date(lead.createdAt).toLocaleDateString()}
+                          </p>
+                        )}
                       </td>
                       <td className="px-4 py-3 hidden sm:table-cell">
                         {isEditing ? (
@@ -551,17 +1151,35 @@ export default function OutreachDashboardClient({ sentTodayInitial }: { sentToda
                           </div>
                         ) : (
                           <>
-                            {lead.email && <p className="text-xs text-muted-foreground truncate max-w-[180px]">✉ {lead.email}</p>}
-                            {lead.phone && <p className="text-xs text-muted-foreground">📱 91{lead.phone}</p>}
+                            {lead.email && (
+                              <p className="text-xs text-muted-foreground truncate max-w-[180px] inline-flex items-center gap-1.5">
+                                <AtSign size={12} className="shrink-0" /> {lead.email}
+                              </p>
+                            )}
+                            {lead.phone && (
+                              <p className="text-xs text-muted-foreground inline-flex items-center gap-1.5">
+                                <Phone size={12} className="shrink-0" /> 91{lead.phone}
+                              </p>
+                            )}
                           </>
                         )}
                       </td>
                       <td className="px-4 py-3 text-muted-foreground hidden lg:table-cell text-xs truncate max-w-[160px]">{lead.targetService}</td>
                       <td className="px-4 py-3">
-                        {hasContact
-                          ? <StatusBadge status={status} />
-                          : <span className="text-[10px] text-muted-foreground font-medium">No {activeTab === 'email' ? 'email' : 'phone'}</span>
-                        }
+                        {hasContact ? (
+                          <StatusDropdown 
+                            status={status} 
+                            onChange={(newStatus) => {
+                              if (activeTab === 'email') {
+                                persistLead(lead.id, { emailStatus: newStatus as Lead['emailStatus'] });
+                              } else {
+                                persistLead(lead.id, { waStatus: newStatus as Lead['waStatus'] });
+                              }
+                            }} 
+                          />
+                        ) : (
+                          <span className="text-[10px] text-muted-foreground font-medium">No {activeTab === 'email' ? 'email' : 'phone'}</span>
+                        )}
                       </td>
                       <td className="px-4 py-3">
                         <div className="flex items-center justify-end gap-1.5 flex-wrap">
@@ -573,11 +1191,17 @@ export default function OutreachDashboardClient({ sentTodayInitial }: { sentToda
                           {activeTab === 'email' && hasContact && (
                             <>
                               {lead.emailStatus === 'pending' && (
-                                <button onClick={() => generateEmail(lead)} disabled={isGenEmail}
-                                  className="flex items-center gap-1.5 px-3 py-1.5 bg-blue-600 text-white rounded-lg text-[11px] font-bold hover:bg-blue-700 disabled:opacity-50 cursor-pointer transition-all">
-                                  {isGenEmail ? <Loader2 size={12} className="animate-spin" /> : <Sparkles size={12} />}
-                                  Generate
-                                </button>
+                                <>
+                                  <button onClick={() => generateEmail(lead)} disabled={isGenEmail}
+                                    className="flex items-center gap-1.5 px-3 py-1.5 bg-blue-600 text-white rounded-lg text-[11px] font-bold hover:bg-blue-700 disabled:opacity-50 cursor-pointer transition-all">
+                                    {isGenEmail ? <Loader2 size={12} className="animate-spin" /> : <Sparkles size={12} />}
+                                    Generate
+                                  </button>
+                                  <button onClick={() => persistLead(lead.id, { emailStatus: 'sent' })}
+                                    className="flex items-center gap-1.5 px-3 py-1.5 bg-card border border-border text-foreground rounded-lg text-[11px] font-bold hover:bg-muted cursor-pointer transition-all" title="Mark as Done">
+                                    <Check size={12} /> Mark Done
+                                  </button>
+                                </>
                               )}
                               {lead.emailStatus === 'generated' && (
                                 <>
@@ -592,17 +1216,22 @@ export default function OutreachDashboardClient({ sentTodayInitial }: { sentToda
                                   </button>
                                 </>
                               )}
-                              {lead.emailStatus === 'sent' && (
+                              {(lead.emailStatus === 'sent' || lead.emailStatus === 'delivered') && (
                                 <span className="flex items-center gap-1 px-3 py-1.5 text-primary text-[11px] font-bold">
-                                  <Check size={12} /> Sent
+                                  <Check size={12} /> {lead.emailStatus === 'delivered' ? 'Delivered' : 'Sent'}
                                 </span>
                               )}
                               {lead.emailStatus === 'failed' && (
                                 <div className="flex flex-col items-end gap-1">
-                                  {lead.emailError && <p className="text-[10px] text-destructive max-w-[200px] text-right">{lead.emailError}</p>}
-                                  <button onClick={() => generateEmail(lead)}
-                                    className="flex items-center gap-1 px-3 py-1.5 bg-destructive/10 text-destructive rounded-lg text-[11px] font-bold hover:bg-destructive/20 cursor-pointer transition-all">
-                                    <AlertCircle size={12} /> Retry
+                                  {!isGenEmail && lead.emailError && <p className="text-[10px] text-destructive max-w-[200px] text-right">{lead.emailError}</p>}
+                                  <button onClick={() => generateEmail(lead)} disabled={isGenEmail}
+                                    className={`flex items-center gap-1 px-3 py-1.5 rounded-lg text-[11px] font-bold cursor-pointer transition-all ${
+                                      isGenEmail
+                                        ? 'bg-blue-500/10 text-blue-600 border border-blue-500/20'
+                                        : 'bg-destructive/10 text-destructive hover:bg-destructive/20'
+                                    }`}>
+                                    {isGenEmail ? <Loader2 size={12} className="animate-spin" /> : <AlertCircle size={12} />}
+                                    {isGenEmail ? 'Retrying…' : 'Retry'}
                                   </button>
                                 </div>
                               )}
@@ -613,11 +1242,17 @@ export default function OutreachDashboardClient({ sentTodayInitial }: { sentToda
                           {activeTab === 'whatsapp' && hasContact && (
                             <>
                               {lead.waStatus === 'pending' && (
-                                <button onClick={() => generateWhatsApp(lead)} disabled={isGenWa}
-                                  className="flex items-center gap-1.5 px-3 py-1.5 bg-[#25D366] text-white rounded-lg text-[11px] font-bold hover:bg-[#20bd5a] disabled:opacity-50 cursor-pointer transition-all">
-                                  {isGenWa ? <Loader2 size={12} className="animate-spin" /> : <Sparkles size={12} />}
-                                  Generate
-                                </button>
+                                <>
+                                  <button onClick={() => generateWhatsApp(lead)} disabled={isGenWa}
+                                    className="flex items-center gap-1.5 px-3 py-1.5 bg-[#25D366] text-white rounded-lg text-[11px] font-bold hover:bg-[#20bd5a] disabled:opacity-50 cursor-pointer transition-all">
+                                    {isGenWa ? <Loader2 size={12} className="animate-spin" /> : <Sparkles size={12} />}
+                                    Generate
+                                  </button>
+                                  <button onClick={() => persistLead(lead.id, { waStatus: 'sent' })}
+                                    className="flex items-center gap-1.5 px-3 py-1.5 bg-card border border-border text-foreground rounded-lg text-[11px] font-bold hover:bg-muted cursor-pointer transition-all" title="Mark as Done">
+                                    <Check size={12} /> Mark Done
+                                  </button>
+                                </>
                               )}
                               {lead.waStatus === 'generated' && (
                                 <>
@@ -634,22 +1269,53 @@ export default function OutreachDashboardClient({ sentTodayInitial }: { sentToda
                                     className="flex items-center gap-1.5 px-3 py-1.5 bg-[#25D366] text-white rounded-lg text-[11px] font-bold hover:bg-[#20bd5a] transition-all">
                                     <ExternalLink size={12} /> Open WA
                                   </a>
+                                  <button onClick={() => persistLead(lead.id, { waStatus: 'sent' })}
+                                    className="flex items-center gap-1.5 px-3 py-1.5 bg-card border border-border text-foreground rounded-lg text-[11px] font-bold hover:bg-muted cursor-pointer transition-all" title="Mark as Sent">
+                                    <Check size={12} /> Mark Sent
+                                  </button>
                                 </>
+                              )}
+                              {(lead.waStatus === 'sent' || lead.waStatus === 'delivered') && (
+                                <span className="flex items-center gap-1 px-3 py-1.5 text-[#25D366] text-[11px] font-bold">
+                                  <Check size={12} /> {lead.waStatus === 'delivered' ? 'Delivered' : 'Sent'}
+                                </span>
                               )}
                               {lead.waStatus === 'failed' && (
                                 <div className="flex flex-col items-end gap-1">
-                                  {lead.waError && <p className="text-[10px] text-destructive max-w-[200px] text-right">{lead.waError}</p>}
-                                  <button onClick={() => generateWhatsApp(lead)}
-                                    className="flex items-center gap-1 px-3 py-1.5 bg-destructive/10 text-destructive rounded-lg text-[11px] font-bold hover:bg-destructive/20 cursor-pointer transition-all">
-                                    <AlertCircle size={12} /> Retry
+                                  {!isGenWa && lead.waError && <p className="text-[10px] text-destructive max-w-[200px] text-right">{lead.waError}</p>}
+                                  <button onClick={() => generateWhatsApp(lead)} disabled={isGenWa}
+                                    className={`flex items-center gap-1 px-3 py-1.5 rounded-lg text-[11px] font-bold cursor-pointer transition-all ${
+                                      isGenWa
+                                        ? 'bg-[#25D366]/10 text-[#25D366] border border-[#25D366]/20'
+                                        : 'bg-destructive/10 text-destructive hover:bg-destructive/20'
+                                    }`}>
+                                    {isGenWa ? <Loader2 size={12} className="animate-spin" /> : <AlertCircle size={12} />}
+                                    {isGenWa ? 'Retrying…' : 'Retry'}
                                   </button>
                                 </div>
                               )}
                             </>
                           )}
 
-                          <button onClick={() => setEditingId(isEditing ? null : lead.id)}
-                            className={`p-1.5 rounded-lg cursor-pointer transition-all ${isEditing ? 'text-primary bg-primary/10' : 'text-muted-foreground hover:text-primary hover:bg-primary/10'}`} title={isEditing ? 'Done' : 'Edit'}>
+                          <button
+                            onClick={() => {
+                              if (isEditing) {
+                                // Persist field edits when Done is clicked
+                                persistLead(lead.id, {
+                                  businessName: lead.businessName,
+                                  ownerName:    lead.ownerName,
+                                  city:         lead.city,
+                                  email:        lead.email,
+                                  phone:        lead.phone,
+                                  industry:     lead.industry,
+                                  targetService: lead.targetService,
+                                });
+                              }
+                              setEditingId(isEditing ? null : lead.id);
+                            }}
+                            className={`p-1.5 rounded-lg cursor-pointer transition-all ${isEditing ? 'text-primary bg-primary/10' : 'text-muted-foreground hover:text-primary hover:bg-primary/10'}`}
+                            title={isEditing ? 'Done' : 'Edit'}
+                          >
                             {isEditing ? <Check size={14} /> : <Pencil size={14} />}
                           </button>
                           <button onClick={() => removeLead(lead.id)}
@@ -676,8 +1342,9 @@ export default function OutreachDashboardClient({ sentTodayInitial }: { sentToda
 
             {/* Modal Header — fixed */}
             <div className="flex items-center justify-between p-6 pb-4 border-b border-border shrink-0">
-              <h3 className="text-base font-bold text-foreground">
-                {activeTab === 'email' ? '📧 Email Preview' : '💬 WhatsApp Preview'}
+              <h3 className="text-base font-bold text-foreground inline-flex items-center gap-2">
+                {activeTab === 'email' ? <Mail size={16} /> : <MessageCircle size={16} />}
+                {activeTab === 'email' ? 'Email Preview' : 'WhatsApp Preview'}
               </h3>
               <button onClick={() => setPreviewLead(null)}
                 className="p-2 rounded-lg hover:bg-muted text-muted-foreground cursor-pointer transition-all">
@@ -718,7 +1385,10 @@ export default function OutreachDashboardClient({ sentTodayInitial }: { sentToda
                     {previewLead.generatedMessage}
                   </div>
                   <p className="text-[10px] text-muted-foreground">
-                    ⚠️ "Number doesn&apos;t exist" means the number isn&apos;t registered on WhatsApp — not a URL issue.
+                    <span className="inline-flex items-center gap-1.5">
+                      <TriangleAlert size={12} />
+                      "Number doesn&apos;t exist" means the number isn&apos;t registered on WhatsApp — not a URL issue.
+                    </span>
                   </p>
                 </div>
               )}
@@ -798,16 +1468,31 @@ function FormSelect({ label, value, onChange, options }: {
   );
 }
 
-function StatusBadge({ status }: { status: string }) {
+function StatusDropdown({ status, onChange }: { status: string; onChange: (newStatus: string) => void }) {
   const styles: Record<string, string> = {
-    pending:   'bg-yellow-500/10 text-yellow-600 border-yellow-500/20',
-    generated: 'bg-blue-500/10 text-blue-600 border-blue-500/20',
-    sent:      'bg-primary/10 text-primary border-primary/20',
-    failed:    'bg-destructive/10 text-destructive border-destructive/20',
+    pending:     'bg-yellow-500/10 text-yellow-600 border-yellow-500/20',
+    generated:   'bg-blue-500/10 text-blue-600 border-blue-500/20',
+    sent:        'bg-primary/10 text-primary border-primary/20',
+    delivered:   'bg-emerald-500/10 text-emerald-600 border-emerald-500/20',
+    unreachable: 'bg-slate-500/10 text-slate-500 dark:text-slate-400 border-slate-500/20',
+    failed:      'bg-destructive/10 text-destructive border-destructive/20',
   };
+  const options = ['pending', 'generated', 'sent', 'delivered', 'unreachable', 'failed'];
+  
   return (
-    <span className={`inline-flex items-center px-2.5 py-1 rounded-lg text-[10px] font-black uppercase tracking-widest border ${styles[status] || styles.pending}`}>
-      {status}
-    </span>
+    <div className="relative group/status w-fit">
+      <select 
+        value={status}
+        onChange={(e) => onChange(e.target.value)}
+        className={`appearance-none px-2.5 py-1 pr-6 rounded-lg text-[10px] font-black uppercase tracking-widest border cursor-pointer focus:outline-none transition-all ${styles[status] || styles.pending}`}
+      >
+        {options.map(opt => (
+          <option key={opt} value={opt} className="bg-background text-foreground uppercase">
+            {opt}
+          </option>
+        ))}
+      </select>
+      <ChevronDown size={12} className="absolute right-1.5 top-1/2 -translate-y-1/2 opacity-40 pointer-events-none" />
+    </div>
   );
 }
