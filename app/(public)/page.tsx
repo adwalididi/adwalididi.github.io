@@ -12,7 +12,6 @@ const FaqSection = dynamic(() => import("@/components/home/faq-section").then(mo
 const Testimonial = dynamic(() => import("@/components/home/testimonial").then(mod => mod.Testimonial))
 const GoogleReviews = dynamic(() => import("@/components/home/google-reviews").then(mod => mod.GoogleReviews))
 const CTASection = dynamic(() => import("@/components/home/cta-section").then(mod => mod.CTASection))
-import { FloatingCTA } from "@/components/ui/floating-cta"
 
 // FAQPage schema — enables rich snippets in Google Search results
 const faqJsonLd = {
@@ -104,7 +103,6 @@ export default function HomePage() {
       <FaqSection />
       <Testimonial />
       <CTASection />
-      <FloatingCTA />
     </>
   )
 }

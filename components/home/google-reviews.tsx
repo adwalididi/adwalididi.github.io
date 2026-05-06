@@ -187,7 +187,7 @@ export function GoogleReviews() {
   const trackRef = useRef<HTMLDivElement>(null)
   const isPausedRef = useRef(false)
 
-  const reviews: Review[] = reviewsData.reviews
+  const reviews: Review[] = [...reviewsData.reviews]
   const placeRating: number = reviewsData.placeRating
   const totalReviews: number = reviewsData.totalReviews
 
