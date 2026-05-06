@@ -48,6 +48,7 @@ For the final production cutover, update to `"name": "adwalididi-website"` and u
 ### 3. Local Build (WSL)
 ```bash
 sudo rm -rf node_modules   # clean up Windows symlinks
+rm -rf .next               # clear Next.js build cache (fixes type errors from old deleted files)
 npm install                 # install Linux binaries
 npm run cf:build            # generates registries + builds worker
 ```

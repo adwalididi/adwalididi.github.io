@@ -76,7 +76,7 @@ function LoginContent() {
           </Link>
         </div>
 
-        <form method="post" action="/admin/open-gate/" className="bg-card p-8 rounded-[2rem] border border-border w-full max-w-md flex flex-col gap-6 shadow-xl shadow-teal-900/5">
+        <form method="post" action="/admin/open-gate" className="bg-card p-8 rounded-[2rem] border border-border w-full max-w-md flex flex-col gap-6 shadow-xl shadow-teal-900/5">
           <input type="hidden" name="target" value={redirectTo} />
           <div className="text-center mb-2">
             <h1 className="text-3xl font-bold text-foreground tracking-tight">System <span className="text-primary">Gateway</span></h1>
