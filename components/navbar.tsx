@@ -50,6 +50,17 @@ export function Navbar() {
             />
           </Link>
 
+          {/* Mobile CTA */}
+          <Link
+            href="/contact"
+            className={`md:hidden px-4 py-2 rounded-lg text-sm font-medium transition-colors ${isActive("/contact")
+              ? 'bg-teal/90 text-white'
+              : 'bg-teal text-white hover:opacity-90'
+              }`}
+          >
+            {"Let's Talk"}
+          </Link>
+
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center gap-8">
             {navLinks.map((link) => (

@@ -2,14 +2,21 @@
 
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { Home, Zap, Briefcase, FileText, MessageCircle } from "lucide-react"
+import {
+  House,
+  RocketLaunch,
+  FolderSimple,
+  UsersThree,
+  Article,
+} from "@phosphor-icons/react"
+import type { IconWeight } from "@phosphor-icons/react"
 
 const navItems = [
-  { href: "/", label: "Home", icon: Home },
-  { href: "/services", label: "Services", icon: Zap },
-  { href: "/portfolio", label: "Work", icon: Briefcase },
-  { href: "/blog", label: "Blog", icon: FileText },
-  { href: "/contact", label: "Contact", icon: MessageCircle },
+  { href: "/", label: "Home", icon: House },
+  { href: "/services", label: "Services", icon: RocketLaunch },
+  { href: "/portfolio", label: "Work", icon: FolderSimple },
+  { href: "/about", label: "About", icon: UsersThree },
+  { href: "/blog", label: "Blog", icon: Article },
 ]
 
 export function MobileBottomNav() {
@@ -30,6 +37,7 @@ export function MobileBottomNav() {
         <div className="flex items-stretch h-16">
           {navItems.map((item) => {
             const active = isActive(item.href)
+            const weight: IconWeight = active ? "fill" : "regular"
             return (
               <Link
                 key={item.href}
@@ -48,8 +56,8 @@ export function MobileBottomNav() {
                   />
                 )}
                 <item.icon
-                  size={20}
-                  strokeWidth={active ? 2.5 : 1.8}
+                  size={22}
+                  weight={weight}
                   aria-hidden="true"
                 />
                 <span
