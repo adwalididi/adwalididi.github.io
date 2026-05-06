@@ -44,6 +44,7 @@ export function AdminSidebar() {
       <div className={`flex-1 py-6 flex flex-col gap-2 overflow-x-hidden ${isCollapsed ? 'px-3 items-center' : 'px-4'}`}>
         <Link 
           href="/" 
+          prefetch={false}
           className={`flex items-center rounded-xl text-sm font-semibold text-muted-foreground hover:bg-muted transition-all mb-4 overflow-hidden whitespace-nowrap ${isCollapsed ? 'justify-center w-12 h-12 p-0' : 'gap-3 px-4 py-3'}`}
           title="Back to Website"
         >
@@ -64,6 +65,7 @@ export function AdminSidebar() {
             <Link
               key={link.id}
               href={link.href}
+              prefetch={false}
               title={isCollapsed ? link.label : undefined}
               className={`flex items-center rounded-xl text-sm font-semibold transition-all overflow-hidden whitespace-nowrap ${
                 isActive 
