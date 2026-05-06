@@ -75,6 +75,7 @@ function generateRegistry() {
     .map(fileName => {
       const slug = fileName.replace(/\.mdx$/, '');
       const fullPath = path.join(blogsDirectory, fileName);
+      console.log(`Processing: ${fileName}`);
       const fileContents = fs.readFileSync(fullPath, 'utf8');
       const { data, content } = parseFrontmatter(fileContents);
 

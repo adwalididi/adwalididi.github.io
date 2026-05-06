@@ -15,6 +15,7 @@ node_modules
 .next/
 .open-next/
 lib/blog-registry.ts
+lib/reviews-registry.ts
 .wrangler/
 .wrangler-bundle*/
 .wrangler-bundle-size/

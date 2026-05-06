@@ -10,6 +10,7 @@ const PortfolioPreview = dynamic(() => import("@/components/home/portfolio-previ
 import { LeadFormWrapper } from "@/components/home/lead-form-wrapper"
 const FaqSection = dynamic(() => import("@/components/home/faq-section").then(mod => mod.FaqSection))
 const Testimonial = dynamic(() => import("@/components/home/testimonial").then(mod => mod.Testimonial))
+const GoogleReviews = dynamic(() => import("@/components/home/google-reviews").then(mod => mod.GoogleReviews))
 const CTASection = dynamic(() => import("@/components/home/cta-section").then(mod => mod.CTASection))
 import { FloatingCTA } from "@/components/ui/floating-cta"
 
@@ -98,6 +99,7 @@ export default function HomePage() {
       <OurProcess />
       <WhyUs />
       <PortfolioPreview />
+      <GoogleReviews />
       <LeadFormWrapper />
       <FaqSection />
       <Testimonial />

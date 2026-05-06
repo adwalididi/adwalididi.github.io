@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint .",
-    "prebuild": "node scripts/build-blog-data.mjs",
+    "prebuild": "node scripts/build-blog-data.mjs && node scripts/build-reviews-data.mjs",
     "cf:build": "npm run prebuild && opennextjs-cloudflare build --config wrangler.worker.jsonc",
     "cf:preview": "npm run prebuild && opennextjs-cloudflare build --config wrangler.worker.jsonc && opennextjs-cloudflare preview --config wrangler.worker.jsonc",
     "cf:deploy": "npm run prebuild && opennextjs-cloudflare build --config wrangler.worker.jsonc && opennextjs-cloudflare deploy --config wrangler.worker.jsonc",

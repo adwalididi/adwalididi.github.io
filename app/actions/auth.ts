@@ -6,6 +6,7 @@ import { redirect } from 'next/navigation';
 export async function logout() {
   const cookieStore = await cookies();
   cookieStore.delete({ name: 'admin_session', path: '/' });
-  cookieStore.delete({ name: 'admin_gate', path: '/admin/' });
+  cookieStore.delete({ name: 'admin_session_outreach', path: '/' });
+  cookieStore.delete({ name: 'admin_gate', path: '/' });
   redirect('/admin/login');
 }

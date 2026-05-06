@@ -1,0 +1,46 @@
+name: Fetch Google Reviews
+
+on:
+  schedule:
+    - cron: '0 6 * * 1' # Runs at 06:00 UTC every Monday
+  workflow_dispatch:      # Allows manual triggering from the Actions tab
+
+permissions:
+  contents: write # REQUIRED: Allows the action to push the commit
+
+jobs:
+  fetch-and-commit:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          # Ensure we have the latest code
+          fetch-depth: 1
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20' # LTS version that supports native fetch
+
+      - name: Fetch Google Reviews
+        env:
+          GOOGLE_PLACES_API_KEY: ${{ secrets.GOOGLE_PLACES_API_KEY }}
+          GOOGLE_PLACE_ID: ${{ vars.GOOGLE_PLACE_ID }}
+        run: node scripts/fetch-reviews.mjs
+
+      - name: Commit and Push Changes
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          
+          # Check if data/reviews.json has changes
+          if git diff --quiet data/reviews.json; then
+            echo "No changes to reviews. Skipping commit."
+          else
+            git add data/reviews.json
+            git commit -m "chore: update Google reviews data"
+            git push origin HEAD
+            echo "Changes committed and pushed successfully."
+          fi
