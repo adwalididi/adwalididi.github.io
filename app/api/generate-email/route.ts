@@ -54,13 +54,21 @@ SUBJECT: [subject line — short, curiosity-driven, no clickbait]
 BODY:
 [email body — plain text, no formatting]`;
 
-    const raw = (await generateContent(prompt)).trim();
+    let raw = '';
+    let subjectMatch: RegExpMatchArray | null = null;
+    let bodyMatch: RegExpMatchArray | null = null;
 
-    const subjectMatch = raw.match(/^SUBJECT:\s*(.+)/im);
-    const bodyMatch = raw.match(/^BODY:\s*([\s\S]+)/im);
+    // Retry once if AI returns a malformed response (no SUBJECT/BODY markers)
+    for (let attempt = 1; attempt <= 2; attempt++) {
+      raw = (await generateContent(prompt)).trim();
+      subjectMatch = raw.match(/^SUBJECT:\s*(.+)/im);
+      bodyMatch = raw.match(/^BODY:\s*([\s\S]+)/im);
+      if (subjectMatch && bodyMatch) break;
+      if (attempt < 2) console.warn(`AI response malformed on attempt ${attempt}, retrying...`);
+    }
 
     if (!subjectMatch || !bodyMatch) {
-      console.error('Gemini response did not match expected format:', raw);
+      console.error('AI response did not match expected format:', raw);
       return Response.json({ error: 'Unexpected AI response format. Please try again.' }, { status: 500 });
     }
 

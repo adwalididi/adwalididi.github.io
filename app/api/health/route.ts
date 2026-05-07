@@ -100,7 +100,7 @@ export async function GET(request: Request) {
       tasks.push((async () => {
         try {
           const start = Date.now();
-          const result = await testGeminiKey(geminiKeys[i] as string);
+          const result = await testGeminiKey(geminiKeys[i] as string, 'gemini-2.0-flash');
           if (result.ok) {
             results[keyName] = { status: 'operational', latency: Date.now() - start, error: null };
           } else {
