@@ -1,5 +1,4 @@
-// Lightweight Gemini API wrapper using direct REST calls
-// Replaces the heavy @google/genai SDK (~13 MB + protobufjs ~3 MB)
+import { generateContentGroq } from './groq';
 
 // Rotate through multiple API keys — tries each in order on quota/rate errors
 function getKeys(): string[] {
@@ -56,6 +55,14 @@ interface GeminiResponse {
 }
 
 export async function generateContent(prompt: string, systemPrompt?: string): Promise<string> {
+  // 1. Try Groq first (72,000 req/day free limit)
+  try {
+    return await generateContentGroq(prompt, systemPrompt);
+  } catch (groqError) {
+    console.warn('[AI] Groq failed, falling back to Gemini cascade:', groqError);
+  }
+
+  // 2. Fall back to Gemini
   const keys = getKeys();
   let lastError: unknown;
 

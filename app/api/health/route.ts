@@ -1,6 +1,7 @@
 import { createClient } from '@supabase/supabase-js';
 import { cookies } from 'next/headers';
 import { testGeminiKey } from '@/lib/gemini';
+import { testGroqKey } from '@/lib/groq';
 
 export const runtime = 'edge';
 
@@ -100,6 +101,39 @@ export async function GET(request: Request) {
         try {
           const start = Date.now();
           const result = await testGeminiKey(geminiKeys[i] as string);
+          if (result.ok) {
+            results[keyName] = { status: 'operational', latency: Date.now() - start, error: null };
+          } else {
+            results[keyName] = { status: 'failing', latency: Date.now() - start, error: result.error || 'Unknown error' };
+          }
+        } catch (e: unknown) {
+          results[keyName] = { status: 'failing', latency: 0, error: e instanceof Error ? e.message : 'Connection failed' };
+        }
+      })());
+    }
+  }
+
+  // 5. Check Groq Keys
+  const groqKeys = [
+    process.env.GROQ_API_KEY,
+    process.env.GROQ_API_KEY_2,
+    process.env.GROQ_API_KEY_3,
+    process.env.GROQ_API_KEY_4,
+    process.env.GROQ_API_KEY_5,
+  ];
+
+  for (let i = 0; i < groqKeys.length; i++) {
+    const keyName = `groq_${i + 1}`;
+    if (shouldCheck(keyName)) {
+      results[keyName] = { status: 'pending', latency: 0, error: null };
+      if (!groqKeys[i]) {
+        results[keyName] = { status: 'failing', latency: 0, error: 'Key not configured' };
+        continue;
+      }
+      tasks.push((async () => {
+        try {
+          const start = Date.now();
+          const result = await testGroqKey(groqKeys[i] as string);
           if (result.ok) {
             results[keyName] = { status: 'operational', latency: Date.now() - start, error: null };
           } else {
