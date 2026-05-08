@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { AdminSidebar } from '@/components/admin/admin-sidebar';
 import { AdminLogo } from '@/components/admin/admin-logo';
 import { AdminThemeProvider } from '@/components/admin/admin-theme-provider';
+import { AdminMobileNav } from '@/components/admin/admin-mobile-nav';
 import { logout } from '@/app/actions/auth';
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
@@ -9,10 +10,10 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     <AdminThemeProvider>
       <div className="flex h-screen bg-background text-foreground font-sans overflow-hidden">
         <AdminSidebar />
-        
+
         <div className="flex-1 flex flex-col h-screen overflow-y-auto">
           <div className="p-4 sm:p-8 max-w-7xl mx-auto w-full flex flex-col flex-1 min-h-0">
-            {/* Header (Mobile) */}
+            {/* Header (Mobile only) */}
             <div className="flex sm:flex-row flex-col gap-6 sm:items-center justify-between mb-4 pb-2 border-b border-border/50 break-words md:hidden">
               <div className="flex items-center gap-5">
                 <Link href="/" className="p-3 rounded-xl bg-card border border-border hover:bg-muted transition-all text-primary" title="Back to Home">
@@ -35,13 +36,16 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
               </div>
             </div>
 
-            {/* Content Area */}
-            <div className="flex-1 min-h-0">
+            {/* Content Area — pb-20 on mobile so content clears the fixed bottom nav */}
+            <div className="flex-1 min-h-0 pb-20 md:pb-0">
               {children}
             </div>
           </div>
         </div>
       </div>
+
+      {/* Mobile bottom navigation bar (hidden on md+, sidebar takes over) */}
+      <AdminMobileNav />
     </AdminThemeProvider>
   );
 }

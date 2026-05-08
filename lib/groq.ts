@@ -59,6 +59,13 @@ export async function generateContentGroq(prompt: string, systemPrompt?: string)
           continue;
         }
 
+        // Auth / suspended key — skip to the next key rather than breaking the loop
+        if (res.status === 401 || res.status === 403) {
+          console.warn(`[Groq] key ${keyIndex + 1} auth error (${res.status}: ${errMsg}), trying next key...`);
+          lastError = new Error(errMsg);
+          continue;
+        }
+
         throw new Error(errMsg);
       }
 
@@ -68,9 +75,14 @@ export async function generateContentGroq(prompt: string, systemPrompt?: string)
       lastError = e;
       const msg = String(e).toLowerCase();
 
-      if (msg.includes('429') || msg.includes('rate') || msg.includes('503') || msg.includes('overloaded')) {
-        console.warn(`[Groq] key ${keyIndex + 1} transient error, retrying...`);
-        await new Promise((r) => setTimeout(r, 500));
+      if (
+        msg.includes('429') || msg.includes('rate') ||
+        msg.includes('503') || msg.includes('overloaded') ||
+        msg.includes('suspended') || msg.includes('deactivated') ||
+        msg.includes('401') || msg.includes('403')
+      ) {
+        console.warn(`[Groq] key ${keyIndex + 1} transient/auth error, trying next key...`);
+        await new Promise((r) => setTimeout(r, 200));
         continue;
       }
 

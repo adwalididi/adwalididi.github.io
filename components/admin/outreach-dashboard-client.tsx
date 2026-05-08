@@ -50,14 +50,14 @@ interface Lead {
   // Email channel
   generatedSubject?: string;
   generatedBody?: string;
-  emailStatus: 'pending' | 'generated' | 'sent' | 'delivered' | 'failed' | 'unreachable';
+  emailStatus: 'pending' | 'generated' | 'sent' | 'delivered' | 'failed' | 'unreachable' | 'junk';
   outreachLogId?: string; // Supabase outreach_log row ID
   emailError?: string;
   // WhatsApp channel
   generatedMessage?: string;
   waLink?: string;
   formattedPhone?: string;
-  waStatus: 'pending' | 'generated' | 'sent' | 'delivered' | 'failed' | 'unreachable';
+  waStatus: 'pending' | 'generated' | 'sent' | 'delivered' | 'failed' | 'unreachable' | 'junk';
   waError?: string;
   createdAt?: string;
 }
@@ -170,10 +170,12 @@ export default function OutreachDashboardClient({ sentTodayInitial = 0 }: { sent
 
   // Search, filter, sort
   const [searchQuery, setSearchQuery] = useState('');
-  const [statusFilter, setStatusFilter] = useState<'all' | 'pending' | 'generated' | 'sent' | 'delivered' | 'failed' | 'unreachable'>('all');
+  const [statusFilter, setStatusFilter] = useState<'active' | 'all' | 'pending' | 'generated' | 'sent' | 'delivered' | 'failed' | 'unreachable' | 'junk'>('active');
+  const [filtersOpen, setFiltersOpen] = useState(false);
   const [industryFilter, setIndustryFilter] = useState('all');
   const [sortBy, setSortBy] = useState<'name' | 'status' | 'none'>('none');
   const [sortDir, setSortDir] = useState<'asc' | 'desc'>('asc');
+  const activeFilters = (statusFilter !== 'active' ? 1 : 0) + (industryFilter !== 'all' ? 1 : 0);
 
   // Fetch leads from Supabase on mount
   async function fetchLeads() {
@@ -240,12 +242,17 @@ export default function OutreachDashboardClient({ sentTodayInitial = 0 }: { sent
   async function removeLead(id: string) {
     const lead = leads.find(l => l.id === id);
     const name = lead?.businessName || 'this lead';
-    if (!window.confirm(`Delete "${name}"? This cannot be undone.`)) return;
+    if (!window.confirm(`Remove "${name}" from view? (Marks as Junk)`)) return;
 
-    // Optimistic: remove immediately
-    setLeads(prev => prev.filter(l => l.id !== id));
+    // Optimistic: update to junk
+    updateLead(id, { emailStatus: 'junk', waStatus: 'junk' } as Partial<Lead>);
     try {
-      await fetch(`/api/outreach-leads/${id}`, { method: 'DELETE', credentials: 'include' });
+      await fetch(`/api/outreach-leads/${id}`, {
+        method: 'PATCH',
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ emailStatus: 'junk', waStatus: 'junk' })
+      });
     } catch (e) {
       console.error('Delete lead error:', e);
       // Restore on failure by refreshing
@@ -704,7 +711,12 @@ export default function OutreachDashboardClient({ sentTodayInitial = 0 }: { sent
     }
 
     // Status filter
-    if (statusFilter !== 'all') {
+    if (statusFilter === 'active') {
+      result = result.filter(l => {
+        const s = activeTab === 'email' ? l.emailStatus : l.waStatus;
+        return s !== 'junk';
+      });
+    } else if (statusFilter !== 'all') {
       result = result.filter(l => {
         const s = activeTab === 'email' ? l.emailStatus : l.waStatus;
         return s === statusFilter;
@@ -731,7 +743,7 @@ export default function OutreachDashboardClient({ sentTodayInitial = 0 }: { sent
         return sortDir === 'asc' ? cmp : -cmp;
       });
     } else if (sortBy === 'status') {
-      const order = { pending: 0, generated: 1, sent: 2, delivered: 3, unreachable: 4, failed: 5 };
+      const order = { pending: 0, generated: 1, sent: 2, delivered: 3, unreachable: 4, failed: 5, junk: 6 };
       result.sort((a, b) => {
         const sa = activeTab === 'email' ? a.emailStatus : a.waStatus;
         const sb = activeTab === 'email' ? b.emailStatus : b.waStatus;
@@ -743,7 +755,7 @@ export default function OutreachDashboardClient({ sentTodayInitial = 0 }: { sent
     return result;
   })();
 
-  const hasActiveFilters = searchQuery.trim() !== '' || statusFilter !== 'all' || industryFilter !== 'all' || sortBy !== 'none';
+  const hasActiveFilters = searchQuery.trim() !== '' || statusFilter !== 'active' || industryFilter !== 'all' || sortBy !== 'none';
 
   function toggleSelectAll() {
     if (selectedLeadIds.size === filteredLeads.length && filteredLeads.length > 0) {
@@ -762,7 +774,7 @@ export default function OutreachDashboardClient({ sentTodayInitial = 0 }: { sent
 
   function clearAllFilters() {
     setSearchQuery('');
-    setStatusFilter('all');
+    setStatusFilter('active');
     setIndustryFilter('all');
     setSortBy('none');
     setSortDir('asc');
@@ -793,27 +805,29 @@ export default function OutreachDashboardClient({ sentTodayInitial = 0 }: { sent
     <div className="space-y-5">
 
       {/* Tabs */}
-      <div className="flex gap-2">
-        <button onClick={() => setActiveTab('email')}
-          className={`flex items-center gap-2 px-6 py-3 rounded-xl font-bold text-sm transition-all cursor-pointer ${
-            activeTab === 'email' ? 'bg-primary text-white shadow-lg shadow-primary/20' : 'bg-card border border-border text-muted-foreground hover:bg-muted'
-          }`}>
-          <Mail size={16} /> Email Outreach
-        </button>
-        <button onClick={() => setActiveTab('whatsapp')}
-          className={`flex items-center gap-2 px-6 py-3 rounded-xl font-bold text-sm transition-all cursor-pointer ${
-            activeTab === 'whatsapp' ? 'bg-[#25D366] text-white shadow-lg shadow-[#25D366]/20' : 'bg-card border border-border text-muted-foreground hover:bg-muted'
-          }`}>
-          <MessageCircle size={16} /> WhatsApp
-        </button>
-        <div className="ml-auto flex items-center gap-3">
-          <div className="flex items-center gap-2 px-4 py-2 bg-card border border-border rounded-xl">
-            <Users size={14} className="text-muted-foreground" />
-            <span className="text-xs font-black text-muted-foreground uppercase tracking-widest">{leads.length} leads</span>
+      <div className="flex flex-col sm:flex-row gap-2 items-start sm:items-center justify-between">
+        <div className="flex gap-2 w-full sm:w-auto">
+          <button onClick={() => setActiveTab('email')}
+            className={`flex-1 sm:flex-none flex items-center justify-center sm:justify-start gap-2 px-4 sm:px-6 py-2.5 sm:py-3 rounded-xl font-bold text-xs sm:text-sm transition-all cursor-pointer ${
+              activeTab === 'email' ? 'bg-primary text-white shadow-lg shadow-primary/20' : 'bg-card border border-border text-muted-foreground hover:bg-muted'
+            }`}>
+            <Mail size={16} /> <span>Email</span>
+          </button>
+          <button onClick={() => setActiveTab('whatsapp')}
+            className={`flex-1 sm:flex-none flex items-center justify-center sm:justify-start gap-2 px-4 sm:px-6 py-2.5 sm:py-3 rounded-xl font-bold text-xs sm:text-sm transition-all cursor-pointer ${
+              activeTab === 'whatsapp' ? 'bg-[#25D366] text-white shadow-lg shadow-[#25D366]/20' : 'bg-card border border-border text-muted-foreground hover:bg-muted'
+            }`}>
+            <MessageCircle size={16} /> <span>WhatsApp</span>
+          </button>
+        </div>
+        <div className="flex items-center gap-2 w-full sm:w-auto">
+          <div className="flex-1 sm:flex-none flex items-center gap-2 px-3 py-2 bg-card border border-border rounded-xl">
+            <Users size={14} className="text-muted-foreground shrink-0" />
+            <span className="text-[10px] sm:text-xs font-black text-muted-foreground uppercase tracking-widest whitespace-nowrap">{leads.length} leads</span>
           </div>
           <button
             onClick={toggleTheme}
-            className="p-2.5 rounded-xl bg-card border border-border hover:bg-muted transition-all text-primary shadow-sm hover:scale-105 active:scale-95 shrink-0 cursor-pointer"
+            className="p-2 sm:p-2.5 rounded-xl bg-card border border-border hover:bg-muted transition-all text-primary shadow-sm hover:scale-105 active:scale-95 shrink-0 cursor-pointer"
             title="Toggle Dark Mode"
           >
             {mounted && (theme === 'dark' ? <Sun size={16} /> : <Moon size={16} />)}
@@ -830,92 +844,174 @@ export default function OutreachDashboardClient({ sentTodayInitial = 0 }: { sent
       </div>
 
       {/* Action Bar */}
-      <div className="flex flex-wrap gap-3">
-        <button onClick={() => setShowForm(!showForm)}
-          className="flex items-center gap-2 px-5 py-2.5 bg-primary text-white rounded-xl font-bold text-xs hover:bg-primary/90 transition-all cursor-pointer">
-          <Plus size={14} /> Add Lead
-        </button>
-        <button onClick={() => fileInputRef.current?.click()}
-          className="flex items-center gap-2 px-5 py-2.5 bg-card border border-border text-foreground rounded-xl font-bold text-xs hover:bg-muted transition-all cursor-pointer">
-          <Upload size={14} /> Upload CSV
-        </button>
-        <input ref={fileInputRef} type="file" accept=".csv" onChange={handleCSVUpload} className="hidden" />
+      <div className="space-y-2">
+        {/* Mobile: First Row - Add & Import */}
+        <div className="flex md:hidden gap-2 w-full">
+          <button onClick={() => setShowForm(!showForm)}
+            className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 bg-primary text-white rounded-xl font-bold text-xs hover:bg-primary/90 transition-all cursor-pointer">
+            <Plus size={12} /> Add
+          </button>
+          <button onClick={() => fileInputRef.current?.click()}
+            className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 bg-card border border-border text-foreground rounded-xl font-bold text-xs hover:bg-muted transition-all cursor-pointer">
+            <Upload size={12} /> CSV
+          </button>
+          <button
+            onClick={importFromCRM}
+            disabled={importingCRM}
+            className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 bg-card border border-border text-foreground rounded-xl font-bold text-xs hover:bg-muted transition-all cursor-pointer disabled:opacity-50"
+            title="Pull leads from your homepage form submissions"
+          >
+            {importingCRM ? <Loader2 size={12} className="animate-spin" /> : <Users size={12} />}
+          </button>
+        </div>
 
-        <button
-          onClick={importFromCRM}
-          disabled={importingCRM}
-          className="flex items-center gap-2 px-5 py-2.5 bg-card border border-border text-foreground rounded-xl font-bold text-xs hover:bg-muted transition-all cursor-pointer disabled:opacity-50"
-          title="Pull leads from your homepage form submissions"
-        >
-          {importingCRM ? <Loader2 size={14} className="animate-spin" /> : <Users size={14} />}
-          {importingCRM ? 'Importing...' : 'Import from CRM'}
-        </button>
-
+        {/* Mobile: Second Row - Bulk Actions */}
         {pendingCount > 0 && (
-          <>
+          <div className="flex md:hidden gap-2 w-full flex-wrap">
             <button 
               onClick={bulkGenerating ? () => { abortBulkRef.current = true; setIsStopping(true); } : bulkGenerate}
               disabled={bulkGenerating && isStopping}
-              className={`flex items-center gap-2 px-5 py-2.5 rounded-xl font-bold text-xs transition-all cursor-pointer ${
+              className={`flex-1 min-w-[120px] flex items-center justify-center gap-1 px-2 py-2 rounded-xl font-bold text-xs transition-all cursor-pointer ${
                 bulkGenerating 
                   ? 'bg-red-600 hover:bg-red-700 text-white shadow-lg' 
                   : 'bg-blue-600 hover:bg-blue-700 text-white disabled:opacity-50'
               }`}>
-              {bulkGenerating && !isStopping ? <X size={14} /> : bulkGenerating && isStopping ? <Loader2 size={14} className="animate-spin" /> : <Sparkles size={14} />}
+              {bulkGenerating && !isStopping ? <X size={12} /> : bulkGenerating && isStopping ? <Loader2 size={12} className="animate-spin" /> : <Sparkles size={12} />}
               {bulkGenerating
-                ? isStopping ? 'Stopping...' : `Stop Generating (${bulkGenerateProgress.completed}/${bulkGenerateProgress.total || pendingCount})`
+                ? isStopping ? 'Stopping' : `${bulkGenerateProgress.completed}/${bulkGenerateProgress.total || pendingCount}`
                 : selectedLeadIds.size > 0 
-                  ? `Generate Selected (${selectedLeadIds.size})` 
-                  : `Generate All (${pendingCount})`}
+                  ? `Gen (${selectedLeadIds.size})` 
+                  : `Gen (${pendingCount})`}
             </button>
             <button 
               onClick={bulkMarkDone}
-              className="flex items-center gap-2 px-5 py-2.5 bg-card border border-border text-foreground rounded-xl font-bold text-xs hover:bg-muted transition-all cursor-pointer">
-              <Check size={14} />
-              {selectedLeadIds.size > 0 
-                ? `Mark Selected Done (${selectedLeadIds.size})` 
-                : `Mark All Done (${pendingCount})`}
+              className="flex-1 min-w-[120px] flex items-center justify-center gap-1 px-2 py-2 bg-card border border-border text-foreground rounded-xl font-bold text-xs hover:bg-muted transition-all cursor-pointer">
+              <Check size={12} />
+              Mark Done
             </button>
-          </>
+          </div>
         )}
+
         {activeTab === 'email' && generatedCount > 0 && (
           <button 
             onClick={bulkSending ? () => { abortBulkRef.current = true; setIsStopping(true); } : bulkSend}
             disabled={bulkSending ? isStopping : (sentToday >= 300)}
-            className={`flex items-center gap-2 px-5 py-2.5 rounded-xl font-bold text-xs transition-all cursor-pointer ${
+            className={`w-full md:hidden flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl font-bold text-xs transition-all cursor-pointer ${
               bulkSending 
                 ? 'bg-red-600 hover:bg-red-700 text-white shadow-lg' 
                 : 'bg-emerald-600 hover:bg-emerald-700 text-white disabled:opacity-50'
             }`}>
-            {bulkSending && !isStopping ? <X size={14} /> : bulkSending && isStopping ? <Loader2 size={14} className="animate-spin" /> : <Send size={14} />}
+            {bulkSending && !isStopping ? <X size={12} /> : bulkSending && isStopping ? <Loader2 size={12} className="animate-spin" /> : <Send size={12} />}
             {bulkSending
-              ? isStopping ? 'Stopping...' : `Stop Sending (${bulkSendProgress.completed}/${bulkSendProgress.total || generatedCount})`
+              ? isStopping ? 'Stopping' : `${bulkSendProgress.completed}/${bulkSendProgress.total || generatedCount}`
               : selectedLeadIds.size > 0
-                ? `Send Selected (${selectedLeadIds.size})`
+                ? `Send (${selectedLeadIds.size})`
                 : `Send All (${generatedCount})`}
           </button>
         )}
+
         {failedCount > 0 && !bulkGenerating && !bulkSending && (
           <button
             onClick={bulkRetryFailed}
-            className="flex items-center gap-2 px-5 py-2.5 bg-destructive/10 border border-destructive/20 text-destructive rounded-xl font-bold text-xs hover:bg-destructive/20 transition-all cursor-pointer"
+            className="w-full md:hidden flex items-center justify-center gap-1.5 px-3 py-2 bg-destructive/10 border border-destructive/20 text-destructive rounded-xl font-bold text-xs hover:bg-destructive/20 transition-all cursor-pointer"
           >
-            <AlertCircle size={14} />
-            {selectedLeadIds.size > 0
-              ? `Retry Selected Failed (${selectedLeadIds.size})`
-              : `Retry All Failed (${failedCount})`}
+            <AlertCircle size={12} />
+            Retry Failed ({failedCount})
           </button>
         )}
+
+        {/* Desktop Actions */}
+        <div className="hidden md:block overflow-x-auto -mx-1 px-1 pb-1">
+          <div className="flex gap-2 w-max">
+            <button onClick={() => setShowForm(!showForm)}
+              className="flex items-center gap-2 px-5 py-2.5 bg-primary text-white rounded-xl font-bold text-xs hover:bg-primary/90 transition-all cursor-pointer">
+              <Plus size={14} /> Add Lead
+            </button>
+            <button onClick={() => fileInputRef.current?.click()}
+              className="flex items-center gap-2 px-5 py-2.5 bg-card border border-border text-foreground rounded-xl font-bold text-xs hover:bg-muted transition-all cursor-pointer">
+              <Upload size={14} /> Upload CSV
+            </button>
+            <input ref={fileInputRef} type="file" accept=".csv" onChange={handleCSVUpload} className="hidden" />
+
+            <button
+              onClick={importFromCRM}
+              disabled={importingCRM}
+              className="flex items-center gap-2 px-5 py-2.5 bg-card border border-border text-foreground rounded-xl font-bold text-xs hover:bg-muted transition-all cursor-pointer disabled:opacity-50"
+              title="Pull leads from your homepage form submissions"
+            >
+              {importingCRM ? <Loader2 size={14} className="animate-spin" /> : <Users size={14} />}
+              {importingCRM ? 'Importing...' : 'Import from CRM'}
+            </button>
+
+            {pendingCount > 0 && (
+              <>
+                <button 
+                  onClick={bulkGenerating ? () => { abortBulkRef.current = true; setIsStopping(true); } : bulkGenerate}
+                  disabled={bulkGenerating && isStopping}
+                  className={`flex items-center gap-2 px-5 py-2.5 rounded-xl font-bold text-xs transition-all cursor-pointer ${
+                    bulkGenerating 
+                      ? 'bg-red-600 hover:bg-red-700 text-white shadow-lg' 
+                      : 'bg-blue-600 hover:bg-blue-700 text-white disabled:opacity-50'
+                  }`}>
+                  {bulkGenerating && !isStopping ? <X size={14} /> : bulkGenerating && isStopping ? <Loader2 size={14} className="animate-spin" /> : <Sparkles size={14} />}
+                  {bulkGenerating
+                    ? isStopping ? 'Stopping...' : `Stop Generating (${bulkGenerateProgress.completed}/${bulkGenerateProgress.total || pendingCount})`
+                    : selectedLeadIds.size > 0 
+                      ? `Generate Selected (${selectedLeadIds.size})` 
+                      : `Generate All (${pendingCount})`}
+                </button>
+                <button 
+                  onClick={bulkMarkDone}
+                  className="flex items-center gap-2 px-5 py-2.5 bg-card border border-border text-foreground rounded-xl font-bold text-xs hover:bg-muted transition-all cursor-pointer">
+                  <Check size={14} />
+                  {selectedLeadIds.size > 0 
+                    ? `Mark Selected Done (${selectedLeadIds.size})` 
+                    : `Mark All Done (${pendingCount})`}
+                </button>
+              </>
+            )}
+            {activeTab === 'email' && generatedCount > 0 && (
+              <button 
+                onClick={bulkSending ? () => { abortBulkRef.current = true; setIsStopping(true); } : bulkSend}
+                disabled={bulkSending ? isStopping : (sentToday >= 300)}
+                className={`flex items-center gap-2 px-5 py-2.5 rounded-xl font-bold text-xs transition-all cursor-pointer ${
+                  bulkSending 
+                    ? 'bg-red-600 hover:bg-red-700 text-white shadow-lg' 
+                    : 'bg-emerald-600 hover:bg-emerald-700 text-white disabled:opacity-50'
+                }`}>
+                {bulkSending && !isStopping ? <X size={14} /> : bulkSending && isStopping ? <Loader2 size={14} className="animate-spin" /> : <Send size={14} />}
+                {bulkSending
+                  ? isStopping ? 'Stopping...' : `Stop Sending (${bulkSendProgress.completed}/${bulkSendProgress.total || generatedCount})`
+                  : selectedLeadIds.size > 0
+                    ? `Send Selected (${selectedLeadIds.size})`
+                    : `Send All (${generatedCount})`}
+              </button>
+            )}
+            {failedCount > 0 && !bulkGenerating && !bulkSending && (
+              <button
+                onClick={bulkRetryFailed}
+                className="flex items-center gap-2 px-5 py-2.5 bg-destructive/10 border border-destructive/20 text-destructive rounded-xl font-bold text-xs hover:bg-destructive/20 transition-all cursor-pointer"
+              >
+                <AlertCircle size={14} />
+                {selectedLeadIds.size > 0
+                  ? `Retry Selected Failed (${selectedLeadIds.size})`
+                  : `Retry All Failed (${failedCount})`}
+              </button>
+            )}
+          </div>
+        </div>
       </div>
+
+      <input ref={fileInputRef} type="file" accept=".csv" onChange={handleCSVUpload} className="hidden" />
 
       {/* Add Lead Form */}
       {showForm && (
-        <div className="bg-card border border-border rounded-[2rem] p-6 sm:p-8 shadow-lg">
-          <div className="flex items-center justify-between mb-5">
+        <div className="bg-card border border-border rounded-[2rem] p-4 sm:p-8 shadow-lg">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-4 sm:mb-5 gap-2">
             <h3 className="text-base font-bold text-foreground">Add New Lead</h3>
             <p className="text-[10px] text-muted-foreground font-medium">Unified — works for both Email &amp; WhatsApp tabs</p>
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
             <FormInput label="Business Name *" value={form.businessName} onChange={v => setForm(p => ({...p, businessName: v}))} placeholder="Sharma's Restaurant" />
             <FormInput label="Owner Name" value={form.ownerName} onChange={v => setForm(p => ({...p, ownerName: v}))} placeholder="Rahul Sharma" />
             <FormInput label="City (optional)" value={form.city} onChange={v => setForm(p => ({...p, city: v}))} placeholder="Mumbai" />
@@ -924,13 +1020,13 @@ export default function OutreachDashboardClient({ sentTodayInitial = 0 }: { sent
             <FormSelect label="Industry" value={form.industry} onChange={v => setForm(p => ({...p, industry: v}))} options={INDUSTRIES} />
             <FormSelect label="Target Service" value={form.targetService} onChange={v => setForm(p => ({...p, targetService: v}))} options={SERVICES} />
           </div>
-          <div className="flex gap-3 mt-5">
+          <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 mt-4 sm:mt-5">
             <button onClick={addLead} disabled={!form.businessName.trim()}
-              className="flex items-center gap-2 px-6 py-3 bg-primary text-white rounded-xl font-bold text-sm hover:bg-primary/90 disabled:opacity-50 transition-all cursor-pointer">
+              className="flex items-center justify-center gap-2 px-4 sm:px-6 py-2.5 sm:py-3 bg-primary text-white rounded-xl font-bold text-xs sm:text-sm hover:bg-primary/90 disabled:opacity-50 transition-all cursor-pointer">
               <Plus size={14} /> Add Lead
             </button>
             <button onClick={() => setShowForm(false)}
-              className="px-5 py-3 bg-card border border-border text-muted-foreground rounded-xl font-bold text-sm hover:bg-muted transition-all cursor-pointer">
+              className="flex items-center justify-center px-4 sm:px-5 py-2.5 sm:py-3 bg-card border border-border text-muted-foreground rounded-xl font-bold text-xs sm:text-sm hover:bg-muted transition-all cursor-pointer">
               Cancel
             </button>
           </div>
@@ -939,68 +1035,86 @@ export default function OutreachDashboardClient({ sentTodayInitial = 0 }: { sent
 
       {/* Search / Filter / Sort Bar */}
       {leads.length > 0 && (
-        <div className="bg-card border border-border rounded-2xl p-4 space-y-3">
-          {/* Row 1: Search + Clear */}
-          <div className="flex items-center gap-3">
-            <div className="relative flex-1">
-              <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
+        <div className="bg-card border border-border rounded-2xl p-3 sm:p-4 space-y-2 sm:space-y-3">
+          {/* Row 1: Search + Filters Toggle */}
+          <div className="flex items-center gap-2 sm:gap-3">
+            <div className="relative flex-1 min-w-0">
+              <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground shrink-0" />
               <input
                 type="text"
                 value={searchQuery}
                 onChange={e => setSearchQuery(e.target.value)}
-                placeholder="Search by business, owner, email, phone, city…"
-                className="w-full bg-background border border-border rounded-xl py-2.5 pl-9 pr-3 text-sm text-foreground placeholder:text-muted-foreground/40 focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10 transition-all"
+                placeholder="Search…"
+                className="w-full bg-background border border-border rounded-xl py-2 pl-9 pr-3 text-xs sm:text-sm text-foreground placeholder:text-muted-foreground/40 focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10 transition-all"
               />
             </div>
+            {/* Filter Toggle (Mobile) */}
+            <button
+              onClick={() => setFiltersOpen(f => !f)}
+              className={`md:hidden relative p-2.5 rounded-xl border transition-all shrink-0 ${
+                filtersOpen || activeFilters > 0
+                  ? 'bg-primary text-white border-primary shadow-sm'
+                  : 'bg-card border-border text-muted-foreground hover:text-foreground hover:bg-muted'
+              }`}
+              title="Toggle Filters"
+            >
+              <Filter size={14} />
+              {activeFilters > 0 && (
+                <span className="absolute -top-1 -right-1 w-4 h-4 bg-white text-primary text-[9px] font-black rounded-full flex items-center justify-center border border-primary/20">
+                  {activeFilters}
+                </span>
+              )}
+            </button>
             {hasActiveFilters && (
               <button
                 onClick={clearAllFilters}
-                className="flex items-center gap-1.5 px-4 py-2.5 bg-destructive/10 text-destructive border border-destructive/20 rounded-xl text-xs font-bold hover:bg-destructive/20 cursor-pointer transition-all shrink-0"
+                className="hidden md:flex items-center gap-1 px-3 py-2 bg-destructive/10 text-destructive border border-destructive/20 rounded-lg text-xs font-bold hover:bg-destructive/20 cursor-pointer transition-all shrink-0"
               >
-                <X size={12} /> Clear All
+                <X size={12} /> Clear
               </button>
             )}
           </div>
 
           {/* Row 2: Filters + Sort */}
-          <div className="flex flex-wrap items-center gap-2">
+          <div className={`${filtersOpen ? 'flex' : 'hidden'} md:flex flex-wrap items-center gap-1.5 sm:gap-2`}>
             {/* Status filter */}
-            <div className="flex items-center gap-1.5">
-              <Filter size={12} className="text-muted-foreground shrink-0" />
-              <span className="text-[10px] font-black text-muted-foreground uppercase tracking-widest shrink-0">Status</span>
-              <div className="flex gap-1 flex-wrap">
-                {(['all', 'pending', 'generated', 'sent', 'delivered', 'failed', 'unreachable'] as const).map(s => (
-                  <button
-                    key={s}
-                    onClick={() => setStatusFilter(s)}
-                    className={`px-3 py-1.5 rounded-lg text-[11px] font-bold transition-all cursor-pointer ${
-                      statusFilter === s
-                        ? 'bg-primary text-white shadow-sm'
-                        : 'bg-muted text-muted-foreground hover:bg-muted/80'
-                    }`}
-                  >
-                    {s === 'all' ? 'All' : s.charAt(0).toUpperCase() + s.slice(1)}
-                  </button>
-                ))}
+            <div className="flex items-center gap-1">
+              <Filter size={12} className="text-muted-foreground shrink-0 hidden sm:block" />
+              <span className="text-[9px] font-black text-muted-foreground uppercase tracking-widest shrink-0 hidden sm:inline">Status</span>
+              <div className="relative">
+                <select
+                  value={statusFilter}
+                  onChange={e => setStatusFilter(e.target.value as typeof statusFilter)}
+                  className={`bg-background border rounded-lg px-2 sm:px-3 py-1.5 text-[10px] sm:text-[11px] font-bold appearance-none cursor-pointer pr-7 focus:outline-none focus:ring-2 focus:ring-primary/10 transition-all ${
+                    statusFilter !== 'all'
+                      ? 'border-primary text-primary'
+                      : 'border-border text-muted-foreground'
+                  }`}
+                >
+                  {(['active', 'all', 'pending', 'generated', 'sent', 'delivered', 'failed', 'unreachable', 'junk'] as const).map(s => (
+                    <option key={s} value={s}>
+                      {s === 'active' ? 'Active' : s === 'all' ? 'All' : s.charAt(0).toUpperCase() + s.slice(1)}
+                    </option>
+                  ))}
+                </select>
+                <ChevronDown size={12} className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none" />
               </div>
             </div>
 
-            <div className="w-px h-6 bg-border hidden sm:block" />
-
             {/* Industry filter */}
-            <div className="flex items-center gap-1.5">
-              <span className="text-[10px] font-black text-muted-foreground uppercase tracking-widest shrink-0">Industry</span>
+            <div className="flex items-center gap-1">
+              <span className="text-[9px] font-black text-muted-foreground uppercase tracking-widest shrink-0 hidden sm:inline">Industry</span>
               <div className="relative">
                 <select
                   value={industryFilter}
                   onChange={e => setIndustryFilter(e.target.value)}
-                  className={`bg-background border rounded-lg px-3 py-1.5 text-[11px] font-bold appearance-none cursor-pointer pr-7 focus:outline-none focus:ring-2 focus:ring-primary/10 transition-all ${
+                  className={`bg-background border rounded-lg px-2 sm:px-3 py-1.5 text-[10px] sm:text-[11px] font-bold appearance-none cursor-pointer pr-7 focus:outline-none focus:ring-2 focus:ring-primary/10 transition-all ${
                     industryFilter !== 'all'
                       ? 'border-primary text-primary'
                       : 'border-border text-muted-foreground'
                   }`}
                 >
-                  <option value="all">All Industries</option>
+                  <option value="all">All</option>
                   {INDUSTRIES.map(ind => (
                     <option key={ind} value={ind}>{ind.split(' /')[0]}</option>
                   ))}
@@ -1012,12 +1126,11 @@ export default function OutreachDashboardClient({ sentTodayInitial = 0 }: { sent
             <div className="w-px h-6 bg-border hidden sm:block" />
 
             {/* Sort buttons */}
-            <div className="flex items-center gap-1.5">
-              <ArrowUpDown size={12} className="text-muted-foreground shrink-0" />
-              <span className="text-[10px] font-black text-muted-foreground uppercase tracking-widest shrink-0">Sort</span>
+            <div className="flex items-center gap-1">
+              <ArrowUpDown size={12} className="text-muted-foreground shrink-0 hidden sm:block" />
               <button
                 onClick={() => toggleSort('name')}
-                className={`px-3 py-1.5 rounded-lg text-[11px] font-bold transition-all cursor-pointer ${
+                className={`px-2 sm:px-3 py-1.5 rounded-lg text-[10px] sm:text-[11px] font-bold transition-all cursor-pointer ${
                   sortBy === 'name'
                     ? 'bg-primary text-white shadow-sm'
                     : 'bg-muted text-muted-foreground hover:bg-muted/80'
@@ -1027,7 +1140,7 @@ export default function OutreachDashboardClient({ sentTodayInitial = 0 }: { sent
               </button>
               <button
                 onClick={() => toggleSort('status')}
-                className={`px-3 py-1.5 rounded-lg text-[11px] font-bold transition-all cursor-pointer ${
+                className={`px-2 sm:px-3 py-1.5 rounded-lg text-[10px] sm:text-[11px] font-bold transition-all cursor-pointer ${
                   sortBy === 'status'
                     ? 'bg-primary text-white shadow-sm'
                     : 'bg-muted text-muted-foreground hover:bg-muted/80'
@@ -1039,9 +1152,19 @@ export default function OutreachDashboardClient({ sentTodayInitial = 0 }: { sent
 
             {/* Result count */}
             {hasActiveFilters && (
-              <span className="ml-auto text-[11px] font-bold text-muted-foreground">
-                {filteredLeads.length} of {leads.length} leads
+              <span className="ml-auto text-[10px] sm:text-[11px] font-bold text-muted-foreground whitespace-nowrap">
+                {filteredLeads.length} of {leads.length}
               </span>
+            )}
+
+            {/* Clear button on mobile when filters are open */}
+            {filtersOpen && hasActiveFilters && (
+              <button
+                onClick={clearAllFilters}
+                className="md:hidden w-full flex items-center justify-center gap-1 px-3 py-2 mt-2 bg-destructive/10 text-destructive border border-destructive/20 rounded-lg text-xs font-bold hover:bg-destructive/20 cursor-pointer transition-all"
+              >
+                <X size={12} /> Clear All
+              </button>
             )}
           </div>
         </div>
@@ -1057,10 +1180,274 @@ export default function OutreachDashboardClient({ sentTodayInitial = 0 }: { sent
           <p className="text-sm text-muted-foreground">Add leads manually or upload a CSV. Each lead has both email and phone — works in both tabs.</p>
         </div>
       ) : (
-        <div className="bg-card border border-border rounded-[2rem] overflow-hidden shadow-lg">
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm">
-              <thead>
+        <>
+          {/* Mobile List View */}
+          <div className="md:hidden bg-card border border-border rounded-[2rem] overflow-hidden shadow-lg">
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm" style={{ minWidth: '600px' }}>
+                <thead className="sticky top-0 z-20">
+                  <tr className="border-b border-border bg-muted/30">
+                    <th className="px-3 py-2 w-8 text-left">
+                      <input
+                        type="checkbox"
+                        checked={filteredLeads.length > 0 && selectedLeadIds.size === filteredLeads.length}
+                        onChange={toggleSelectAll}
+                        className="rounded border-border text-primary focus:ring-primary/20 bg-background cursor-pointer"
+                      />
+                    </th>
+                    <th className="text-left px-3 py-2 text-[10px] font-black text-primary uppercase tracking-widest">Business</th>
+                    <th className="text-left px-3 py-2 text-[10px] font-black text-primary uppercase tracking-widest">Contact</th>
+                    <th className="text-left px-3 py-2 text-[10px] font-black text-primary uppercase tracking-widest">Status</th>
+                    <th className="text-right px-3 py-2 text-[10px] font-black text-primary uppercase tracking-widest">Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {filteredLeads.length === 0 && leads.length > 0 ? (
+                    <tr>
+                      <td colSpan={5} className="px-3 py-8 text-center">
+                        <div className="flex flex-col items-center gap-2">
+                          <Search size={20} className="text-muted-foreground" />
+                          <p className="text-sm font-semibold text-foreground">No leads match your filters</p>
+                          <p className="text-xs text-muted-foreground">Try adjusting your search or filter criteria</p>
+                          <button onClick={clearAllFilters} className="mt-2 px-4 py-2 bg-primary/10 text-primary rounded-lg text-xs font-bold hover:bg-primary/20 cursor-pointer">
+                            Clear All Filters
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ) : (
+                    filteredLeads.map(lead => {
+                      const status = activeTab === 'email' ? lead.emailStatus : lead.waStatus;
+                      const hasContact = activeTab === 'email' ? !!lead.email : !!lead.phone;
+                      const isGenEmail = generatingEmailId === lead.id;
+                      const isGenWa = generatingWaId === lead.id;
+                      const isSending = sendingId === lead.id;
+                      const isCopied = copiedId === lead.id;
+                      const isEditing = editingId === lead.id;
+
+                      return (
+                        <tr key={lead.id} className="border-b border-border/40 hover:bg-muted/40 transition-colors">
+                          <td className="px-3 py-3 w-8">
+                            <input
+                              type="checkbox"
+                              checked={selectedLeadIds.has(lead.id)}
+                              onChange={() => toggleSelect(lead.id)}
+                              className="rounded border-border text-primary focus:ring-primary/20 bg-background cursor-pointer"
+                            />
+                          </td>
+                          <td className="px-3 py-3">
+                            <div className="flex flex-col gap-0.5">
+                              {isEditing ? (
+                                <input value={lead.businessName} onChange={e => updateLead(lead.id, { businessName: e.target.value })}
+                                  className="bg-background border border-primary/30 rounded-lg px-2 py-1 text-sm font-semibold text-foreground w-full focus:outline-none focus:ring-2 focus:ring-primary/20" />
+                              ) : (
+                                <span className="font-semibold text-foreground text-sm">{lead.businessName}</span>
+                              )}
+                              <span className="text-[10px] text-muted-foreground">
+                                {lead.industry.split(' /')[0]}{lead.city ? ` • ${lead.city}` : ''}
+                              </span>
+                              {lead.createdAt && (
+                                <span className="text-[9px] text-muted-foreground/40 uppercase tracking-widest">
+                                  {new Date(lead.createdAt).toLocaleDateString()}
+                                </span>
+                              )}
+                            </div>
+                          </td>
+                          <td className="px-3 py-3">
+                            <div className="flex flex-col gap-1">
+                              {isEditing ? (
+                                <>
+                                  <input value={lead.email} onChange={e => updateLead(lead.id, { email: e.target.value })} placeholder="email"
+                                    className="bg-background border border-primary/30 rounded px-2 py-1 text-xs text-foreground w-full focus:outline-none focus:ring-2 focus:ring-primary/20" />
+                                  <input value={lead.phone} onChange={e => updateLead(lead.id, { phone: e.target.value.replace(/\D/g,'').slice(0,10) })} placeholder="phone"
+                                    className="bg-background border border-primary/30 rounded px-2 py-1 text-xs text-foreground w-full focus:outline-none focus:ring-2 focus:ring-primary/20" />
+                                </>
+                              ) : (
+                                <>
+                                  {lead.email && (
+                                    <div className="flex items-center gap-1.5">
+                                      <AtSign size={12} className="text-muted-foreground shrink-0" />
+                                      <span className="text-xs text-foreground truncate max-w-[150px]">{lead.email}</span>
+                                    </div>
+                                  )}
+                                  {lead.phone && (
+                                    <div className="flex items-center gap-1.5">
+                                      <Phone size={12} className="text-muted-foreground shrink-0" />
+                                      <span className="text-xs text-foreground">91{lead.phone}</span>
+                                    </div>
+                                  )}
+                                </>
+                              )}
+                            </div>
+                          </td>
+                          <td className="px-3 py-3">
+                            {hasContact ? (
+                              <StatusDropdown
+                                status={status}
+                                onChange={(newStatus) => {
+                                  if (activeTab === 'email') {
+                                    persistLead(lead.id, { emailStatus: newStatus as Lead['emailStatus'] });
+                                  } else {
+                                    persistLead(lead.id, { waStatus: newStatus as Lead['waStatus'] });
+                                  }
+                                }}
+                              />
+                            ) : (
+                              <span className="text-[10px] text-muted-foreground italic">No {activeTab === 'email' ? 'email' : 'phone'}</span>
+                            )}
+                          </td>
+                          <td className="px-3 py-3">
+                            <div className="flex items-center justify-end gap-1 flex-wrap">
+                              {!hasContact && (
+                                <span className="text-[10px] text-muted-foreground italic">Add {activeTab === 'email' ? 'email' : 'phone'} to use this channel</span>
+                              )}
+
+                              {/* EMAIL TAB ACTIONS */}
+                              {activeTab === 'email' && hasContact && (
+                                <>
+                                  {lead.emailStatus === 'pending' && (
+                                    <>
+                                      <button onClick={() => generateEmail(lead)} disabled={isGenEmail}
+                                        className="flex items-center gap-1 px-2 py-1 bg-blue-600 text-white rounded text-[10px] font-bold hover:bg-blue-700 disabled:opacity-50 cursor-pointer transition-all">
+                                        {isGenEmail ? <Loader2 size={10} className="animate-spin" /> : <Sparkles size={10} />}
+                                        Gen
+                                      </button>
+                                      <button onClick={() => persistLead(lead.id, { emailStatus: 'sent' })}
+                                        className="flex items-center gap-1 px-2 py-1 bg-card border border-border text-foreground rounded text-[10px] font-bold hover:bg-muted cursor-pointer transition-all">
+                                        <Check size={10} /> Done
+                                      </button>
+                                    </>
+                                  )}
+                                  {lead.emailStatus === 'generated' && (
+                                    <>
+                                      <button onClick={() => setPreviewLead(lead)}
+                                        className="px-2 py-1 bg-card border border-border text-foreground rounded text-[10px] font-bold hover:bg-muted cursor-pointer transition-all">
+                                        Preview
+                                      </button>
+                                      <button onClick={() => sendEmail(lead)} disabled={isSending || sentToday >= 300}
+                                        className="flex items-center gap-1 px-2 py-1 bg-emerald-600 text-white rounded text-[10px] font-bold hover:bg-emerald-700 disabled:opacity-50 cursor-pointer transition-all">
+                                        {isSending ? <Loader2 size={10} className="animate-spin" /> : <Send size={10} />}
+                                        Send
+                                      </button>
+                                    </>
+                                  )}
+                                  {(lead.emailStatus === 'sent' || lead.emailStatus === 'delivered') && (
+                                    <span className="flex items-center gap-1 px-2 py-1 text-primary text-[10px] font-bold">
+                                      <Check size={10} /> {lead.emailStatus === 'delivered' ? 'Delivered' : 'Sent'}
+                                    </span>
+                                  )}
+                                  {lead.emailStatus === 'failed' && (
+                                    <div className="flex flex-col items-end gap-1">
+                                      {!isGenEmail && lead.emailError && <p className="text-[9px] text-destructive max-w-[150px] text-right">{lead.emailError}</p>}
+                                      <button onClick={() => generateEmail(lead)} disabled={isGenEmail}
+                                        className={`flex items-center gap-1 px-2 py-1 rounded text-[10px] font-bold cursor-pointer transition-all ${
+                                          isGenEmail
+                                            ? 'bg-blue-500/10 text-blue-600 border border-blue-500/20'
+                                            : 'bg-destructive/10 text-destructive hover:bg-destructive/20'
+                                        }`}>
+                                        {isGenEmail ? <Loader2 size={10} className="animate-spin" /> : <AlertCircle size={10} />}
+                                        {isGenEmail ? 'Retrying…' : 'Retry'}
+                                      </button>
+                                    </div>
+                                  )}
+                                </>
+                              )}
+
+                              {/* WHATSAPP TAB ACTIONS */}
+                              {activeTab === 'whatsapp' && hasContact && (
+                                <>
+                                  {lead.waStatus === 'pending' && (
+                                    <>
+                                      <button onClick={() => generateWhatsApp(lead)} disabled={isGenWa}
+                                        className="flex items-center gap-1 px-2 py-1 bg-[#25D366] text-white rounded text-[10px] font-bold hover:bg-[#20bd5a] disabled:opacity-50 cursor-pointer transition-all">
+                                        {isGenWa ? <Loader2 size={10} className="animate-spin" /> : <Sparkles size={10} />}
+                                        Gen
+                                      </button>
+                                      <button onClick={() => persistLead(lead.id, { waStatus: 'sent' })}
+                                        className="flex items-center gap-1 px-2 py-1 bg-card border border-border text-foreground rounded text-[10px] font-bold hover:bg-muted cursor-pointer transition-all">
+                                        <Check size={10} /> Done
+                                      </button>
+                                    </>
+                                  )}
+                                  {lead.waStatus === 'generated' && (
+                                    <>
+                                      <button onClick={() => setPreviewLead(lead)}
+                                        className="px-2 py-1 bg-card border border-border text-foreground rounded text-[10px] font-bold hover:bg-muted cursor-pointer transition-all">
+                                        Preview
+                                      </button>
+                                      <button onClick={() => copyMessage(lead)}
+                                        className="flex items-center gap-1 px-2 py-1 bg-card border border-border text-foreground rounded text-[10px] font-bold hover:bg-muted cursor-pointer transition-all">
+                                        {isCopied ? <Check size={10} className="text-primary" /> : <Copy size={10} />}
+                                        {isCopied ? 'Copied!' : 'Copy'}
+                                      </button>
+                                      <a href={lead.waLink} target="_blank" rel="noopener noreferrer"
+                                        className="flex items-center gap-1 px-2 py-1 bg-[#25D366] text-white rounded text-[10px] font-bold hover:bg-[#20bd5a] transition-all">
+                                        <ExternalLink size={10} /> Open
+                                      </a>
+                                    </>
+                                  )}
+                                  {(lead.waStatus === 'sent' || lead.waStatus === 'delivered') && (
+                                    <span className="flex items-center gap-1 px-2 py-1 text-[#25D366] text-[10px] font-bold">
+                                      <Check size={10} /> {lead.waStatus === 'delivered' ? 'Delivered' : 'Sent'}
+                                    </span>
+                                  )}
+                                  {lead.waStatus === 'failed' && (
+                                    <div className="flex flex-col items-end gap-1">
+                                      {!isGenWa && lead.waError && <p className="text-[9px] text-destructive max-w-[150px] text-right">{lead.waError}</p>}
+                                      <button onClick={() => generateWhatsApp(lead)} disabled={isGenWa}
+                                        className={`flex items-center gap-1 px-2 py-1 rounded text-[10px] font-bold cursor-pointer transition-all ${
+                                          isGenWa
+                                            ? 'bg-[#25D366]/10 text-[#25D366] border border-[#25D366]/20'
+                                            : 'bg-destructive/10 text-destructive hover:bg-destructive/20'
+                                        }`}>
+                                        {isGenWa ? <Loader2 size={10} className="animate-spin" /> : <AlertCircle size={10} />}
+                                        {isGenWa ? 'Retrying…' : 'Retry'}
+                                      </button>
+                                    </div>
+                                  )}
+                                </>
+                              )}
+
+                              <button
+                                onClick={() => {
+                                  if (isEditing) {
+                                    persistLead(lead.id, {
+                                      businessName: lead.businessName,
+                                      ownerName: lead.ownerName,
+                                      city: lead.city,
+                                      email: lead.email,
+                                      phone: lead.phone,
+                                      industry: lead.industry,
+                                      targetService: lead.targetService,
+                                    });
+                                  }
+                                  setEditingId(isEditing ? null : lead.id);
+                                }}
+                                className={`p-1 rounded cursor-pointer transition-all ${isEditing ? 'text-primary bg-primary/10' : 'text-muted-foreground hover:text-primary hover:bg-primary/10'}`}
+                                title={isEditing ? 'Done' : 'Edit'}
+                              >
+                                {isEditing ? <Check size={12} /> : <Pencil size={12} />}
+                              </button>
+                              <button onClick={() => removeLead(lead.id)}
+                                className="p-1 text-muted-foreground hover:text-destructive rounded hover:bg-destructive/10 cursor-pointer transition-all" title="Remove">
+                                <Trash2 size={12} />
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+                      );
+                    })
+                  )}
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          {/* Desktop Table View */}
+          <div className="hidden md:block bg-card border border-border rounded-[2rem] overflow-hidden shadow-lg">
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm" style={{ minWidth: '700px' }}>
+              <thead className="sticky top-0 z-20">
                 <tr className="border-b border-border bg-muted/30">
                   <th className="px-4 py-3 w-10 text-left">
                     <input
@@ -1072,7 +1459,7 @@ export default function OutreachDashboardClient({ sentTodayInitial = 0 }: { sent
                   </th>
                   <th className="text-left px-4 py-3 text-[10px] font-black text-primary uppercase tracking-widest">Business</th>
                   <th className="text-left px-4 py-3 text-[10px] font-black text-primary uppercase tracking-widest hidden sm:table-cell">Owner</th>
-                  <th className="text-left px-4 py-3 text-[10px] font-black text-primary uppercase tracking-widest hidden md:table-cell">Contact</th>
+                  <th className="text-left px-4 py-3 text-[10px] font-black text-primary uppercase tracking-widest">Contact</th>
                   <th className="text-left px-4 py-3 text-[10px] font-black text-primary uppercase tracking-widest hidden lg:table-cell">Service</th>
                   <th className="text-left px-4 py-3 text-[10px] font-black text-primary uppercase tracking-widest">Status</th>
                   <th className="text-right px-4 py-3 text-[10px] font-black text-primary uppercase tracking-widest">Actions</th>
@@ -1141,7 +1528,7 @@ export default function OutreachDashboardClient({ sentTodayInitial = 0 }: { sent
                           <span className="text-muted-foreground truncate max-w-[120px] block">{lead.ownerName || '—'}</span>
                         )}
                       </td>
-                      <td className="px-4 py-3 hidden md:table-cell">
+                      <td className="px-4 py-3">
                         {isEditing ? (
                           <div className="space-y-1">
                             <input value={lead.email} onChange={e => updateLead(lead.id, { email: e.target.value })} placeholder="email"
@@ -1328,9 +1715,10 @@ export default function OutreachDashboardClient({ sentTodayInitial = 0 }: { sent
                   );
                 })}
               </tbody>
-            </table>
+              </table>
+            </div>
           </div>
-        </div>
+        </>
       )}
 
       {/* Preview Modal — fixed scroll */}
