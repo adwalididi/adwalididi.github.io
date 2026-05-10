@@ -40,6 +40,7 @@ export async function PATCH(
     if ('email'           in body) updates.email             = body.email        || null;
     if ('phone'           in body) updates.phone             = body.phone        || null;
     if ('industry'        in body) updates.industry          = body.industry;
+    if ('customIndustry'  in body) updates.custom_industry    = body.customIndustry  || null;
     if ('targetService'   in body) updates.target_service    = body.targetService;
     if ('emailStatus'     in body) updates.email_status      = body.emailStatus;
     if ('waStatus'        in body) updates.wa_status         = body.waStatus;

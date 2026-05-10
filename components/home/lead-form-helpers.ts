@@ -78,12 +78,17 @@ export async function getIpHash(): Promise<string | null> {
   } catch { return null }
 }
 
+/**
+ * @deprecated Direct fbq() call replaced by unified deduplication tracking.
+ * Use trackConversion('Lead_Submission', ...) from lib/conversion-tracking instead.
+ * This shim is kept here so existing lead-form.tsx imports don't need to change.
+ */
 export function fireLeadPixelEvent(businessType: string) {
-  try {
-    const consent = JSON.parse(localStorage.getItem("cookie_consent") || "{}")
-    if (consent.ad_storage === "granted" && typeof window !== "undefined") {
-      const fbq = (window as unknown as { fbq: (...args: unknown[]) => void }).fbq
-      if (typeof fbq === "function") fbq("track", "Lead", { content_category: businessType })
-    }
-  } catch {}
+  // Dynamic import to avoid circular deps and keep this helper file SSR-safe
+  import('@/lib/conversion-tracking').then(({ trackConversion }) => {
+    trackConversion('Lead_Submission', {
+      business_type: businessType,
+      lead_source: 'homepage',
+    })
+  }).catch(() => {})
 }

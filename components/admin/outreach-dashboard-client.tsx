@@ -46,6 +46,7 @@ interface Lead {
   ownerName: string;
   city?: string;
   industry: string;
+  customIndustry?: string; // Used when industry === 'Other' to store the real business type
   targetService: string;
   // Email channel
   generatedSubject?: string;
@@ -70,6 +71,7 @@ function newLead(partial: Partial<Lead> & Pick<Lead, 'businessName'>): Lead {
     ownerName: '',
     city: '',
     industry: INDUSTRIES[0],
+    customIndustry: '',
     targetService: SERVICES[0],
     emailStatus: 'pending',
     waStatus: 'pending',
@@ -129,29 +131,40 @@ function parseCsv(text: string): string[][] {
 
 // ─── Component ────────────────────────────────────────────────────────────────
 
+/**
+ * Normalize a custom industry label:
+ * - Trims whitespace
+ * - Title-cases every word
+ * This prevents "jewellery", "JEWELLERY", "Jewellery" from being stored as three separate entries.
+ */
+function normalizeCustomIndustry(val: string): string {
+  return val.trim().replace(/\b\w/g, c => c.toUpperCase());
+}
+
 /** Map a Supabase snake_case row → camelCase Lead object */
 function mapDbToLead(row: Record<string, unknown>): Lead {
   return {
-    id:               row.id               as string,
-    crmId:            (row.crm_id          as string) || undefined,
-    email:            (row.email           as string) || '',
-    phone:            (row.phone           as string) || '',
-    businessName:     (row.business_name   as string) || '',
-    ownerName:        (row.owner_name      as string) || '',
-    city:             (row.city            as string) || undefined,
-    industry:         (row.industry        as string) || INDUSTRIES[0],
-    targetService:    (row.target_service  as string) || SERVICES[0],
+    id: row.id as string,
+    crmId: (row.crm_id as string) || undefined,
+    email: (row.email as string) || '',
+    phone: (row.phone as string) || '',
+    businessName: (row.business_name as string) || '',
+    ownerName: (row.owner_name as string) || '',
+    city: (row.city as string) || undefined,
+    industry: (row.industry as string) || INDUSTRIES[0],
+    customIndustry: (row.custom_industry as string) || undefined,
+    targetService: (row.target_service as string) || SERVICES[0],
     generatedSubject: (row.generated_subject as string) || undefined,
-    generatedBody:    (row.generated_body  as string) || undefined,
+    generatedBody: (row.generated_body as string) || undefined,
     generatedMessage: (row.generated_message as string) || undefined,
-    waLink:           (row.wa_link         as string) || undefined,
-    formattedPhone:   (row.formatted_phone as string) || undefined,
-    emailStatus:      (row.email_status    as Lead['emailStatus']) || 'pending',
-    waStatus:         (row.wa_status       as Lead['waStatus'])   || 'pending',
-    emailError:       (row.email_error     as string) || undefined,
-    waError:          (row.wa_error        as string) || undefined,
-    outreachLogId:    (row.outreach_log_id as string) || undefined,
-    createdAt:        (row.created_at      as string) || undefined,
+    waLink: (row.wa_link as string) || undefined,
+    formattedPhone: (row.formatted_phone as string) || undefined,
+    emailStatus: (row.email_status as Lead['emailStatus']) || 'pending',
+    waStatus: (row.wa_status as Lead['waStatus']) || 'pending',
+    emailError: (row.email_error as string) || undefined,
+    waError: (row.wa_error as string) || undefined,
+    outreachLogId: (row.outreach_log_id as string) || undefined,
+    createdAt: (row.created_at as string) || undefined,
   };
 }
 
@@ -195,7 +208,7 @@ export default function OutreachDashboardClient({ sentTodayInitial = 0 }: { sent
   // Form state
   const [form, setForm] = useState({
     email: '', phone: '', businessName: '', ownerName: '', city: '',
-    industry: INDUSTRIES[0], targetService: SERVICES[0],
+    industry: INDUSTRIES[0], customIndustry: '', targetService: SERVICES[0],
   });
 
   // Per-row loading
@@ -222,7 +235,7 @@ export default function OutreachDashboardClient({ sentTodayInitial = 0 }: { sent
     const optimistic = newLead({ ...form, businessName: form.businessName.trim() });
     // Optimistic: show immediately
     setLeads(prev => [optimistic, ...prev]);
-    setForm({ email: '', phone: '', businessName: '', ownerName: '', city: '', industry: INDUSTRIES[0], targetService: SERVICES[0] });
+    setForm({ email: '', phone: '', businessName: '', ownerName: '', city: '', industry: INDUSTRIES[0], customIndustry: '', targetService: SERVICES[0] });
     setShowForm(false);
     try {
       const res = await fetch('/api/outreach-leads', {
@@ -332,7 +345,7 @@ export default function OutreachDashboardClient({ sentTodayInitial = 0 }: { sent
         const vals = rows[i].map((v) => cleanBasic(v));
         const r: Record<string, string> = {};
         headers.forEach((h, idx) => { r[h] = vals[idx] || ''; });
-        
+
         const biz = stripSymbols(r.business_name || r.businessname || r.business || '');
         if (!biz) continue;
 
@@ -355,7 +368,24 @@ export default function OutreachDashboardClient({ sentTodayInitial = 0 }: { sent
           city: stripSymbols(r.city || r.location || ''),
           email,
           phone,
-          industry: r.industry || INDUSTRIES[0],
+          industry: (() => {
+            const raw = (r.industry || '').trim();
+            // Detect "Other - X" or "Other: X" pattern → store as industry=Other, customIndustry=X
+            const otherPattern = /^[Oo]ther\s*[-:]+\s*(.+)$/;
+            const m = raw.match(otherPattern);
+            if (m) return 'Other'; // customIndustry handled below
+            return raw || INDUSTRIES[0];
+          })(),
+          customIndustry: (() => {
+            // 1. Explicit custom_industry column
+            const explicit = stripSymbols(r.custom_industry || r.customindustry || '');
+            if (explicit) return normalizeCustomIndustry(explicit);
+            // 2. Extract from "Other - X" / "Other: X" in the industry column
+            const raw = (r.industry || '').trim();
+            const m = raw.match(/^[Oo]ther\s*[-:]+\s*(.+)$/);
+            if (m) return normalizeCustomIndustry(stripSymbols(m[1]));
+            return '';
+          })(),
           targetService: r.target_service || r.targetservice || r.service || SERVICES[0],
         }));
       }
@@ -386,6 +416,14 @@ export default function OutreachDashboardClient({ sentTodayInitial = 0 }: { sent
 
   // ─── Generate Email ───────────────────────────────────────────────
 
+  /** Resolves 'Other' industry to the custom label if one is set, for AI prompts. */
+  function resolveIndustry(lead: Lead): string {
+    if (lead.industry === 'Other' && lead.customIndustry?.trim()) {
+      return lead.customIndustry.trim();
+    }
+    return lead.industry;
+  }
+
   async function generateEmail(lead: Lead) {
     if (!lead.email) return;
     // Validate email format client-side — catches scraped malformed emails (e.g. missing @)
@@ -403,7 +441,7 @@ export default function OutreachDashboardClient({ sentTodayInitial = 0 }: { sent
         body: JSON.stringify({
           businessName: lead.businessName, ownerName: lead.ownerName,
           city: lead.city,
-          industry: lead.industry, targetService: lead.targetService,
+          industry: resolveIndustry(lead), targetService: lead.targetService,
           email: lead.email,
         }),
       });
@@ -439,7 +477,7 @@ export default function OutreachDashboardClient({ sentTodayInitial = 0 }: { sent
         body: JSON.stringify({
           phone: lead.phone, name: lead.ownerName,
           city: lead.city,
-          businessName: lead.businessName, industry: lead.industry,
+          businessName: lead.businessName, industry: resolveIndustry(lead),
           targetService: lead.targetService,
         }),
       });
@@ -568,7 +606,7 @@ export default function OutreachDashboardClient({ sentTodayInitial = 0 }: { sent
       queue = queue.filter(l => selectedLeadIds.has(l.id));
     }
     if (queue.length === 0) return;
-    
+
     if (!window.confirm(`Are you sure you want to send emails to ${queue.length} leads?`)) {
       return;
     }
@@ -601,22 +639,22 @@ export default function OutreachDashboardClient({ sentTodayInitial = 0 }: { sent
       queue = queue.filter(l => selectedLeadIds.has(l.id));
     }
     if (queue.length === 0) return;
-    
+
     if (!window.confirm(`Are you sure you want to mark ${queue.length} leads as done without generating or sending messages?`)) {
       return;
     }
 
     try {
       const patchKey = activeTab === 'email' ? 'emailStatus' : 'waStatus';
-      
+
       queue.forEach(lead => {
         updateLead(lead.id, { [patchKey]: 'sent' } as Partial<Lead>);
       });
-      
+
       const chunkSize = 10;
       for (let i = 0; i < queue.length; i += chunkSize) {
         const chunk = queue.slice(i, i + chunkSize);
-        await Promise.all(chunk.map(lead => 
+        await Promise.all(chunk.map(lead =>
           fetch(`/api/outreach-leads/${lead.id}`, {
             method: 'PATCH',
             credentials: 'include',
@@ -680,18 +718,23 @@ export default function OutreachDashboardClient({ sentTodayInitial = 0 }: { sent
 
   // ─── Computed ─────────────────────────────────────────────────────
 
-  const emailPending   = leads.filter(l => l.email && l.emailStatus === 'pending').length;
+  const emailPending = leads.filter(l => l.email && l.emailStatus === 'pending').length;
   const emailGenerated = leads.filter(l => l.email && l.emailStatus === 'generated').length;
-  const emailSent      = leads.filter(l => l.emailStatus === 'sent').length;
-  const emailFailed    = leads.filter(l => l.email && l.emailStatus === 'failed').length;
-  const waPending      = leads.filter(l => l.phone && l.waStatus === 'pending').length;
-  const waGenerated    = leads.filter(l => l.phone && l.waStatus === 'generated').length;
-  const waSent         = leads.filter(l => l.phone && l.waStatus === 'sent').length;
-  const waFailed       = leads.filter(l => l.phone && l.waStatus === 'failed').length;
+  const emailSent = leads.filter(l => l.emailStatus === 'sent').length;
+  const emailFailed = leads.filter(l => l.email && l.emailStatus === 'failed').length;
+  const waPending = leads.filter(l => l.phone && l.waStatus === 'pending').length;
+  const waGenerated = leads.filter(l => l.phone && l.waStatus === 'generated').length;
+  const waSent = leads.filter(l => l.phone && l.waStatus === 'sent').length;
+  const waFailed = leads.filter(l => l.phone && l.waStatus === 'failed').length;
 
-  const pendingCount   = activeTab === 'email' ? emailPending : waPending;
+  /** Unique normalised custom industry labels already in the leads list — used for autocomplete datalist */
+  const customIndustryOptions = Array.from(
+    new Set(leads.map(l => l.customIndustry?.trim()).filter(Boolean) as string[])
+  ).sort();
+
+  const pendingCount = activeTab === 'email' ? emailPending : waPending;
   const generatedCount = activeTab === 'email' ? emailGenerated : waGenerated;
-  const failedCount    = activeTab === 'email' ? emailFailed : waFailed;
+  const failedCount = activeTab === 'email' ? emailFailed : waFailed;
 
   // ─── Filtered + Sorted Leads ──────────────────────────────────────
 
@@ -701,12 +744,18 @@ export default function OutreachDashboardClient({ sentTodayInitial = 0 }: { sent
     // Search
     if (searchQuery.trim()) {
       const q = searchQuery.trim().toLowerCase();
+      // Strip non-digits for phone matching — lets users search "98765 43210", "+91 9876543210", etc.
+      const qDigits = q.replace(/\D/g, '');
       result = result.filter(l =>
         l.businessName.toLowerCase().includes(q) ||
         l.ownerName.toLowerCase().includes(q) ||
         l.email.toLowerCase().includes(q) ||
-        l.phone.includes(q) ||
-        (l.city || '').toLowerCase().includes(q)
+        (l.city || '').toLowerCase().includes(q) ||
+        // Phone: match stored 10-digit value using digit-only query (strips +91 / spaces / hyphens)
+        (qDigits.length >= 4 && (
+          l.phone.includes(qDigits) ||
+          l.phone.includes(qDigits.replace(/^91/, ''))
+        ))
       );
     }
 
@@ -808,15 +857,13 @@ export default function OutreachDashboardClient({ sentTodayInitial = 0 }: { sent
       <div className="flex flex-col sm:flex-row gap-2 items-start sm:items-center justify-between">
         <div className="flex gap-2 w-full sm:w-auto">
           <button onClick={() => setActiveTab('email')}
-            className={`flex-1 sm:flex-none flex items-center justify-center sm:justify-start gap-2 px-4 sm:px-6 py-2.5 sm:py-3 rounded-xl font-bold text-xs sm:text-sm transition-all cursor-pointer ${
-              activeTab === 'email' ? 'bg-primary text-white shadow-lg shadow-primary/20' : 'bg-card border border-border text-muted-foreground hover:bg-muted'
-            }`}>
+            className={`flex-1 sm:flex-none flex items-center justify-center sm:justify-start gap-2 px-4 sm:px-6 py-2.5 sm:py-3 rounded-xl font-bold text-xs sm:text-sm transition-all cursor-pointer ${activeTab === 'email' ? 'bg-primary text-white shadow-lg shadow-primary/20' : 'bg-card border border-border text-muted-foreground hover:bg-muted'
+              }`}>
             <Mail size={16} /> <span>Email</span>
           </button>
           <button onClick={() => setActiveTab('whatsapp')}
-            className={`flex-1 sm:flex-none flex items-center justify-center sm:justify-start gap-2 px-4 sm:px-6 py-2.5 sm:py-3 rounded-xl font-bold text-xs sm:text-sm transition-all cursor-pointer ${
-              activeTab === 'whatsapp' ? 'bg-[#25D366] text-white shadow-lg shadow-[#25D366]/20' : 'bg-card border border-border text-muted-foreground hover:bg-muted'
-            }`}>
+            className={`flex-1 sm:flex-none flex items-center justify-center sm:justify-start gap-2 px-4 sm:px-6 py-2.5 sm:py-3 rounded-xl font-bold text-xs sm:text-sm transition-all cursor-pointer ${activeTab === 'whatsapp' ? 'bg-[#25D366] text-white shadow-lg shadow-[#25D366]/20' : 'bg-card border border-border text-muted-foreground hover:bg-muted'
+              }`}>
             <MessageCircle size={16} /> <span>WhatsApp</span>
           </button>
         </div>
@@ -868,22 +915,21 @@ export default function OutreachDashboardClient({ sentTodayInitial = 0 }: { sent
         {/* Mobile: Second Row - Bulk Actions */}
         {pendingCount > 0 && (
           <div className="flex md:hidden gap-2 w-full flex-wrap">
-            <button 
+            <button
               onClick={bulkGenerating ? () => { abortBulkRef.current = true; setIsStopping(true); } : bulkGenerate}
               disabled={bulkGenerating && isStopping}
-              className={`flex-1 min-w-[120px] flex items-center justify-center gap-1 px-2 py-2 rounded-xl font-bold text-xs transition-all cursor-pointer ${
-                bulkGenerating 
-                  ? 'bg-red-600 hover:bg-red-700 text-white shadow-lg' 
+              className={`flex-1 min-w-[120px] flex items-center justify-center gap-1 px-2 py-2 rounded-xl font-bold text-xs transition-all cursor-pointer ${bulkGenerating
+                  ? 'bg-red-600 hover:bg-red-700 text-white shadow-lg'
                   : 'bg-blue-600 hover:bg-blue-700 text-white disabled:opacity-50'
-              }`}>
+                }`}>
               {bulkGenerating && !isStopping ? <X size={12} /> : bulkGenerating && isStopping ? <Loader2 size={12} className="animate-spin" /> : <Sparkles size={12} />}
               {bulkGenerating
                 ? isStopping ? 'Stopping' : `${bulkGenerateProgress.completed}/${bulkGenerateProgress.total || pendingCount}`
-                : selectedLeadIds.size > 0 
-                  ? `Gen (${selectedLeadIds.size})` 
+                : selectedLeadIds.size > 0
+                  ? `Gen (${selectedLeadIds.size})`
                   : `Gen (${pendingCount})`}
             </button>
-            <button 
+            <button
               onClick={bulkMarkDone}
               className="flex-1 min-w-[120px] flex items-center justify-center gap-1 px-2 py-2 bg-card border border-border text-foreground rounded-xl font-bold text-xs hover:bg-muted transition-all cursor-pointer">
               <Check size={12} />
@@ -893,14 +939,13 @@ export default function OutreachDashboardClient({ sentTodayInitial = 0 }: { sent
         )}
 
         {activeTab === 'email' && generatedCount > 0 && (
-          <button 
+          <button
             onClick={bulkSending ? () => { abortBulkRef.current = true; setIsStopping(true); } : bulkSend}
             disabled={bulkSending ? isStopping : (sentToday >= 300)}
-            className={`w-full md:hidden flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl font-bold text-xs transition-all cursor-pointer ${
-              bulkSending 
-                ? 'bg-red-600 hover:bg-red-700 text-white shadow-lg' 
+            className={`w-full md:hidden flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl font-bold text-xs transition-all cursor-pointer ${bulkSending
+                ? 'bg-red-600 hover:bg-red-700 text-white shadow-lg'
                 : 'bg-emerald-600 hover:bg-emerald-700 text-white disabled:opacity-50'
-            }`}>
+              }`}>
             {bulkSending && !isStopping ? <X size={12} /> : bulkSending && isStopping ? <Loader2 size={12} className="animate-spin" /> : <Send size={12} />}
             {bulkSending
               ? isStopping ? 'Stopping' : `${bulkSendProgress.completed}/${bulkSendProgress.total || generatedCount}`
@@ -945,40 +990,38 @@ export default function OutreachDashboardClient({ sentTodayInitial = 0 }: { sent
 
             {pendingCount > 0 && (
               <>
-                <button 
+                <button
                   onClick={bulkGenerating ? () => { abortBulkRef.current = true; setIsStopping(true); } : bulkGenerate}
                   disabled={bulkGenerating && isStopping}
-                  className={`flex items-center gap-2 px-5 py-2.5 rounded-xl font-bold text-xs transition-all cursor-pointer ${
-                    bulkGenerating 
-                      ? 'bg-red-600 hover:bg-red-700 text-white shadow-lg' 
+                  className={`flex items-center gap-2 px-5 py-2.5 rounded-xl font-bold text-xs transition-all cursor-pointer ${bulkGenerating
+                      ? 'bg-red-600 hover:bg-red-700 text-white shadow-lg'
                       : 'bg-blue-600 hover:bg-blue-700 text-white disabled:opacity-50'
-                  }`}>
+                    }`}>
                   {bulkGenerating && !isStopping ? <X size={14} /> : bulkGenerating && isStopping ? <Loader2 size={14} className="animate-spin" /> : <Sparkles size={14} />}
                   {bulkGenerating
                     ? isStopping ? 'Stopping...' : `Stop Generating (${bulkGenerateProgress.completed}/${bulkGenerateProgress.total || pendingCount})`
-                    : selectedLeadIds.size > 0 
-                      ? `Generate Selected (${selectedLeadIds.size})` 
+                    : selectedLeadIds.size > 0
+                      ? `Generate Selected (${selectedLeadIds.size})`
                       : `Generate All (${pendingCount})`}
                 </button>
-                <button 
+                <button
                   onClick={bulkMarkDone}
                   className="flex items-center gap-2 px-5 py-2.5 bg-card border border-border text-foreground rounded-xl font-bold text-xs hover:bg-muted transition-all cursor-pointer">
                   <Check size={14} />
-                  {selectedLeadIds.size > 0 
-                    ? `Mark Selected Done (${selectedLeadIds.size})` 
+                  {selectedLeadIds.size > 0
+                    ? `Mark Selected Done (${selectedLeadIds.size})`
                     : `Mark All Done (${pendingCount})`}
                 </button>
               </>
             )}
             {activeTab === 'email' && generatedCount > 0 && (
-              <button 
+              <button
                 onClick={bulkSending ? () => { abortBulkRef.current = true; setIsStopping(true); } : bulkSend}
                 disabled={bulkSending ? isStopping : (sentToday >= 300)}
-                className={`flex items-center gap-2 px-5 py-2.5 rounded-xl font-bold text-xs transition-all cursor-pointer ${
-                  bulkSending 
-                    ? 'bg-red-600 hover:bg-red-700 text-white shadow-lg' 
+                className={`flex items-center gap-2 px-5 py-2.5 rounded-xl font-bold text-xs transition-all cursor-pointer ${bulkSending
+                    ? 'bg-red-600 hover:bg-red-700 text-white shadow-lg'
                     : 'bg-emerald-600 hover:bg-emerald-700 text-white disabled:opacity-50'
-                }`}>
+                  }`}>
                 {bulkSending && !isStopping ? <X size={14} /> : bulkSending && isStopping ? <Loader2 size={14} className="animate-spin" /> : <Send size={14} />}
                 {bulkSending
                   ? isStopping ? 'Stopping...' : `Stop Sending (${bulkSendProgress.completed}/${bulkSendProgress.total || generatedCount})`
@@ -1012,13 +1055,29 @@ export default function OutreachDashboardClient({ sentTodayInitial = 0 }: { sent
             <p className="text-[10px] text-muted-foreground font-medium">Unified — works for both Email &amp; WhatsApp tabs</p>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
-            <FormInput label="Business Name *" value={form.businessName} onChange={v => setForm(p => ({...p, businessName: v}))} placeholder="Sharma's Restaurant" />
-            <FormInput label="Owner Name" value={form.ownerName} onChange={v => setForm(p => ({...p, ownerName: v}))} placeholder="Rahul Sharma" />
-            <FormInput label="City (optional)" value={form.city} onChange={v => setForm(p => ({...p, city: v}))} placeholder="Mumbai" />
-            <FormInput label="Email (for email outreach)" type="email" value={form.email} onChange={v => setForm(p => ({...p, email: v}))} placeholder="owner@business.com" />
-            <FormInput label="Phone (for WhatsApp)" type="tel" value={form.phone} onChange={v => setForm(p => ({...p, phone: v.replace(/\D/g,'').slice(0,10)}))} placeholder="9876543210" />
-            <FormSelect label="Industry" value={form.industry} onChange={v => setForm(p => ({...p, industry: v}))} options={INDUSTRIES} />
-            <FormSelect label="Target Service" value={form.targetService} onChange={v => setForm(p => ({...p, targetService: v}))} options={SERVICES} />
+            <FormInput label="Business Name *" value={form.businessName} onChange={v => setForm(p => ({ ...p, businessName: v }))} placeholder="Sharma's Restaurant" />
+            <FormInput label="Owner Name" value={form.ownerName} onChange={v => setForm(p => ({ ...p, ownerName: v }))} placeholder="Rahul Sharma" />
+            <FormInput label="City (optional)" value={form.city} onChange={v => setForm(p => ({ ...p, city: v }))} placeholder="Mumbai" />
+            <FormInput label="Email (for email outreach)" type="email" value={form.email} onChange={v => setForm(p => ({ ...p, email: v }))} placeholder="owner@business.com" />
+            <FormInput label="Phone (for WhatsApp)" type="tel" value={form.phone} onChange={v => setForm(p => ({ ...p, phone: v.replace(/\D/g, '').slice(0, 10) }))} placeholder="9876543210" />
+            <FormSelect label="Industry" value={form.industry} onChange={v => setForm(p => ({ ...p, industry: v, customIndustry: '' }))} options={INDUSTRIES} />
+            {form.industry === 'Other' && (
+              <div className="flex flex-col gap-1">
+                <label className="text-[10px] font-black text-muted-foreground uppercase tracking-widest">Specify Business Type</label>
+                <input
+                  list="custom-industry-form"
+                  value={form.customIndustry}
+                  onChange={e => setForm(p => ({ ...p, customIndustry: e.target.value }))}
+                  onBlur={e => setForm(p => ({ ...p, customIndustry: normalizeCustomIndustry(e.target.value) }))}
+                  placeholder="e.g. Jewellery Store"
+                  className="bg-background border border-border rounded-xl px-3 py-2.5 text-sm text-foreground placeholder:text-muted-foreground/40 focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10 transition-all"
+                />
+                <datalist id="custom-industry-form">
+                  {customIndustryOptions.map(opt => <option key={opt} value={opt} />)}
+                </datalist>
+              </div>
+            )}
+            <FormSelect label="Target Service" value={form.targetService} onChange={v => setForm(p => ({ ...p, targetService: v }))} options={SERVICES} />
           </div>
           <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 mt-4 sm:mt-5">
             <button onClick={addLead} disabled={!form.businessName.trim()}
@@ -1051,11 +1110,10 @@ export default function OutreachDashboardClient({ sentTodayInitial = 0 }: { sent
             {/* Filter Toggle (Mobile) */}
             <button
               onClick={() => setFiltersOpen(f => !f)}
-              className={`md:hidden relative p-2.5 rounded-xl border transition-all shrink-0 ${
-                filtersOpen || activeFilters > 0
+              className={`md:hidden relative p-2.5 rounded-xl border transition-all shrink-0 ${filtersOpen || activeFilters > 0
                   ? 'bg-primary text-white border-primary shadow-sm'
                   : 'bg-card border-border text-muted-foreground hover:text-foreground hover:bg-muted'
-              }`}
+                }`}
               title="Toggle Filters"
             >
               <Filter size={14} />
@@ -1085,11 +1143,10 @@ export default function OutreachDashboardClient({ sentTodayInitial = 0 }: { sent
                 <select
                   value={statusFilter}
                   onChange={e => setStatusFilter(e.target.value as typeof statusFilter)}
-                  className={`bg-background border rounded-lg px-2 sm:px-3 py-1.5 text-[10px] sm:text-[11px] font-bold appearance-none cursor-pointer pr-7 focus:outline-none focus:ring-2 focus:ring-primary/10 transition-all ${
-                    statusFilter !== 'all'
+                  className={`bg-background border rounded-lg px-2 sm:px-3 py-1.5 text-[10px] sm:text-[11px] font-bold appearance-none cursor-pointer pr-7 focus:outline-none focus:ring-2 focus:ring-primary/10 transition-all ${statusFilter !== 'all'
                       ? 'border-primary text-primary'
                       : 'border-border text-muted-foreground'
-                  }`}
+                    }`}
                 >
                   {(['active', 'all', 'pending', 'generated', 'sent', 'delivered', 'failed', 'unreachable', 'junk'] as const).map(s => (
                     <option key={s} value={s}>
@@ -1108,11 +1165,10 @@ export default function OutreachDashboardClient({ sentTodayInitial = 0 }: { sent
                 <select
                   value={industryFilter}
                   onChange={e => setIndustryFilter(e.target.value)}
-                  className={`bg-background border rounded-lg px-2 sm:px-3 py-1.5 text-[10px] sm:text-[11px] font-bold appearance-none cursor-pointer pr-7 focus:outline-none focus:ring-2 focus:ring-primary/10 transition-all ${
-                    industryFilter !== 'all'
+                  className={`bg-background border rounded-lg px-2 sm:px-3 py-1.5 text-[10px] sm:text-[11px] font-bold appearance-none cursor-pointer pr-7 focus:outline-none focus:ring-2 focus:ring-primary/10 transition-all ${industryFilter !== 'all'
                       ? 'border-primary text-primary'
                       : 'border-border text-muted-foreground'
-                  }`}
+                    }`}
                 >
                   <option value="all">All</option>
                   {INDUSTRIES.map(ind => (
@@ -1130,21 +1186,19 @@ export default function OutreachDashboardClient({ sentTodayInitial = 0 }: { sent
               <ArrowUpDown size={12} className="text-muted-foreground shrink-0 hidden sm:block" />
               <button
                 onClick={() => toggleSort('name')}
-                className={`px-2 sm:px-3 py-1.5 rounded-lg text-[10px] sm:text-[11px] font-bold transition-all cursor-pointer ${
-                  sortBy === 'name'
+                className={`px-2 sm:px-3 py-1.5 rounded-lg text-[10px] sm:text-[11px] font-bold transition-all cursor-pointer ${sortBy === 'name'
                     ? 'bg-primary text-white shadow-sm'
                     : 'bg-muted text-muted-foreground hover:bg-muted/80'
-                }`}
+                  }`}
               >
                 Name {sortBy === 'name' ? (sortDir === 'asc' ? '↑' : '↓') : ''}
               </button>
               <button
                 onClick={() => toggleSort('status')}
-                className={`px-2 sm:px-3 py-1.5 rounded-lg text-[10px] sm:text-[11px] font-bold transition-all cursor-pointer ${
-                  sortBy === 'status'
+                className={`px-2 sm:px-3 py-1.5 rounded-lg text-[10px] sm:text-[11px] font-bold transition-all cursor-pointer ${sortBy === 'status'
                     ? 'bg-primary text-white shadow-sm'
                     : 'bg-muted text-muted-foreground hover:bg-muted/80'
-                }`}
+                  }`}
               >
                 Status {sortBy === 'status' ? (sortDir === 'asc' ? '↑' : '↓') : ''}
               </button>
@@ -1182,7 +1236,7 @@ export default function OutreachDashboardClient({ sentTodayInitial = 0 }: { sent
       ) : (
         <>
           {/* Mobile List View */}
-          <div className="md:hidden bg-card border border-border rounded-[2rem] overflow-hidden shadow-lg">
+          <div className="md:hidden bg-card border border-border rounded-[2rem] shadow-lg overflow-hidden min-h-[200px]">
             <div className="overflow-x-auto">
               <table className="w-full text-sm" style={{ minWidth: '600px' }}>
                 <thead className="sticky top-0 z-20">
@@ -1238,13 +1292,36 @@ export default function OutreachDashboardClient({ sentTodayInitial = 0 }: { sent
                           <td className="px-3 py-3">
                             <div className="flex flex-col gap-0.5">
                               {isEditing ? (
-                                <input value={lead.businessName} onChange={e => updateLead(lead.id, { businessName: e.target.value })}
-                                  className="bg-background border border-primary/30 rounded-lg px-2 py-1 text-sm font-semibold text-foreground w-full focus:outline-none focus:ring-2 focus:ring-primary/20" />
+                                <>
+                                  <input value={lead.businessName} onChange={e => updateLead(lead.id, { businessName: e.target.value })}
+                                    className="bg-background border border-primary/30 rounded-lg px-2 py-1 text-sm font-semibold text-foreground w-full focus:outline-none focus:ring-2 focus:ring-primary/20" />
+                                  <input value={lead.city || ''} onChange={e => updateLead(lead.id, { city: e.target.value })} placeholder="City"
+                                    className="bg-background border border-primary/30 rounded-lg px-2 py-1 text-xs text-foreground w-full focus:outline-none focus:ring-2 focus:ring-primary/20 mt-1" />
+                                  <select value={lead.industry} onChange={e => updateLead(lead.id, { industry: e.target.value, customIndustry: '' })}
+                                    className="bg-background border border-primary/30 rounded-lg px-2 py-1 text-xs text-foreground w-full focus:outline-none focus:ring-2 focus:ring-primary/20 mt-1 cursor-pointer">
+                                    {INDUSTRIES.map(ind => <option key={ind} value={ind}>{ind}</option>)}
+                                  </select>
+                                  {lead.industry === 'Other' && (
+                                    <>
+                                      <input
+                                        list="custom-industry-mobile"
+                                        value={lead.customIndustry || ''}
+                                        onChange={e => updateLead(lead.id, { customIndustry: e.target.value })}
+                                        onBlur={e => updateLead(lead.id, { customIndustry: normalizeCustomIndustry(e.target.value) })}
+                                        placeholder="e.g. Jewellery Store"
+                                        className="bg-background border border-primary/30 rounded-lg px-2 py-1 text-xs text-foreground w-full focus:outline-none focus:ring-2 focus:ring-primary/20 mt-1"
+                                      />
+                                      <datalist id="custom-industry-mobile">
+                                        {customIndustryOptions.map(opt => <option key={opt} value={opt} />)}
+                                      </datalist>
+                                    </>
+                                  )}
+                                </>
                               ) : (
                                 <span className="font-semibold text-foreground text-sm">{lead.businessName}</span>
                               )}
                               <span className="text-[10px] text-muted-foreground">
-                                {lead.industry.split(' /')[0]}{lead.city ? ` • ${lead.city}` : ''}
+                                {(lead.industry === 'Other' && lead.customIndustry) ? lead.customIndustry : lead.industry.split(' /')[0]}{lead.city ? ` • ${lead.city}` : ''}
                               </span>
                               {lead.createdAt && (
                                 <span className="text-[9px] text-muted-foreground/40 uppercase tracking-widest">
@@ -1259,7 +1336,7 @@ export default function OutreachDashboardClient({ sentTodayInitial = 0 }: { sent
                                 <>
                                   <input value={lead.email} onChange={e => updateLead(lead.id, { email: e.target.value })} placeholder="email"
                                     className="bg-background border border-primary/30 rounded px-2 py-1 text-xs text-foreground w-full focus:outline-none focus:ring-2 focus:ring-primary/20" />
-                                  <input value={lead.phone} onChange={e => updateLead(lead.id, { phone: e.target.value.replace(/\D/g,'').slice(0,10) })} placeholder="phone"
+                                  <input value={lead.phone} onChange={e => updateLead(lead.id, { phone: e.target.value.replace(/\D/g, '').slice(0, 10) })} placeholder="phone"
                                     className="bg-background border border-primary/30 rounded px-2 py-1 text-xs text-foreground w-full focus:outline-none focus:ring-2 focus:ring-primary/20" />
                                 </>
                               ) : (
@@ -1340,11 +1417,10 @@ export default function OutreachDashboardClient({ sentTodayInitial = 0 }: { sent
                                     <div className="flex flex-col items-end gap-1">
                                       {!isGenEmail && lead.emailError && <p className="text-[9px] text-destructive max-w-[150px] text-right">{lead.emailError}</p>}
                                       <button onClick={() => generateEmail(lead)} disabled={isGenEmail}
-                                        className={`flex items-center gap-1 px-2 py-1 rounded text-[10px] font-bold cursor-pointer transition-all ${
-                                          isGenEmail
+                                        className={`flex items-center gap-1 px-2 py-1 rounded text-[10px] font-bold cursor-pointer transition-all ${isGenEmail
                                             ? 'bg-blue-500/10 text-blue-600 border border-blue-500/20'
                                             : 'bg-destructive/10 text-destructive hover:bg-destructive/20'
-                                        }`}>
+                                          }`}>
                                         {isGenEmail ? <Loader2 size={10} className="animate-spin" /> : <AlertCircle size={10} />}
                                         {isGenEmail ? 'Retrying…' : 'Retry'}
                                       </button>
@@ -1395,11 +1471,10 @@ export default function OutreachDashboardClient({ sentTodayInitial = 0 }: { sent
                                     <div className="flex flex-col items-end gap-1">
                                       {!isGenWa && lead.waError && <p className="text-[9px] text-destructive max-w-[150px] text-right">{lead.waError}</p>}
                                       <button onClick={() => generateWhatsApp(lead)} disabled={isGenWa}
-                                        className={`flex items-center gap-1 px-2 py-1 rounded text-[10px] font-bold cursor-pointer transition-all ${
-                                          isGenWa
+                                        className={`flex items-center gap-1 px-2 py-1 rounded text-[10px] font-bold cursor-pointer transition-all ${isGenWa
                                             ? 'bg-[#25D366]/10 text-[#25D366] border border-[#25D366]/20'
                                             : 'bg-destructive/10 text-destructive hover:bg-destructive/20'
-                                        }`}>
+                                          }`}>
                                         {isGenWa ? <Loader2 size={10} className="animate-spin" /> : <AlertCircle size={10} />}
                                         {isGenWa ? 'Retrying…' : 'Retry'}
                                       </button>
@@ -1418,6 +1493,7 @@ export default function OutreachDashboardClient({ sentTodayInitial = 0 }: { sent
                                       email: lead.email,
                                       phone: lead.phone,
                                       industry: lead.industry,
+                                      customIndustry: lead.customIndustry,
                                       targetService: lead.targetService,
                                     });
                                   }
@@ -1447,274 +1523,291 @@ export default function OutreachDashboardClient({ sentTodayInitial = 0 }: { sent
           <div className="hidden md:block bg-card border border-border rounded-[2rem] overflow-hidden shadow-lg">
             <div className="overflow-x-auto">
               <table className="w-full text-sm" style={{ minWidth: '700px' }}>
-              <thead className="sticky top-0 z-20">
-                <tr className="border-b border-border bg-muted/30">
-                  <th className="px-4 py-3 w-10 text-left">
-                    <input
-                      type="checkbox"
-                      checked={filteredLeads.length > 0 && selectedLeadIds.size === filteredLeads.length}
-                      onChange={toggleSelectAll}
-                      className="rounded border-border text-primary focus:ring-primary/20 bg-background cursor-pointer"
-                    />
-                  </th>
-                  <th className="text-left px-4 py-3 text-[10px] font-black text-primary uppercase tracking-widest">Business</th>
-                  <th className="text-left px-4 py-3 text-[10px] font-black text-primary uppercase tracking-widest hidden sm:table-cell">Owner</th>
-                  <th className="text-left px-4 py-3 text-[10px] font-black text-primary uppercase tracking-widest">Contact</th>
-                  <th className="text-left px-4 py-3 text-[10px] font-black text-primary uppercase tracking-widest hidden lg:table-cell">Service</th>
-                  <th className="text-left px-4 py-3 text-[10px] font-black text-primary uppercase tracking-widest">Status</th>
-                  <th className="text-right px-4 py-3 text-[10px] font-black text-primary uppercase tracking-widest">Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {filteredLeads.length === 0 && leads.length > 0 ? (
-                  <tr>
-                    <td colSpan={7} className="px-4 py-10 text-center">
-                      <div className="flex flex-col items-center gap-2">
-                        <Search size={20} className="text-muted-foreground" />
-                        <p className="text-sm font-semibold text-foreground">No leads match your filters</p>
-                        <p className="text-xs text-muted-foreground">Try adjusting your search or filter criteria</p>
-                        <button onClick={clearAllFilters} className="mt-2 px-4 py-2 bg-primary/10 text-primary rounded-lg text-xs font-bold hover:bg-primary/20 cursor-pointer transition-all">
-                          Clear All Filters
-                        </button>
-                      </div>
-                    </td>
+                <thead className="sticky top-0 z-20">
+                  <tr className="border-b border-border bg-muted/30">
+                    <th className="px-4 py-3 w-10 text-left">
+                      <input
+                        type="checkbox"
+                        checked={filteredLeads.length > 0 && selectedLeadIds.size === filteredLeads.length}
+                        onChange={toggleSelectAll}
+                        className="rounded border-border text-primary focus:ring-primary/20 bg-background cursor-pointer"
+                      />
+                    </th>
+                    <th className="text-left px-4 py-3 text-[10px] font-black text-primary uppercase tracking-widest">Business</th>
+                    <th className="text-left px-4 py-3 text-[10px] font-black text-primary uppercase tracking-widest hidden sm:table-cell">Owner</th>
+                    <th className="text-left px-4 py-3 text-[10px] font-black text-primary uppercase tracking-widest">Contact</th>
+                    <th className="text-left px-4 py-3 text-[10px] font-black text-primary uppercase tracking-widest hidden lg:table-cell">Service</th>
+                    <th className="text-left px-4 py-3 text-[10px] font-black text-primary uppercase tracking-widest">Status</th>
+                    <th className="text-right px-4 py-3 text-[10px] font-black text-primary uppercase tracking-widest">Actions</th>
                   </tr>
-                ) : null}
-                {filteredLeads.map(lead => {
-                  const status      = activeTab === 'email' ? lead.emailStatus : lead.waStatus;
-                  const hasContact  = activeTab === 'email' ? !!lead.email : !!lead.phone;
-                  const isGenEmail  = generatingEmailId === lead.id;
-                  const isGenWa     = generatingWaId === lead.id;
-                  const isSending   = sendingId === lead.id;
-                  const isCopied    = copiedId === lead.id;
-
-                  const isEditing = editingId === lead.id;
-
-                  return (
-                    <tr key={lead.id} className="border-b border-border/40 hover:bg-muted/40 transition-colors">
-                      <td className="px-4 py-3 w-10">
-                        <input
-                          type="checkbox"
-                          checked={selectedLeadIds.has(lead.id)}
-                          onChange={() => toggleSelect(lead.id)}
-                          className="rounded border-border text-primary focus:ring-primary/20 bg-background cursor-pointer"
-                        />
-                      </td>
-                      <td className="px-4 py-3">
-                        {isEditing ? (
-                          <div className="space-y-1">
-                            <input value={lead.businessName} onChange={e => updateLead(lead.id, { businessName: e.target.value })}
-                              className="bg-background border border-primary/30 rounded-lg px-2 py-1 text-sm text-foreground w-full max-w-[150px] focus:outline-none focus:ring-2 focus:ring-primary/20" />
-                            <input value={lead.city || ''} onChange={e => updateLead(lead.id, { city: e.target.value })} placeholder="City"
-                              className="bg-background border border-primary/30 rounded-lg px-2 py-1 text-xs text-foreground w-full max-w-[150px] focus:outline-none focus:ring-2 focus:ring-primary/20" />
-                          </div>
-                        ) : (
-                          <p className="font-semibold text-foreground truncate max-w-[150px]">{lead.businessName}</p>
-                        )}
-                        <p className="text-[10px] text-muted-foreground mt-0.5">
-                          {lead.industry.split(' /')[0]}{lead.city ? ` • ${lead.city}` : ''}
-                        </p>
-                        {lead.createdAt && (
-                          <p className="text-[9px] text-muted-foreground/40 uppercase tracking-widest mt-1" title="Date Added">
-                            Added: {new Date(lead.createdAt).toLocaleDateString()}
-                          </p>
-                        )}
-                      </td>
-                      <td className="px-4 py-3 hidden sm:table-cell">
-                        {isEditing ? (
-                          <input value={lead.ownerName} onChange={e => updateLead(lead.id, { ownerName: e.target.value })}
-                            className="bg-background border border-primary/30 rounded-lg px-2 py-1 text-sm text-foreground w-full max-w-[120px] focus:outline-none focus:ring-2 focus:ring-primary/20" />
-                        ) : (
-                          <span className="text-muted-foreground truncate max-w-[120px] block">{lead.ownerName || '—'}</span>
-                        )}
-                      </td>
-                      <td className="px-4 py-3">
-                        {isEditing ? (
-                          <div className="space-y-1">
-                            <input value={lead.email} onChange={e => updateLead(lead.id, { email: e.target.value })} placeholder="email"
-                              className="bg-background border border-primary/30 rounded-lg px-2 py-1 text-xs text-foreground w-full max-w-[180px] focus:outline-none focus:ring-2 focus:ring-primary/20" />
-                            <input value={lead.phone} onChange={e => updateLead(lead.id, { phone: e.target.value.replace(/\D/g,'').slice(0,10) })} placeholder="phone"
-                              className="bg-background border border-primary/30 rounded-lg px-2 py-1 text-xs text-foreground w-full max-w-[180px] focus:outline-none focus:ring-2 focus:ring-primary/20" />
-                          </div>
-                        ) : (
-                          <>
-                            {lead.email && (
-                              <p className="text-xs text-muted-foreground truncate max-w-[180px] inline-flex items-center gap-1.5">
-                                <AtSign size={12} className="shrink-0" /> {lead.email}
-                              </p>
-                            )}
-                            {lead.phone && (
-                              <p className="text-xs text-muted-foreground inline-flex items-center gap-1.5">
-                                <Phone size={12} className="shrink-0" /> 91{lead.phone}
-                              </p>
-                            )}
-                          </>
-                        )}
-                      </td>
-                      <td className="px-4 py-3 text-muted-foreground hidden lg:table-cell text-xs truncate max-w-[160px]">{lead.targetService}</td>
-                      <td className="px-4 py-3">
-                        {hasContact ? (
-                          <StatusDropdown 
-                            status={status} 
-                            onChange={(newStatus) => {
-                              if (activeTab === 'email') {
-                                persistLead(lead.id, { emailStatus: newStatus as Lead['emailStatus'] });
-                              } else {
-                                persistLead(lead.id, { waStatus: newStatus as Lead['waStatus'] });
-                              }
-                            }} 
-                          />
-                        ) : (
-                          <span className="text-[10px] text-muted-foreground font-medium">No {activeTab === 'email' ? 'email' : 'phone'}</span>
-                        )}
-                      </td>
-                      <td className="px-4 py-3">
-                        <div className="flex items-center justify-end gap-1.5 flex-wrap">
-                          {!hasContact && (
-                            <span className="text-[10px] text-muted-foreground italic">Add {activeTab === 'email' ? 'email' : 'phone'} to use this channel</span>
-                          )}
-
-                          {/* EMAIL TAB ACTIONS */}
-                          {activeTab === 'email' && hasContact && (
-                            <>
-                              {lead.emailStatus === 'pending' && (
-                                <>
-                                  <button onClick={() => generateEmail(lead)} disabled={isGenEmail}
-                                    className="flex items-center gap-1.5 px-3 py-1.5 bg-blue-600 text-white rounded-lg text-[11px] font-bold hover:bg-blue-700 disabled:opacity-50 cursor-pointer transition-all">
-                                    {isGenEmail ? <Loader2 size={12} className="animate-spin" /> : <Sparkles size={12} />}
-                                    Generate
-                                  </button>
-                                  <button onClick={() => persistLead(lead.id, { emailStatus: 'sent' })}
-                                    className="flex items-center gap-1.5 px-3 py-1.5 bg-card border border-border text-foreground rounded-lg text-[11px] font-bold hover:bg-muted cursor-pointer transition-all" title="Mark as Done">
-                                    <Check size={12} /> Mark Done
-                                  </button>
-                                </>
-                              )}
-                              {lead.emailStatus === 'generated' && (
-                                <>
-                                  <button onClick={() => setPreviewLead(lead)}
-                                    className="px-3 py-1.5 bg-card border border-border text-foreground rounded-lg text-[11px] font-bold hover:bg-muted cursor-pointer transition-all">
-                                    Preview
-                                  </button>
-                                  <button onClick={() => sendEmail(lead)} disabled={isSending || sentToday >= 300}
-                                    className="flex items-center gap-1.5 px-3 py-1.5 bg-emerald-600 text-white rounded-lg text-[11px] font-bold hover:bg-emerald-700 disabled:opacity-50 cursor-pointer transition-all">
-                                    {isSending ? <Loader2 size={12} className="animate-spin" /> : <Send size={12} />}
-                                    Send
-                                  </button>
-                                </>
-                              )}
-                              {(lead.emailStatus === 'sent' || lead.emailStatus === 'delivered') && (
-                                <span className="flex items-center gap-1 px-3 py-1.5 text-primary text-[11px] font-bold">
-                                  <Check size={12} /> {lead.emailStatus === 'delivered' ? 'Delivered' : 'Sent'}
-                                </span>
-                              )}
-                              {lead.emailStatus === 'failed' && (
-                                <div className="flex flex-col items-end gap-1">
-                                  {!isGenEmail && lead.emailError && <p className="text-[10px] text-destructive max-w-[200px] text-right">{lead.emailError}</p>}
-                                  <button onClick={() => generateEmail(lead)} disabled={isGenEmail}
-                                    className={`flex items-center gap-1 px-3 py-1.5 rounded-lg text-[11px] font-bold cursor-pointer transition-all ${
-                                      isGenEmail
-                                        ? 'bg-blue-500/10 text-blue-600 border border-blue-500/20'
-                                        : 'bg-destructive/10 text-destructive hover:bg-destructive/20'
-                                    }`}>
-                                    {isGenEmail ? <Loader2 size={12} className="animate-spin" /> : <AlertCircle size={12} />}
-                                    {isGenEmail ? 'Retrying…' : 'Retry'}
-                                  </button>
-                                </div>
-                              )}
-                            </>
-                          )}
-
-                          {/* WHATSAPP TAB ACTIONS */}
-                          {activeTab === 'whatsapp' && hasContact && (
-                            <>
-                              {lead.waStatus === 'pending' && (
-                                <>
-                                  <button onClick={() => generateWhatsApp(lead)} disabled={isGenWa}
-                                    className="flex items-center gap-1.5 px-3 py-1.5 bg-[#25D366] text-white rounded-lg text-[11px] font-bold hover:bg-[#20bd5a] disabled:opacity-50 cursor-pointer transition-all">
-                                    {isGenWa ? <Loader2 size={12} className="animate-spin" /> : <Sparkles size={12} />}
-                                    Generate
-                                  </button>
-                                  <button onClick={() => persistLead(lead.id, { waStatus: 'sent' })}
-                                    className="flex items-center gap-1.5 px-3 py-1.5 bg-card border border-border text-foreground rounded-lg text-[11px] font-bold hover:bg-muted cursor-pointer transition-all" title="Mark as Done">
-                                    <Check size={12} /> Mark Done
-                                  </button>
-                                </>
-                              )}
-                              {lead.waStatus === 'generated' && (
-                                <>
-                                  <button onClick={() => setPreviewLead(lead)}
-                                    className="px-3 py-1.5 bg-card border border-border text-foreground rounded-lg text-[11px] font-bold hover:bg-muted cursor-pointer transition-all">
-                                    Preview
-                                  </button>
-                                  <button onClick={() => copyMessage(lead)}
-                                    className="flex items-center gap-1.5 px-3 py-1.5 bg-card border border-border text-foreground rounded-lg text-[11px] font-bold hover:bg-muted cursor-pointer transition-all">
-                                    {isCopied ? <Check size={12} className="text-primary" /> : <Copy size={12} />}
-                                    {isCopied ? 'Copied!' : 'Copy'}
-                                  </button>
-                                  <a href={lead.waLink} target="_blank" rel="noopener noreferrer"
-                                    className="flex items-center gap-1.5 px-3 py-1.5 bg-[#25D366] text-white rounded-lg text-[11px] font-bold hover:bg-[#20bd5a] transition-all">
-                                    <ExternalLink size={12} /> Open WA
-                                  </a>
-                                  <button onClick={() => persistLead(lead.id, { waStatus: 'sent' })}
-                                    className="flex items-center gap-1.5 px-3 py-1.5 bg-card border border-border text-foreground rounded-lg text-[11px] font-bold hover:bg-muted cursor-pointer transition-all" title="Mark as Sent">
-                                    <Check size={12} /> Mark Sent
-                                  </button>
-                                </>
-                              )}
-                              {(lead.waStatus === 'sent' || lead.waStatus === 'delivered') && (
-                                <span className="flex items-center gap-1 px-3 py-1.5 text-[#25D366] text-[11px] font-bold">
-                                  <Check size={12} /> {lead.waStatus === 'delivered' ? 'Delivered' : 'Sent'}
-                                </span>
-                              )}
-                              {lead.waStatus === 'failed' && (
-                                <div className="flex flex-col items-end gap-1">
-                                  {!isGenWa && lead.waError && <p className="text-[10px] text-destructive max-w-[200px] text-right">{lead.waError}</p>}
-                                  <button onClick={() => generateWhatsApp(lead)} disabled={isGenWa}
-                                    className={`flex items-center gap-1 px-3 py-1.5 rounded-lg text-[11px] font-bold cursor-pointer transition-all ${
-                                      isGenWa
-                                        ? 'bg-[#25D366]/10 text-[#25D366] border border-[#25D366]/20'
-                                        : 'bg-destructive/10 text-destructive hover:bg-destructive/20'
-                                    }`}>
-                                    {isGenWa ? <Loader2 size={12} className="animate-spin" /> : <AlertCircle size={12} />}
-                                    {isGenWa ? 'Retrying…' : 'Retry'}
-                                  </button>
-                                </div>
-                              )}
-                            </>
-                          )}
-
-                          <button
-                            onClick={() => {
-                              if (isEditing) {
-                                // Persist field edits when Done is clicked
-                                persistLead(lead.id, {
-                                  businessName: lead.businessName,
-                                  ownerName:    lead.ownerName,
-                                  city:         lead.city,
-                                  email:        lead.email,
-                                  phone:        lead.phone,
-                                  industry:     lead.industry,
-                                  targetService: lead.targetService,
-                                });
-                              }
-                              setEditingId(isEditing ? null : lead.id);
-                            }}
-                            className={`p-1.5 rounded-lg cursor-pointer transition-all ${isEditing ? 'text-primary bg-primary/10' : 'text-muted-foreground hover:text-primary hover:bg-primary/10'}`}
-                            title={isEditing ? 'Done' : 'Edit'}
-                          >
-                            {isEditing ? <Check size={14} /> : <Pencil size={14} />}
-                          </button>
-                          <button onClick={() => removeLead(lead.id)}
-                            className="p-1.5 text-muted-foreground hover:text-destructive rounded-lg hover:bg-destructive/10 cursor-pointer transition-all" title="Remove">
-                            <Trash2 size={14} />
+                </thead>
+                <tbody>
+                  {filteredLeads.length === 0 && leads.length > 0 ? (
+                    <tr>
+                      <td colSpan={7} className="px-4 py-10 text-center">
+                        <div className="flex flex-col items-center gap-2">
+                          <Search size={20} className="text-muted-foreground" />
+                          <p className="text-sm font-semibold text-foreground">No leads match your filters</p>
+                          <p className="text-xs text-muted-foreground">Try adjusting your search or filter criteria</p>
+                          <button onClick={clearAllFilters} className="mt-2 px-4 py-2 bg-primary/10 text-primary rounded-lg text-xs font-bold hover:bg-primary/20 cursor-pointer transition-all">
+                            Clear All Filters
                           </button>
                         </div>
                       </td>
                     </tr>
-                  );
-                })}
-              </tbody>
+                  ) : null}
+                  {filteredLeads.map(lead => {
+                    const status = activeTab === 'email' ? lead.emailStatus : lead.waStatus;
+                    const hasContact = activeTab === 'email' ? !!lead.email : !!lead.phone;
+                    const isGenEmail = generatingEmailId === lead.id;
+                    const isGenWa = generatingWaId === lead.id;
+                    const isSending = sendingId === lead.id;
+                    const isCopied = copiedId === lead.id;
+
+                    const isEditing = editingId === lead.id;
+
+                    return (
+                      <tr key={lead.id} className="border-b border-border/40 hover:bg-muted/40 transition-colors">
+                        <td className="px-4 py-3 w-10">
+                          <input
+                            type="checkbox"
+                            checked={selectedLeadIds.has(lead.id)}
+                            onChange={() => toggleSelect(lead.id)}
+                            className="rounded border-border text-primary focus:ring-primary/20 bg-background cursor-pointer"
+                          />
+                        </td>
+                        <td className="px-4 py-3">
+                          {isEditing ? (
+                            <div className="space-y-1">
+                              <input value={lead.businessName} onChange={e => updateLead(lead.id, { businessName: e.target.value })}
+                                className="bg-background border border-primary/30 rounded-lg px-2 py-1 text-sm text-foreground w-full max-w-[180px] focus:outline-none focus:ring-2 focus:ring-primary/20" />
+                              <input value={lead.city || ''} onChange={e => updateLead(lead.id, { city: e.target.value })} placeholder="City"
+                                className="bg-background border border-primary/30 rounded-lg px-2 py-1 text-xs text-foreground w-full max-w-[180px] focus:outline-none focus:ring-2 focus:ring-primary/20" />
+                              <select value={lead.industry} onChange={e => updateLead(lead.id, { industry: e.target.value, customIndustry: '' })}
+                                className="bg-background border border-primary/30 rounded-lg px-2 py-1 text-xs text-foreground w-full max-w-[180px] focus:outline-none focus:ring-2 focus:ring-primary/20 cursor-pointer">
+                                {INDUSTRIES.map(ind => <option key={ind} value={ind}>{ind}</option>)}
+                              </select>
+                              {lead.industry === 'Other' && (
+                                <>
+                                  <input
+                                    list="custom-industry-desktop"
+                                    value={lead.customIndustry || ''}
+                                    onChange={e => updateLead(lead.id, { customIndustry: e.target.value })}
+                                    onBlur={e => updateLead(lead.id, { customIndustry: normalizeCustomIndustry(e.target.value) })}
+                                    placeholder="e.g. Jewellery Store"
+                                    className="bg-background border border-primary/30 rounded-lg px-2 py-1 text-xs text-foreground w-full max-w-[180px] focus:outline-none focus:ring-2 focus:ring-primary/20"
+                                  />
+                                  <datalist id="custom-industry-desktop">
+                                    {customIndustryOptions.map(opt => <option key={opt} value={opt} />)}
+                                  </datalist>
+                                </>
+                              )}
+                            </div>
+                          ) : (
+                            <p className="font-semibold text-foreground truncate max-w-[150px]">{lead.businessName}</p>
+                          )}
+                          <p className="text-[10px] text-muted-foreground mt-0.5">
+                            {(lead.industry === 'Other' && lead.customIndustry) ? lead.customIndustry : lead.industry.split(' /')[0]}{lead.city ? ` • ${lead.city}` : ''}
+                          </p>
+                          {lead.createdAt && (
+                            <p className="text-[9px] text-muted-foreground/40 uppercase tracking-widest mt-1" title="Date Added">
+                              Added: {new Date(lead.createdAt).toLocaleDateString()}
+                            </p>
+                          )}
+                        </td>
+                        <td className="px-4 py-3 hidden sm:table-cell">
+                          {isEditing ? (
+                            <input value={lead.ownerName} onChange={e => updateLead(lead.id, { ownerName: e.target.value })}
+                              className="bg-background border border-primary/30 rounded-lg px-2 py-1 text-sm text-foreground w-full max-w-[120px] focus:outline-none focus:ring-2 focus:ring-primary/20" />
+                          ) : (
+                            <span className="text-muted-foreground truncate max-w-[120px] block">{lead.ownerName || '—'}</span>
+                          )}
+                        </td>
+                        <td className="px-4 py-3">
+                          {isEditing ? (
+                            <div className="space-y-1">
+                              <input value={lead.email} onChange={e => updateLead(lead.id, { email: e.target.value })} placeholder="email"
+                                className="bg-background border border-primary/30 rounded-lg px-2 py-1 text-xs text-foreground w-full max-w-[180px] focus:outline-none focus:ring-2 focus:ring-primary/20" />
+                              <input value={lead.phone} onChange={e => updateLead(lead.id, { phone: e.target.value.replace(/\D/g, '').slice(0, 10) })} placeholder="phone"
+                                className="bg-background border border-primary/30 rounded-lg px-2 py-1 text-xs text-foreground w-full max-w-[180px] focus:outline-none focus:ring-2 focus:ring-primary/20" />
+                            </div>
+                          ) : (
+                            <>
+                              {lead.email && (
+                                <p className="text-xs text-muted-foreground truncate max-w-[180px] inline-flex items-center gap-1.5">
+                                  <AtSign size={12} className="shrink-0" /> {lead.email}
+                                </p>
+                              )}
+                              {lead.phone && (
+                                <p className="text-xs text-muted-foreground inline-flex items-center gap-1.5">
+                                  <Phone size={12} className="shrink-0" /> 91{lead.phone}
+                                </p>
+                              )}
+                            </>
+                          )}
+                        </td>
+                        <td className="px-4 py-3 text-muted-foreground hidden lg:table-cell text-xs truncate max-w-[160px]">{lead.targetService}</td>
+                        <td className="px-4 py-3">
+                          {hasContact ? (
+                            <StatusDropdown
+                              status={status}
+                              onChange={(newStatus) => {
+                                if (activeTab === 'email') {
+                                  persistLead(lead.id, { emailStatus: newStatus as Lead['emailStatus'] });
+                                } else {
+                                  persistLead(lead.id, { waStatus: newStatus as Lead['waStatus'] });
+                                }
+                              }}
+                            />
+                          ) : (
+                            <span className="text-[10px] text-muted-foreground font-medium">No {activeTab === 'email' ? 'email' : 'phone'}</span>
+                          )}
+                        </td>
+                        <td className="px-4 py-3">
+                          <div className="flex items-center justify-end gap-1.5 flex-wrap">
+                            {!hasContact && (
+                              <span className="text-[10px] text-muted-foreground italic">Add {activeTab === 'email' ? 'email' : 'phone'} to use this channel</span>
+                            )}
+
+                            {/* EMAIL TAB ACTIONS */}
+                            {activeTab === 'email' && hasContact && (
+                              <>
+                                {lead.emailStatus === 'pending' && (
+                                  <>
+                                    <button onClick={() => generateEmail(lead)} disabled={isGenEmail}
+                                      className="flex items-center gap-1.5 px-3 py-1.5 bg-blue-600 text-white rounded-lg text-[11px] font-bold hover:bg-blue-700 disabled:opacity-50 cursor-pointer transition-all">
+                                      {isGenEmail ? <Loader2 size={12} className="animate-spin" /> : <Sparkles size={12} />}
+                                      Generate
+                                    </button>
+                                    <button onClick={() => persistLead(lead.id, { emailStatus: 'sent' })}
+                                      className="flex items-center gap-1.5 px-3 py-1.5 bg-card border border-border text-foreground rounded-lg text-[11px] font-bold hover:bg-muted cursor-pointer transition-all" title="Mark as Done">
+                                      <Check size={12} /> Mark Done
+                                    </button>
+                                  </>
+                                )}
+                                {lead.emailStatus === 'generated' && (
+                                  <>
+                                    <button onClick={() => setPreviewLead(lead)}
+                                      className="px-3 py-1.5 bg-card border border-border text-foreground rounded-lg text-[11px] font-bold hover:bg-muted cursor-pointer transition-all">
+                                      Preview
+                                    </button>
+                                    <button onClick={() => sendEmail(lead)} disabled={isSending || sentToday >= 300}
+                                      className="flex items-center gap-1.5 px-3 py-1.5 bg-emerald-600 text-white rounded-lg text-[11px] font-bold hover:bg-emerald-700 disabled:opacity-50 cursor-pointer transition-all">
+                                      {isSending ? <Loader2 size={12} className="animate-spin" /> : <Send size={12} />}
+                                      Send
+                                    </button>
+                                  </>
+                                )}
+                                {(lead.emailStatus === 'sent' || lead.emailStatus === 'delivered') && (
+                                  <span className="flex items-center gap-1 px-3 py-1.5 text-primary text-[11px] font-bold">
+                                    <Check size={12} /> {lead.emailStatus === 'delivered' ? 'Delivered' : 'Sent'}
+                                  </span>
+                                )}
+                                {lead.emailStatus === 'failed' && (
+                                  <div className="flex flex-col items-end gap-1">
+                                    {!isGenEmail && lead.emailError && <p className="text-[10px] text-destructive max-w-[200px] text-right">{lead.emailError}</p>}
+                                    <button onClick={() => generateEmail(lead)} disabled={isGenEmail}
+                                      className={`flex items-center gap-1 px-3 py-1.5 rounded-lg text-[11px] font-bold cursor-pointer transition-all ${isGenEmail
+                                          ? 'bg-blue-500/10 text-blue-600 border border-blue-500/20'
+                                          : 'bg-destructive/10 text-destructive hover:bg-destructive/20'
+                                        }`}>
+                                      {isGenEmail ? <Loader2 size={12} className="animate-spin" /> : <AlertCircle size={12} />}
+                                      {isGenEmail ? 'Retrying…' : 'Retry'}
+                                    </button>
+                                  </div>
+                                )}
+                              </>
+                            )}
+
+                            {/* WHATSAPP TAB ACTIONS */}
+                            {activeTab === 'whatsapp' && hasContact && (
+                              <>
+                                {lead.waStatus === 'pending' && (
+                                  <>
+                                    <button onClick={() => generateWhatsApp(lead)} disabled={isGenWa}
+                                      className="flex items-center gap-1.5 px-3 py-1.5 bg-[#25D366] text-white rounded-lg text-[11px] font-bold hover:bg-[#20bd5a] disabled:opacity-50 cursor-pointer transition-all">
+                                      {isGenWa ? <Loader2 size={12} className="animate-spin" /> : <Sparkles size={12} />}
+                                      Generate
+                                    </button>
+                                    <button onClick={() => persistLead(lead.id, { waStatus: 'sent' })}
+                                      className="flex items-center gap-1.5 px-3 py-1.5 bg-card border border-border text-foreground rounded-lg text-[11px] font-bold hover:bg-muted cursor-pointer transition-all" title="Mark as Done">
+                                      <Check size={12} /> Mark Done
+                                    </button>
+                                  </>
+                                )}
+                                {lead.waStatus === 'generated' && (
+                                  <>
+                                    <button onClick={() => setPreviewLead(lead)}
+                                      className="px-3 py-1.5 bg-card border border-border text-foreground rounded-lg text-[11px] font-bold hover:bg-muted cursor-pointer transition-all">
+                                      Preview
+                                    </button>
+                                    <button onClick={() => copyMessage(lead)}
+                                      className="flex items-center gap-1.5 px-3 py-1.5 bg-card border border-border text-foreground rounded-lg text-[11px] font-bold hover:bg-muted cursor-pointer transition-all">
+                                      {isCopied ? <Check size={12} className="text-primary" /> : <Copy size={12} />}
+                                      {isCopied ? 'Copied!' : 'Copy'}
+                                    </button>
+                                    <a href={lead.waLink} target="_blank" rel="noopener noreferrer"
+                                      className="flex items-center gap-1.5 px-3 py-1.5 bg-[#25D366] text-white rounded-lg text-[11px] font-bold hover:bg-[#20bd5a] transition-all">
+                                      <ExternalLink size={12} /> Open WA
+                                    </a>
+                                    <button onClick={() => persistLead(lead.id, { waStatus: 'sent' })}
+                                      className="flex items-center gap-1.5 px-3 py-1.5 bg-card border border-border text-foreground rounded-lg text-[11px] font-bold hover:bg-muted cursor-pointer transition-all" title="Mark as Sent">
+                                      <Check size={12} /> Mark Sent
+                                    </button>
+                                  </>
+                                )}
+                                {(lead.waStatus === 'sent' || lead.waStatus === 'delivered') && (
+                                  <span className="flex items-center gap-1 px-3 py-1.5 text-[#25D366] text-[11px] font-bold">
+                                    <Check size={12} /> {lead.waStatus === 'delivered' ? 'Delivered' : 'Sent'}
+                                  </span>
+                                )}
+                                {lead.waStatus === 'failed' && (
+                                  <div className="flex flex-col items-end gap-1">
+                                    {!isGenWa && lead.waError && <p className="text-[10px] text-destructive max-w-[200px] text-right">{lead.waError}</p>}
+                                    <button onClick={() => generateWhatsApp(lead)} disabled={isGenWa}
+                                      className={`flex items-center gap-1 px-3 py-1.5 rounded-lg text-[11px] font-bold cursor-pointer transition-all ${isGenWa
+                                          ? 'bg-[#25D366]/10 text-[#25D366] border border-[#25D366]/20'
+                                          : 'bg-destructive/10 text-destructive hover:bg-destructive/20'
+                                        }`}>
+                                      {isGenWa ? <Loader2 size={12} className="animate-spin" /> : <AlertCircle size={12} />}
+                                      {isGenWa ? 'Retrying…' : 'Retry'}
+                                    </button>
+                                  </div>
+                                )}
+                              </>
+                            )}
+
+                            <button
+                              onClick={() => {
+                                if (isEditing) {
+                                  // Persist field edits when Done is clicked
+                                  persistLead(lead.id, {
+                                    businessName: lead.businessName,
+                                    ownerName: lead.ownerName,
+                                    city: lead.city,
+                                    email: lead.email,
+                                    phone: lead.phone,
+                                    industry: lead.industry,
+                                    targetService: lead.targetService,
+                                  });
+                                }
+                                setEditingId(isEditing ? null : lead.id);
+                              }}
+                              className={`p-1.5 rounded-lg cursor-pointer transition-all ${isEditing ? 'text-primary bg-primary/10' : 'text-muted-foreground hover:text-primary hover:bg-primary/10'}`}
+                              title={isEditing ? 'Done' : 'Edit'}
+                            >
+                              {isEditing ? <Check size={14} /> : <Pencil size={14} />}
+                            </button>
+                            <button onClick={() => removeLead(lead.id)}
+                              className="p-1.5 text-muted-foreground hover:text-destructive rounded-lg hover:bg-destructive/10 cursor-pointer transition-all" title="Remove">
+                              <Trash2 size={14} />
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
               </table>
             </div>
           </div>
@@ -1858,18 +1951,18 @@ function FormSelect({ label, value, onChange, options }: {
 
 function StatusDropdown({ status, onChange }: { status: string; onChange: (newStatus: string) => void }) {
   const styles: Record<string, string> = {
-    pending:     'bg-yellow-500/10 text-yellow-600 border-yellow-500/20',
-    generated:   'bg-blue-500/10 text-blue-600 border-blue-500/20',
-    sent:        'bg-primary/10 text-primary border-primary/20',
-    delivered:   'bg-emerald-500/10 text-emerald-600 border-emerald-500/20',
+    pending: 'bg-yellow-500/10 text-yellow-600 border-yellow-500/20',
+    generated: 'bg-blue-500/10 text-blue-600 border-blue-500/20',
+    sent: 'bg-primary/10 text-primary border-primary/20',
+    delivered: 'bg-emerald-500/10 text-emerald-600 border-emerald-500/20',
     unreachable: 'bg-slate-500/10 text-slate-500 dark:text-slate-400 border-slate-500/20',
-    failed:      'bg-destructive/10 text-destructive border-destructive/20',
+    failed: 'bg-destructive/10 text-destructive border-destructive/20',
   };
   const options = ['pending', 'generated', 'sent', 'delivered', 'unreachable', 'failed'];
-  
+
   return (
     <div className="relative group/status w-fit">
-      <select 
+      <select
         value={status}
         onChange={(e) => onChange(e.target.value)}
         className={`appearance-none px-2.5 py-1 pr-6 rounded-lg text-[10px] font-black uppercase tracking-widest border cursor-pointer focus:outline-none transition-all ${styles[status] || styles.pending}`}

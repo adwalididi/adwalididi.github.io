@@ -2,10 +2,20 @@
 
 import { useEffect, useRef, useState } from "react"
 import { WhatsAppIcon } from "@/components/ui/whatsapp-icon"
+import { trackConversion } from "@/lib/conversion-tracking"
 
 export function CTASection() {
   const [isVisible, setIsVisible] = useState(false)
   const sectionRef = useRef<HTMLElement>(null)
+
+  const handleWhatsAppClick = () => {
+    trackConversion('WhatsApp_Click', { source: 'cta_section' })
+    window.open(
+      'https://wa.me/916261643774?text=Hi!%20I\'m%20interested%20in%20your%20digital%20marketing%20services.%20Let\'s%20talk!',
+      '_blank',
+      'noopener,noreferrer'
+    )
+  }
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -39,11 +49,9 @@ export function CTASection() {
             No lengthy proposals. No confusing jargon. Just a conversation about your business and what we can do.
           </p>
           
-          <a
-            href="https://wa.me/916261643774?text=Hi!%20I'm%20interested%20in%20your%20digital%20marketing%20services.%20Let's%20talk!"
-            target="_blank"
-            rel="noopener noreferrer"
-            className={`inline-flex items-center gap-2 bg-teal text-white px-8 py-4 rounded-xl font-medium text-lg hover:bg-deep-teal transition-all hover:scale-105 shadow-lg mt-8 delay-200 group ${
+          <button
+            onClick={handleWhatsAppClick}
+            className={`inline-flex items-center gap-2 bg-teal text-white px-8 py-4 rounded-xl font-medium text-lg hover:bg-deep-teal transition-all hover:scale-105 shadow-lg mt-8 delay-200 group cursor-pointer ${
               isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
             }`}
           >
@@ -51,7 +59,7 @@ export function CTASection() {
               <WhatsAppIcon className="w-6 h-6 sm:w-5 sm:h-5 shrink-0" />
             </div>
             <span>{"WhatsApp Karo — Get a Free Audit"}</span>
-          </a>
+          </button>
         </div>
       </div>
     </section>

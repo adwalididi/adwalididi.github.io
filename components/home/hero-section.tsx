@@ -6,6 +6,7 @@ import { ArrowRight } from "lucide-react"
 import { WhatsAppIcon } from "@/components/ui/whatsapp-icon"
 import { m } from "framer-motion"
 import { useState, useEffect } from "react"
+import { trackConversion } from "@/lib/conversion-tracking"
 
 export function HeroSection() {
   const [isMounted, setIsMounted] = useState(false)
@@ -13,6 +14,15 @@ export function HeroSection() {
   useEffect(() => {
     setIsMounted(true)
   }, [])
+
+  const handleWhatsAppClick = () => {
+    trackConversion('WhatsApp_Click', { source: 'hero_cta' })
+    window.open(
+      'https://wa.me/916261643774?text=Hi!%20I%20want%20to%20get%20more%20enquiries%20for%20my%20business.%20Can%20we%20talk%3F',
+      '_blank',
+      'noopener,noreferrer'
+    )
+  }
 
   return (
     <section
@@ -64,15 +74,13 @@ export function HeroSection() {
             animate={{ opacity: isMounted ? 1 : 0 }}
             transition={{ duration: 0.8, delay: 0.6 }}
           >
-            <a
-              href="https://wa.me/916261643774?text=Hi!%20I%20want%20to%20get%20more%20enquiries%20for%20my%20business.%20Can%20we%20talk%3F"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 bg-teal text-white px-8 py-4 rounded-xl font-medium text-lg hover:opacity-90 transition-all hover:scale-105 shadow-xl"
+            <button
+              onClick={handleWhatsAppClick}
+              className="inline-flex items-center gap-2 bg-teal text-white px-8 py-4 rounded-xl font-medium text-lg hover:opacity-90 transition-all hover:scale-105 shadow-xl cursor-pointer"
             >
               <WhatsAppIcon className="w-6 h-6 sm:w-5 sm:h-5 shrink-0" aria-hidden="true" />
               WhatsApp Us Now
-            </a>
+            </button>
             <Link
               href="/portfolio"
               className="inline-flex items-center gap-2 px-8 py-4 rounded-xl font-semibold text-lg text-white transition-all hover:scale-105 bg-white-10 hover:bg-white-20 backdrop-blur-sm shadow-xl border border-white-30"

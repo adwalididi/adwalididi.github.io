@@ -3,7 +3,8 @@
 import Link from "next/link"
 import Image from "next/image"
 import { useState, useEffect } from "react"
-import { usePathname } from "next/navigation"
+import { usePathname, useRouter } from "next/navigation"
+import { trackConversion } from "@/lib/conversion-tracking"
 
 const navLinks = [
   { href: "/", label: "Home" },
@@ -16,6 +17,12 @@ const navLinks = [
 export function Navbar() {
   const [scrolled, setScrolled] = useState(false)
   const pathname = usePathname()
+  const router = useRouter()
+
+  const handleLetsTalk = () => {
+    trackConversion('Contact_CTA', { source: 'navbar' })
+    router.push('/contact')
+  }
 
   const isActive = (href: string) => {
     if (href === "/") return pathname === "/"
@@ -51,15 +58,16 @@ export function Navbar() {
           </Link>
 
           {/* Mobile CTA */}
-          <Link
-            href="/contact"
-            className={`md:hidden px-4 py-2 rounded-lg text-sm font-medium transition-colors ${isActive("/contact")
-              ? 'bg-teal/90 text-white'
-              : 'bg-teal text-white hover:opacity-90'
-              }`}
+          <button
+            onClick={handleLetsTalk}
+            className={`md:hidden px-4 py-2 rounded-lg text-sm font-medium transition-colors cursor-pointer ${
+              isActive("/contact")
+                ? 'bg-teal/90 text-white'
+                : 'bg-teal text-white hover:opacity-90'
+            }`}
           >
             {"Let's Talk"}
-          </Link>
+          </button>
 
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center gap-8">
@@ -78,15 +86,16 @@ export function Navbar() {
                 )}
               </Link>
             ))}
-            <Link
-              href="/contact"
-              className={`px-5 py-2.5 rounded-xl font-medium transition-colors ${isActive("/contact")
-                ? 'bg-teal/90 text-white'
-                : 'bg-teal text-white hover:opacity-90'
-                }`}
+            <button
+              onClick={handleLetsTalk}
+              className={`px-5 py-2.5 rounded-xl font-medium transition-colors cursor-pointer ${
+                isActive("/contact")
+                  ? 'bg-teal/90 text-white'
+                  : 'bg-teal text-white hover:opacity-90'
+              }`}
             >
               {"Let's Talk"}
-            </Link>
+            </button>
           </div>
         </div>
       </nav>
