@@ -35,25 +35,29 @@ export async function POST(request: Request) {
 
     const waPhone = `91${cleanPhone}`;
 
-    const prompt = `Write a WhatsApp-style cold outreach message for Adwalididi, an Indian digital marketing agency.
+    const prompt = `Write a WhatsApp cold outreach message for Adwalididi, a small Indian digital marketing agency.
 
 Target details:
-- Person's name: ${name || 'there'}
+- Recipient name: ${name || 'there'}
 - Business name: ${businessName}
 - City: ${city || 'not specified'}
 - Industry: ${industry}
-- Service being pitched: ${targetService}
+- Service to pitch: ${targetService}
 
-Rules:
-- Keep it under 50 words, casual, friendly
-- If city is provided, mention it ONCE naturally (e.g., "your café in Pune"). If not specified, skip location.
-- Can use a mix of Hindi and English if natural
-- Do NOT use emoji or special symbols — convey warmth with words only
-- Pitch the specific service naturally
-- End with a question to encourage reply
-- Do NOT be formal, do NOT use "Dear Sir/Madam"
-- Sign as "Shivani from Adwalididi"
-- Return ONLY the message text`;
+Message structure — follow this exactly in order:
+1. OPENER: Address them by first name (or "Hey" if no name). One warm, direct sentence that makes clear you know their space — not generic.
+2. PAIN POINT: Name one real, specific struggle that ${industry} businesses face (e.g. low walk-ins, poor online visibility, no social presence). Be concrete, not vague.
+3. SOLUTION: Connect that pain point directly to ${targetService}. Show how it solves that specific problem.
+4. CTA: A short, pull-based close that creates mild urgency — not a bland question. Something like "Don't let that growth sit idle — reply and let's see what's possible." Make it feel like an invitation, not a sales push.
+5. SIGN-OFF: End with only "- Shivani, Adwalididi" on a new line. Do NOT mention Shivani or Adwalididi anywhere else in the message.
+
+Strict rules:
+- 70 to 80 words total. Every word must earn its place.
+- If city is provided, weave it in once naturally. If not, skip it.
+- Casual, warm tone — can mix Hindi and English if natural
+- NO emoji, NO special symbols, NO exclamation marks
+- Do NOT start with "Dear" or any formal opener
+- Return ONLY the message text, no labels or commentary`;
 
 
     const systemPrompt = 'You are Shivani, a friendly digital marketing consultant at Adwalididi agency in India. You write casual WhatsApp messages that feel personal and get replies. Never be formal or spammy.';

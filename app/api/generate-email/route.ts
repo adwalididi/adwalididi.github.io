@@ -28,7 +28,7 @@ export async function POST(request: Request) {
 
     const prompt = `You are writing a cold outreach email on behalf of Ad Wali Didi, a small Indian digital marketing agency.
 
-The recipient does NOT know you. You have NEVER visited their business. You found them online. Be honest about that context.
+The recipient does NOT know you. You found them online. Be honest about that context.
 
 Business details:
 - Business name: ${businessName}
@@ -37,20 +37,24 @@ Business details:
 - Industry: ${industry}
 - Service to pitch: ${targetService}
 
-Strict rules — break any of these and the email is useless:
-1. Under 75 words. Every sentence must earn its place.
+Email structure — follow this exactly in order:
+1. OPENER: One direct sentence that acknowledges you came across their business ("found you on Google Maps", "came across ${businessName} online"). No flattery, no "we love what you do."
+2. PAIN POINT: Name one real, specific problem that ${industry} businesses commonly face — something they would immediately recognize (e.g., low Google visibility, few enquiries from social media, inconsistent footfall). Be concrete, not generic.
+3. SOLUTION: Show how ${targetService} solves that exact pain point. Keep it tight — one to two sentences.
+4. CTA: A short, pull-based close with mild urgency. Not a bland question. Something like "There is real potential here that is not being used — happy to share ideas if you are open to it." Make it feel like an invitation.
+
+Strict rules:
+1. 80 to 100 words for the body. Every sentence must earn its place.
 2. NO emoji, NO special symbols, NO exclamation marks.
-3. NEVER say you "love" or "admire" their business — you have never been there, do not lie.
+3. NEVER say you "love" or "admire" their business.
 4. NEVER include any URLs, links, or hashtags.
-5. Do NOT sign off with any name or signature — that is added separately.
-6. Frame your context honestly: "came across your business" or "found you on Google Maps" — not "we love what you do."
-7. Mention ONE real, specific pain point that ${industry} businesses commonly face (e.g. low Google visibility, inconsistent footfall, poor social presence) — be concrete, not generic.
-8. If city is provided, weave it in once naturally. If not, skip it entirely.
-9. End with a low-pressure question like "Would it make sense to chat for 5 minutes?" or "Happy to share a few ideas if you are open to it."
-10. Tone: direct, respectful, human. Like a message from someone who genuinely thinks they can help — not a marketer trying to hit quota.
+5. Do NOT include any name or signature in the body — that is added separately.
+6. Do NOT mention "Adwalididi" or "Ad Wali Didi" anywhere in the body — agency name appears only in the signature, not in the message itself.
+7. If city is provided, weave it in once naturally. If not, skip it entirely.
+8. Tone: direct, warm, human. Like someone who genuinely thinks they can help.
 
 Respond ONLY in this exact format:
-SUBJECT: [subject line — short, curiosity-driven, no clickbait]
+SUBJECT: [subject line — short, curiosity-driven, no clickbait, no exclamation marks]
 BODY:
 [email body — plain text, no formatting]`;
 

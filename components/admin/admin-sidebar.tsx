@@ -10,7 +10,7 @@ import { logout } from '@/app/actions/auth';
 
 export function AdminSidebar() {
   const pathname = usePathname();
-  const [isCollapsed, setIsCollapsed] = useState(false);
+  const [isCollapsed, setIsCollapsed] = useState(true);
 
   const links = [
     { id: 'leads', label: 'Leads CRM', href: '/admin/leads', icon: Users },
