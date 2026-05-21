@@ -1814,10 +1814,22 @@ export default function OutreachDashboardClient({ sentTodayInitial = 0 }: { sent
         </>
       )}
 
-      {/* Preview Modal — fixed scroll */}
+      {/* Preview Modal — editable, fixed scroll */}
       {previewLead && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4"
-          onClick={() => setPreviewLead(null)}>
+          onClick={() => {
+            // Auto-persist edits on close
+            persistLead(previewLead.id, {
+              ...(activeTab === 'email' ? {
+                generatedSubject: previewLead.generatedSubject,
+                generatedBody: previewLead.generatedBody,
+              } : {
+                generatedMessage: previewLead.generatedMessage,
+                waLink: `https://wa.me/91${previewLead.phone}?text=${encodeURIComponent(previewLead.generatedMessage || '')}`,
+              }),
+            });
+            setPreviewLead(null);
+          }}>
           <div className="bg-card border border-border rounded-[2rem] w-full max-w-lg flex flex-col shadow-2xl max-h-[85vh]"
             onClick={e => e.stopPropagation()}>
 
@@ -1827,27 +1839,56 @@ export default function OutreachDashboardClient({ sentTodayInitial = 0 }: { sent
                 {activeTab === 'email' ? <Mail size={16} /> : <MessageCircle size={16} />}
                 {activeTab === 'email' ? 'Email Preview' : 'WhatsApp Preview'}
               </h3>
-              <button onClick={() => setPreviewLead(null)}
-                className="p-2 rounded-lg hover:bg-muted text-muted-foreground cursor-pointer transition-all">
-                <X size={18} />
-              </button>
+              <div className="flex items-center gap-2">
+                <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest flex items-center gap-1">
+                  <Pencil size={10} /> Editable
+                </span>
+                <button onClick={() => {
+                  persistLead(previewLead.id, {
+                    ...(activeTab === 'email' ? {
+                      generatedSubject: previewLead.generatedSubject,
+                      generatedBody: previewLead.generatedBody,
+                    } : {
+                      generatedMessage: previewLead.generatedMessage,
+                      waLink: `https://wa.me/91${previewLead.phone}?text=${encodeURIComponent(previewLead.generatedMessage || '')}`,
+                    }),
+                  });
+                  setPreviewLead(null);
+                }}
+                  className="p-2 rounded-lg hover:bg-muted text-muted-foreground cursor-pointer transition-all">
+                  <X size={18} />
+                </button>
+              </div>
             </div>
 
-            {/* Modal Body — scrollable */}
+            {/* Modal Body — scrollable, editable */}
             <div className="flex-1 min-h-0 overflow-y-auto p-6 space-y-4">
               {activeTab === 'email' && previewLead.generatedSubject && (
                 <>
                   <div>
                     <p className="text-[10px] font-black text-primary uppercase tracking-widest mb-1.5">Subject Line</p>
-                    <p className="text-foreground font-semibold text-sm bg-muted rounded-xl p-3 border border-border leading-relaxed">
-                      {previewLead.generatedSubject}
-                    </p>
+                    <input
+                      value={previewLead.generatedSubject}
+                      onChange={e => {
+                        const val = e.target.value;
+                        setPreviewLead(prev => prev ? { ...prev, generatedSubject: val } : null);
+                        updateLead(previewLead.id, { generatedSubject: val });
+                      }}
+                      className="w-full text-foreground font-semibold text-sm bg-muted rounded-xl p-3 border border-border leading-relaxed focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10 transition-all"
+                    />
                   </div>
                   <div>
                     <p className="text-[10px] font-black text-primary uppercase tracking-widest mb-1.5">Email Body</p>
-                    <div className="text-foreground text-sm leading-relaxed bg-muted rounded-xl p-4 border border-border whitespace-pre-wrap">
-                      {previewLead.generatedBody}
-                    </div>
+                    <textarea
+                      value={previewLead.generatedBody || ''}
+                      onChange={e => {
+                        const val = e.target.value;
+                        setPreviewLead(prev => prev ? { ...prev, generatedBody: val } : null);
+                        updateLead(previewLead.id, { generatedBody: val });
+                      }}
+                      rows={8}
+                      className="w-full text-foreground text-sm leading-relaxed bg-muted rounded-xl p-4 border border-border focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10 transition-all resize-y min-h-[120px]"
+                    />
                   </div>
                 </>
               )}
@@ -1862,13 +1903,27 @@ export default function OutreachDashboardClient({ sentTodayInitial = 0 }: { sent
                       </span>
                     )}
                   </div>
-                  <div className="text-sm leading-relaxed bg-[#dcf8c6] dark:bg-[#005c4b] text-[#111] dark:text-white rounded-2xl p-4 border border-[#b4e0a3] dark:border-[#00806a] whitespace-pre-wrap">
-                    {previewLead.generatedMessage}
-                  </div>
+                  <textarea
+                    value={previewLead.generatedMessage}
+                    onChange={e => {
+                      const val = e.target.value;
+                      setPreviewLead(prev => prev ? {
+                        ...prev,
+                        generatedMessage: val,
+                        waLink: `https://wa.me/91${prev.phone}?text=${encodeURIComponent(val)}`,
+                      } : null);
+                      updateLead(previewLead.id, {
+                        generatedMessage: val,
+                        waLink: `https://wa.me/91${previewLead.phone}?text=${encodeURIComponent(val)}`,
+                      });
+                    }}
+                    rows={6}
+                    className="w-full text-sm leading-relaxed bg-[#dcf8c6] dark:bg-[#005c4b] text-[#111] dark:text-white rounded-2xl p-4 border border-[#b4e0a3] dark:border-[#00806a] focus:outline-none focus:border-[#25D366] focus:ring-2 focus:ring-[#25D366]/20 transition-all resize-y min-h-[100px]"
+                  />
                   <p className="text-[10px] text-muted-foreground">
                     <span className="inline-flex items-center gap-1.5">
                       <TriangleAlert size={12} />
-                      "Number doesn&apos;t exist" means the number isn&apos;t registered on WhatsApp — not a URL issue.
+                      &quot;Number doesn&apos;t exist&quot; means the number isn&apos;t registered on WhatsApp — not a URL issue.
                     </span>
                   </p>
                 </div>
@@ -1879,7 +1934,15 @@ export default function OutreachDashboardClient({ sentTodayInitial = 0 }: { sent
             <div className="p-6 pt-4 border-t border-border shrink-0">
               {activeTab === 'email' ? (
                 <div className="flex gap-3">
-                  <button onClick={() => { sendEmail(previewLead); setPreviewLead(null); }}
+                  <button onClick={() => {
+                    // Persist edits first, then send
+                    persistLead(previewLead.id, {
+                      generatedSubject: previewLead.generatedSubject,
+                      generatedBody: previewLead.generatedBody,
+                    });
+                    sendEmail(previewLead);
+                    setPreviewLead(null);
+                  }}
                     disabled={sentToday >= 300}
                     className="flex-1 flex items-center justify-center gap-2 py-3 bg-emerald-600 text-white rounded-xl font-bold text-sm hover:bg-emerald-700 disabled:opacity-50 cursor-pointer transition-all">
                     <Send size={14} /> Send Email
@@ -1891,11 +1954,24 @@ export default function OutreachDashboardClient({ sentTodayInitial = 0 }: { sent
                 </div>
               ) : (
                 <div className="flex gap-3">
-                  <button onClick={() => copyMessage(previewLead)}
+                  <button onClick={() => {
+                    // Persist edits first, then copy
+                    persistLead(previewLead.id, {
+                      generatedMessage: previewLead.generatedMessage,
+                      waLink: previewLead.waLink,
+                    });
+                    copyMessage(previewLead);
+                  }}
                     className="flex-1 flex items-center justify-center gap-2 py-3 bg-card border border-border text-foreground rounded-xl font-bold text-sm hover:bg-muted cursor-pointer transition-all">
                     <Copy size={14} /> Copy Message
                   </button>
                   <a href={previewLead.waLink} target="_blank" rel="noopener noreferrer"
+                    onClick={() => {
+                      persistLead(previewLead.id, {
+                        generatedMessage: previewLead.generatedMessage,
+                        waLink: previewLead.waLink,
+                      });
+                    }}
                     className="flex-1 flex items-center justify-center gap-2 py-3 bg-[#25D366] text-white rounded-xl font-bold text-sm hover:bg-[#20bd5a] transition-all">
                     <ExternalLink size={14} /> Open WhatsApp
                   </a>

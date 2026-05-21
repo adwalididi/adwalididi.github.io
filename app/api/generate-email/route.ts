@@ -48,10 +48,11 @@ Strict rules:
 2. NO emoji, NO special symbols, NO exclamation marks.
 3. NEVER say you "love" or "admire" their business.
 4. NEVER include any URLs, links, or hashtags.
-5. Do NOT include any name or signature in the body — that is added separately.
-6. Do NOT mention "Adwalididi" or "Ad Wali Didi" anywhere in the body — agency name appears only in the signature, not in the message itself.
-7. If city is provided, weave it in once naturally. If not, skip it entirely.
-8. Tone: direct, warm, human. Like someone who genuinely thinks they can help.
+5. Do NOT include any name, signature, sign-off, or closing line (like "Best," or "Regards,") in the body — the signature is added separately by the system.
+6. NEVER use square-bracket placeholders like [Your Name], [Contact Information], [Company Name], etc. The body must be complete, final text with zero placeholders.
+7. Do NOT mention "Adwalididi" or "Ad Wali Didi" anywhere in the body — agency name appears only in the signature, not in the message itself.
+8. If city is provided, weave it in once naturally. If not, skip it entirely.
+9. Tone: direct, warm, human. Like someone who genuinely thinks they can help.
 
 Respond ONLY in this exact format:
 SUBJECT: [subject line — short, curiosity-driven, no clickbait, no exclamation marks]
