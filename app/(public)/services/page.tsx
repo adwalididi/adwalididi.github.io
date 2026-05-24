@@ -10,12 +10,12 @@ export const metadata: Metadata = {
   title: "Our Services | Google Ads, Meta Ads & GBP Management — Ad Wali Didi",
   description: "Google Business Profile management, Meta Ads, Google Ads and Ad Creatives for Indian small businesses. One agency, three services, zero coordination headache.",
   alternates: {
-    canonical: '/services/',
+    canonical: '/services',
   },
   openGraph: {
     title: 'Our Services | Google Ads, Meta Ads & GBP Management — Ad Wali Didi',
     description: 'Google Business Profile management, Meta Ads, Google Ads and Ad Creatives for Indian small businesses. One agency, three services, zero coordination headache.',
-    url: '/services/',
+    url: '/services',
     images: [{ url: '/og-services.webp', width: 1200, height: 630, alt: 'Our Services — Ad Wali Didi' }],
   },
   twitter: {

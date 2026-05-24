@@ -8,12 +8,12 @@ export const metadata: Metadata = {
   title: "About Us | Ad Wali Didi — Indian Digital Marketing Agency",
   description: "Ad Wali Didi started to help Indian small businesses become visible online. Our story, our approach, and why we do this.",
   alternates: {
-    canonical: '/about/',
+    canonical: '/about',
   },
   openGraph: {
     title: 'About Us | Ad Wali Didi — Indian Digital Marketing Agency',
     description: 'Ad Wali Didi started to help Indian small businesses become visible online. Our story, our approach, and why we do this.',
-    url: '/about/',
+    url: '/about',
     images: [{ url: '/og-about.webp', width: 1200, height: 630, alt: 'About Ad Wali Didi' }],
   },
   twitter: {

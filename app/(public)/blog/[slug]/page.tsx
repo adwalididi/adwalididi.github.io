@@ -28,7 +28,7 @@ export async function generateMetadata({ params }: BlogPostPageProps): Promise<M
       type: 'article',
       title: post.title,
       description: post.metaDescription,
-      url: `/blog/${post.slug}/`,
+      url: `/blog/${post.slug}`,
       siteName: 'Ad Wali Didi',
       publishedTime: post.date,
       authors: ['Ad Wali Didi'],
@@ -39,7 +39,7 @@ export async function generateMetadata({ params }: BlogPostPageProps): Promise<M
       description: post.metaDescription,
     },
     alternates: {
-      canonical: `/blog/${post.slug}/`,
+      canonical: `/blog/${post.slug}`,
     },
   }
 }
@@ -78,7 +78,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
         },
         "mainEntityOfPage": {
           "@type": "WebPage",
-          "@id": `https://adwalididi.com/blog/${post.slug}/`,
+          "@id": `https://adwalididi.com/blog/${post.slug}`,
         },
         "keywords": post.keywords.join(", "),
       },
@@ -95,13 +95,13 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
             "@type": "ListItem",
             "position": 2,
             "name": "Blog",
-            "item": "https://adwalididi.com/blog/"
+            "item": "https://adwalididi.com/blog"
           },
           {
             "@type": "ListItem",
             "position": 3,
             "name": post.title,
-            "item": `https://adwalididi.com/blog/${post.slug}/`
+            "item": `https://adwalididi.com/blog/${post.slug}`
           }
         ]
       }
@@ -120,7 +120,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
         <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Breadcrumb */}
           <Link
-            href="/blog/"
+            href="/blog"
             className="inline-flex items-center gap-2 text-sm text-muted-text hover:text-teal transition-colors mb-8"
           >
             <ArrowLeft size={14} />
@@ -209,7 +209,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
               {relatedPosts.map((relatedPost) => (
                 <Link
                   key={relatedPost.slug}
-                  href={`/blog/${relatedPost.slug}/`}
+                  href={`/blog/${relatedPost.slug}`}
                   className="group bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-lg transition-all duration-300 flex flex-col"
                   style={{ border: '0.5px solid #C8E8E3' }}
                 >

@@ -7,12 +7,12 @@ export const metadata: Metadata = {
   title: "Contact Ad Wali Didi | WhatsApp Us for a Free Audit",
   description: "Get a free audit of your Google presence and ad activity. WhatsApp Ad Wali Didi directly — we respond same day.",
   alternates: {
-    canonical: '/contact/',
+    canonical: '/contact',
   },
   openGraph: {
     title: 'Contact Ad Wali Didi | WhatsApp Us for a Free Audit',
     description: 'Get a free audit of your Google presence and ad activity. WhatsApp Ad Wali Didi directly — we respond same day.',
-    url: '/contact/',
+    url: '/contact',
     images: [{ url: '/og-contact.webp', width: 1200, height: 630, alt: 'Contact Ad Wali Didi' }],
   },
   twitter: {

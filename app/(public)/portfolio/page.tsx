@@ -9,12 +9,12 @@ export const metadata: Metadata = {
   title: "Our Work & Results | Ad Wali Didi",
   description: "Real results for real businesses. 150+ enquiries for a travel startup, 550 leads for a construction business. See our case studies.",
   alternates: {
-    canonical: '/portfolio/',
+    canonical: '/portfolio',
   },
   openGraph: {
     title: 'Our Work & Results | Ad Wali Didi',
     description: 'Real results for real businesses. 150+ enquiries for a travel startup, 550 leads for a construction business. See our case studies.',
-    url: '/portfolio/',
+    url: '/portfolio',
     images: [{ url: '/og-portfolio.webp', width: 1200, height: 630, alt: 'Our Work — Ad Wali Didi' }],
   },
   twitter: {

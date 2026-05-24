@@ -3,6 +3,9 @@ import type { Metadata } from 'next'
 export const metadata: Metadata = {
   title: 'Terms of Use | Ad Wali Didi',
   description: 'Terms of Use governing your access to and use of adwalididi.com.',
+  alternates: {
+    canonical: '/terms-of-use',
+  },
 }
 
 export default function TermsOfUsePage() {
