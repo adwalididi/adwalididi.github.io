@@ -49,17 +49,17 @@ interface Lead {
   customIndustry?: string; // Used when industry === 'Other' to store the real business type
   targetService: string;
   // Email channel
-  generatedSubject?: string;
-  generatedBody?: string;
+  generatedSubject?: string | null;
+  generatedBody?: string | null;
   emailStatus: 'pending' | 'generated' | 'sent' | 'delivered' | 'failed' | 'unreachable' | 'junk';
   outreachLogId?: string; // Supabase outreach_log row ID
-  emailError?: string;
+  emailError?: string | null;
   // WhatsApp channel
-  generatedMessage?: string;
-  waLink?: string;
+  generatedMessage?: string | null;
+  waLink?: string | null;
   formattedPhone?: string;
   waStatus: 'pending' | 'generated' | 'sent' | 'delivered' | 'failed' | 'unreachable' | 'junk';
-  waError?: string;
+  waError?: string | null;
   createdAt?: string;
 }
 
@@ -275,7 +275,31 @@ export default function OutreachDashboardClient({ sentTodayInitial = 0 }: { sent
 
   /** In-memory update for real-time edit fields — call persistLead to save. */
   function updateLead(id: string, patch: Partial<Lead>) {
-    setLeads(prev => prev.map(l => l.id === id ? { ...l, ...patch } : l));
+    setLeads(prev => prev.map(l => {
+      if (l.id === id) {
+        const updated = { ...l, ...patch };
+        // If target service changed, reset generated outreach copy so it gets regenerated.
+        // IMPORTANT: protect sent/delivered — those emails are already out; don't revert them.
+        if (patch.targetService && patch.targetService !== l.targetService) {
+          const emailResettable = !['junk', 'sent', 'delivered'].includes(updated.emailStatus);
+          if (emailResettable) {
+            updated.emailStatus = 'pending';
+            updated.generatedSubject = null;
+            updated.generatedBody = null;
+            updated.emailError = null;
+          }
+          const waResettable = !['junk', 'sent', 'delivered'].includes(updated.waStatus);
+          if (waResettable) {
+            updated.waStatus = 'pending';
+            updated.generatedMessage = null;
+            updated.waLink = null;
+            updated.waError = null;
+          }
+        }
+        return updated;
+      }
+      return l;
+    }));
   }
 
   /** Persist a patch to Supabase — used for generated content, status updates, and on edit 'Done'. */
@@ -716,6 +740,73 @@ export default function OutreachDashboardClient({ sentTodayInitial = 0 }: { sent
     }
   }
 
+  // ─── Bulk Update Service ──────────────────────────────────────────
+
+  async function bulkUpdateService(newService: string) {
+    const selectedIds = Array.from(selectedLeadIds);
+    if (selectedIds.length === 0) return;
+
+    // Optimistically update state
+    setLeads(prev => prev.map(l => {
+      if (selectedIds.includes(l.id)) {
+        const patch: Partial<Lead> = { targetService: newService };
+        const emailResettable = !['junk', 'sent', 'delivered'].includes(l.emailStatus);
+        if (emailResettable) {
+          patch.emailStatus = 'pending';
+          patch.generatedSubject = null;
+          patch.generatedBody = null;
+          patch.emailError = null;
+        }
+        const waResettable = !['junk', 'sent', 'delivered'].includes(l.waStatus);
+        if (waResettable) {
+          patch.waStatus = 'pending';
+          patch.generatedMessage = null;
+          patch.waLink = null;
+          patch.waError = null;
+        }
+        return { ...l, ...patch };
+      }
+      return l;
+    }));
+
+    try {
+      const chunkSize = 10;
+      for (let i = 0; i < selectedIds.length; i += chunkSize) {
+        const chunk = selectedIds.slice(i, i + chunkSize);
+        await Promise.all(chunk.map(async id => {
+          const lead = leads.find(l => l.id === id);
+          if (!lead) return;
+          const patch: Record<string, any> = { targetService: newService };
+          const emailResettable = !['junk', 'sent', 'delivered'].includes(lead.emailStatus);
+          if (emailResettable) {
+            patch.emailStatus = 'pending';
+            patch.generatedSubject = null;
+            patch.generatedBody = null;
+            patch.emailError = null;
+          }
+          const waResettable = !['junk', 'sent', 'delivered'].includes(lead.waStatus);
+          if (waResettable) {
+            patch.waStatus = 'pending';
+            patch.generatedMessage = null;
+            patch.waLink = null;
+            patch.waError = null;
+          }
+          await fetch(`/api/outreach-leads/${id}`, {
+            method: 'PATCH',
+            credentials: 'include',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(patch),
+          });
+        }));
+      }
+      setSelectedLeadIds(new Set());
+    } catch (e) {
+      console.error('Bulk update service error:', e);
+      alert('Failed to update service for some leads.');
+      fetchLeads();
+    }
+  }
+
   // ─── Computed ─────────────────────────────────────────────────────
 
   const emailPending = leads.filter(l => l.email && l.emailStatus === 'pending').length;
@@ -912,6 +1003,32 @@ export default function OutreachDashboardClient({ sentTodayInitial = 0 }: { sent
           </button>
         </div>
 
+        {/* Mobile: Bulk Service Update */}
+        {selectedLeadIds.size > 0 && (
+          <div className="flex md:hidden items-center justify-between gap-2 p-2.5 bg-primary/5 border border-primary/20 rounded-xl w-full">
+            <span className="text-[9px] font-black uppercase tracking-widest text-primary shrink-0">Service ({selectedLeadIds.size})</span>
+            <div className="relative flex-1">
+              <select
+                onChange={async (e) => {
+                  const val = e.target.value;
+                  if (!val) return;
+                  if (window.confirm(`Change target service to "${val}" for ${selectedLeadIds.size} selected leads?`)) {
+                    await bulkUpdateService(val);
+                  }
+                  e.target.value = '';
+                }}
+                className="w-full bg-background border border-border rounded-lg pl-2 pr-7 py-1.5 text-xs font-bold appearance-none cursor-pointer focus:outline-none focus:ring-1 focus:ring-primary/20 text-foreground"
+              >
+                <option value="">Change selected to...</option>
+                {SERVICES.map(s => (
+                  <option key={s} value={s}>{s}</option>
+                ))}
+              </select>
+              <ChevronDown size={12} className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none" />
+            </div>
+          </div>
+        )}
+
         {/* Mobile: Second Row - Bulk Actions */}
         {pendingCount > 0 && (
           <div className="flex md:hidden gap-2 w-full flex-wrap">
@@ -987,6 +1104,31 @@ export default function OutreachDashboardClient({ sentTodayInitial = 0 }: { sent
               {importingCRM ? <Loader2 size={14} className="animate-spin" /> : <Users size={14} />}
               {importingCRM ? 'Importing...' : 'Import from CRM'}
             </button>
+
+            {selectedLeadIds.size > 0 && (
+              <div className="flex items-center gap-2 bg-primary/5 border border-primary/25 rounded-xl px-3 py-1.5 shrink-0">
+                <span className="text-[10px] font-black uppercase tracking-widest text-primary">Target Service ({selectedLeadIds.size})</span>
+                <div className="relative">
+                  <select
+                    onChange={async (e) => {
+                      const val = e.target.value;
+                      if (!val) return;
+                      if (window.confirm(`Change target service to "${val}" for ${selectedLeadIds.size} selected leads?`)) {
+                        await bulkUpdateService(val);
+                      }
+                      e.target.value = '';
+                    }}
+                    className="bg-background border border-border rounded-lg pl-2 pr-7 py-1 text-xs font-bold appearance-none cursor-pointer focus:outline-none focus:ring-1 focus:ring-primary/20 text-foreground"
+                  >
+                    <option value="">Change to...</option>
+                    {SERVICES.map(s => (
+                      <option key={s} value={s}>{s}</option>
+                    ))}
+                  </select>
+                  <ChevronDown size={10} className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none" />
+                </div>
+              </div>
+            )}
 
             {pendingCount > 0 && (
               <>
@@ -1316,6 +1458,12 @@ export default function OutreachDashboardClient({ sentTodayInitial = 0 }: { sent
                                       </datalist>
                                     </>
                                   )}
+                                  <select value={lead.targetService} onChange={e => updateLead(lead.id, { targetService: e.target.value })}
+                                    className="bg-background border border-primary/30 rounded-lg px-2 py-1 text-xs text-foreground w-full focus:outline-none focus:ring-2 focus:ring-primary/20 mt-1 cursor-pointer">
+                                    {(SERVICES.includes(lead.targetService) ? SERVICES : [...SERVICES, lead.targetService]).map(s => (
+                                      <option key={s} value={s}>{s}</option>
+                                    ))}
+                                  </select>
                                 </>
                               ) : (
                                 <span className="font-semibold text-foreground text-sm">{lead.businessName}</span>
@@ -1456,7 +1604,7 @@ export default function OutreachDashboardClient({ sentTodayInitial = 0 }: { sent
                                         {isCopied ? <Check size={10} className="text-primary" /> : <Copy size={10} />}
                                         {isCopied ? 'Copied!' : 'Copy'}
                                       </button>
-                                      <a href={lead.waLink} target="_blank" rel="noopener noreferrer"
+                                      <a href={lead.waLink || undefined} target="_blank" rel="noopener noreferrer"
                                         className="flex items-center gap-1 px-2 py-1 bg-[#25D366] text-white rounded text-[10px] font-bold hover:bg-[#20bd5a] transition-all">
                                         <ExternalLink size={10} /> Open
                                       </a>
@@ -1486,7 +1634,11 @@ export default function OutreachDashboardClient({ sentTodayInitial = 0 }: { sent
                               <button
                                 onClick={() => {
                                   if (isEditing) {
-                                    persistLead(lead.id, {
+                                    // Persist only the user-editable fields.
+                                    // Status + generated-content resets (if service changed) are
+                                    // already reflected in local state via updateLead; we persist
+                                    // those too so the DB stays in sync.
+                                    const editPatch: Partial<Lead> = {
                                       businessName: lead.businessName,
                                       ownerName: lead.ownerName,
                                       city: lead.city,
@@ -1495,7 +1647,21 @@ export default function OutreachDashboardClient({ sentTodayInitial = 0 }: { sent
                                       industry: lead.industry,
                                       customIndustry: lead.customIndustry,
                                       targetService: lead.targetService,
-                                    });
+                                    };
+                                    // Only carry reset fields when the status has actually been reset
+                                    if (!['sent', 'delivered', 'junk'].includes(lead.emailStatus)) {
+                                      editPatch.emailStatus = lead.emailStatus;
+                                      editPatch.generatedSubject = lead.generatedSubject;
+                                      editPatch.generatedBody = lead.generatedBody;
+                                      editPatch.emailError = lead.emailError;
+                                    }
+                                    if (!['sent', 'delivered', 'junk'].includes(lead.waStatus)) {
+                                      editPatch.waStatus = lead.waStatus;
+                                      editPatch.generatedMessage = lead.generatedMessage;
+                                      editPatch.waLink = lead.waLink;
+                                      editPatch.waError = lead.waError;
+                                    }
+                                    persistLead(lead.id, editPatch);
                                   }
                                   setEditingId(isEditing ? null : lead.id);
                                 }}
@@ -1646,7 +1812,21 @@ export default function OutreachDashboardClient({ sentTodayInitial = 0 }: { sent
                             </>
                           )}
                         </td>
-                        <td className="px-4 py-3 text-muted-foreground hidden lg:table-cell text-xs truncate max-w-[160px]">{lead.targetService}</td>
+                        <td className="px-4 py-3 text-muted-foreground hidden lg:table-cell text-xs truncate max-w-[160px]">
+                          {isEditing ? (
+                            <select
+                              value={lead.targetService}
+                              onChange={e => updateLead(lead.id, { targetService: e.target.value })}
+                              className="bg-background border border-primary/30 rounded-lg px-2 py-1 text-xs text-foreground w-full focus:outline-none focus:ring-2 focus:ring-primary/20 cursor-pointer"
+                            >
+                              {(SERVICES.includes(lead.targetService) ? SERVICES : [...SERVICES, lead.targetService]).map(s => (
+                                <option key={s} value={s}>{s}</option>
+                              ))}
+                            </select>
+                          ) : (
+                            lead.targetService
+                          )}
+                        </td>
                         <td className="px-4 py-3">
                           {hasContact ? (
                             <StatusDropdown
@@ -1746,7 +1926,7 @@ export default function OutreachDashboardClient({ sentTodayInitial = 0 }: { sent
                                       {isCopied ? <Check size={12} className="text-primary" /> : <Copy size={12} />}
                                       {isCopied ? 'Copied!' : 'Copy'}
                                     </button>
-                                    <a href={lead.waLink} target="_blank" rel="noopener noreferrer"
+                                    <a href={lead.waLink || undefined} target="_blank" rel="noopener noreferrer"
                                       className="flex items-center gap-1.5 px-3 py-1.5 bg-[#25D366] text-white rounded-lg text-[11px] font-bold hover:bg-[#20bd5a] transition-all">
                                       <ExternalLink size={12} /> Open WA
                                     </a>
@@ -1780,16 +1960,34 @@ export default function OutreachDashboardClient({ sentTodayInitial = 0 }: { sent
                             <button
                               onClick={() => {
                                 if (isEditing) {
-                                  // Persist field edits when Done is clicked
-                                  persistLead(lead.id, {
+                                  // Persist only user-editable fields.
+                                  // Status + generated-content resets (if service changed) are
+                                  // already in local state via updateLead; persist only those
+                                  // that were actually reset so we don't overwrite sent/delivered.
+                                  const editPatch: Partial<Lead> = {
                                     businessName: lead.businessName,
                                     ownerName: lead.ownerName,
                                     city: lead.city,
                                     email: lead.email,
                                     phone: lead.phone,
                                     industry: lead.industry,
+                                    customIndustry: lead.customIndustry,
                                     targetService: lead.targetService,
-                                  });
+                                  };
+                                  // Carry reset fields only when the channel was actually reset
+                                  if (!['sent', 'delivered', 'junk'].includes(lead.emailStatus)) {
+                                    editPatch.emailStatus = lead.emailStatus;
+                                    editPatch.generatedSubject = lead.generatedSubject;
+                                    editPatch.generatedBody = lead.generatedBody;
+                                    editPatch.emailError = lead.emailError;
+                                  }
+                                  if (!['sent', 'delivered', 'junk'].includes(lead.waStatus)) {
+                                    editPatch.waStatus = lead.waStatus;
+                                    editPatch.generatedMessage = lead.generatedMessage;
+                                    editPatch.waLink = lead.waLink;
+                                    editPatch.waError = lead.waError;
+                                  }
+                                  persistLead(lead.id, editPatch);
                                 }
                                 setEditingId(isEditing ? null : lead.id);
                               }}
@@ -1965,7 +2163,7 @@ export default function OutreachDashboardClient({ sentTodayInitial = 0 }: { sent
                     className="flex-1 flex items-center justify-center gap-2 py-3 bg-card border border-border text-foreground rounded-xl font-bold text-sm hover:bg-muted cursor-pointer transition-all">
                     <Copy size={14} /> Copy Message
                   </button>
-                  <a href={previewLead.waLink} target="_blank" rel="noopener noreferrer"
+                  <a href={previewLead.waLink || undefined} target="_blank" rel="noopener noreferrer"
                     onClick={() => {
                       persistLead(previewLead.id, {
                         generatedMessage: previewLead.generatedMessage,
