@@ -23,7 +23,7 @@ const spaceGrotesk = Space_Grotesk({
 })
 
 export const metadata: Metadata = {
-  metadataBase: new URL('https://adwalididi.com/'),
+  metadataBase: new URL('https://adwalididi.com'),
   title: 'Ad Wali Didi | Google Ads, Meta Ads & Ad Creatives for Indian Businesses',
   description: 'We help Indian businesses get more enquiries through Google Business Profile, Meta Ads, and Ad Creatives. 150+ enquiries generated in Month 1 for a travel startup.',
   keywords: ['digital marketing', 'Google Ads', 'Meta Ads', 'Google Business Profile', 'Indian businesses', 'local marketing', 'Ad Creatives'],
@@ -34,7 +34,7 @@ export const metadata: Metadata = {
   openGraph: {
     type: 'website',
     locale: 'en_IN',
-    url: 'https://adwalididi.com/',
+    url: 'https://adwalididi.com',
     siteName: 'Ad Wali Didi',
     title: 'Ad Wali Didi | Google Ads, Meta Ads & Ad Creatives for Indian Businesses',
     description: 'We help Indian businesses get more enquiries through Google Business Profile, Meta Ads, and Ad Creatives. 150+ enquiries generated in Month 1 for a travel startup.',
@@ -47,7 +47,7 @@ export const metadata: Metadata = {
     images: ['/og-home.webp'],
   },
   alternates: {
-    canonical: '/',
+    canonical: 'https://adwalididi.com',
   },
 }
 
