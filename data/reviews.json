@@ -1,7 +1,7 @@
 {
   "placeRating": 5,
-  "totalReviews": 6,
-  "lastFetchedAt": "2026-06-22T11:55:46.099Z",
+  "totalReviews": 5,
+  "lastFetchedAt": "2026-06-29T11:00:44.708Z",
   "reviews": [
     {
       "author": "Alkesh Patil",
@@ -36,12 +36,12 @@
       "publishTime": "2026-04-21T17:49:21.231272470Z"
     },
     {
-      "author": "Bhurr LLP",
-      "photoUri": "https://lh3.googleusercontent.com/a/ACg8ocIm22Oayo5BsNP2tR55108h7rU2v1YispIPWr3q-s3XGE9hJQ=s128-c0x00000000-cc-rp-mo",
+      "author": "Shubham Biswas",
+      "photoUri": "https://lh3.googleusercontent.com/a-/ALV-UjXQ2R9mezo7PUxG55B5-TKACfp5yTFaGEd8xwwEK9fGxhXT2pVS=s128-c0x00000000-cc-rp-mo",
       "rating": 5,
       "text": "",
-      "relativeTime": "a week ago",
-      "publishTime": "2026-06-14T20:21:35.095335618Z"
+      "relativeTime": "2 months ago",
+      "publishTime": "2026-04-21T16:25:18.499347327Z"
     }
   ]
 }
